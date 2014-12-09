@@ -19,7 +19,7 @@ strip.index <- function(x){
 indiana <- strip.index(read.csv('data/output/gridded//IllinoisData_v0.2.csv'))
 michigan <- strip.index(read.csv('data/output/gridded/so_Michigan_v0.3.csv'))
 illinois <- strip.index(read.csv('data/output/gridded/IndianaData_v0.2.csv'))
-paleon <- strip.index(read.csv('data/output/gridded/glo.forest.composition_v1_9alb.csv'))
+paleon <- strip.index(read.csv('data/output/aggregated_midwest/glo.forest.composition_v1_91alb.csv'))
 
 paleon <- paleon[,!colnames(paleon) %in% 'cell']
 
