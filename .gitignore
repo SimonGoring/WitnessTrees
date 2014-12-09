@@ -10,3 +10,6 @@
 data/raw_data/
 R/paper/outputs
 WitnessTrees.Rproj
+*.shp
+*.dbf
+*.prj

@@ -38,7 +38,7 @@ library(raster)
 
 wisc <- readOGR('data/raw_data/wisc/glo_corn.shp', 'glo_corn')
 minn <- readOGR('data/raw_data/minn/Minnesota.shp', 'Minnesota')
-mich <- readOGR('data/raw_data/mich/michigan.shp', 'michigan')
+mich <- readOGR('data/output/aggregated_midwest/michigan_filled/michigan_filled.shp', 'michigan_filled')
 
 #  The files are in unique projections, this standardizes the projections to
 #  a long-lat projection:
@@ -131,8 +131,8 @@ azimuths <- apply(azimuths, 2, get_angle)
 #      Changing tree codes to lumped names:
 spec.codes <- read.csv('data/input/relation_tables/fullpaleon_conversion_v0.3_1.csv', stringsAsFactor = FALSE)
 
-lumped <- data.frame(abbr = as.character(spec.codes$Level.1[spec.codes$Domain %in% 'Upper Midwest']),
-                     lump = as.character(spec.codes$Level.3a[spec.codes$Domain %in% 'Upper Midwest']))
+lumped <- data.frame(abbr = as.character(spec.codes$Level.1),
+                     lump = as.character(spec.codes$Level.3a))
 
 species.old <- data.frame(as.character(nwmw$SP1), 
                           as.character(nwmw$SP2), 
@@ -152,7 +152,6 @@ species[species %in% ''] <- 'No tree'
 
 #  Now we assign species that don't fit to the 'No tree' category.
 species[is.na(species)] <- 'No tree'
-species[species == ''] <- NA
 
 ######
 #  Some annoying things that need to be done:
@@ -240,7 +239,7 @@ species <- data.frame(species1 = sp.levels[ranked.data[, 9]],
 #  Some wisconsin samples don't have a year.  Look this up and figure out why.
 #  It causes a problem with the Cottam correction factor.
 
-mn_survey <- read.csv('MN_Surveys.csv')
+mn_survey <- read.csv('data/raw_data/minn/MN_Surveys.csv')
 mn_survey$TOWN <- paste('T', formatC(mn_survey$TOWN, width=3, flag='0'), 'N', sep ='')
 mn_survey$RANG <- paste('R', formatC(mn_survey$RANG, width=2, flag='0'), mn_survey$RDIR, sep ='')
 
@@ -294,5 +293,7 @@ colnames(final.data) <- c('Point', 'Township', 'Range',
 coordinates(final.data) <- coordinates(nwmw)
 
 #  Write the data out as a shapefile.
-writeOGR(final.data, 'minn.wisc.mich.clean_v1_3.shp', 'minn.wisc.mich.clean_v1_3', 'ESRI Shapefile',
+writeOGR(final.data, 
+         'data/output/aggregated_midwest/minn.wisc.mich.clean_v1_5.shp', 
+         'minn.wisc.mich.clean_v1_5', 'ESRI Shapefile',
          overwrite_layer = TRUE, check_exists = TRUE)

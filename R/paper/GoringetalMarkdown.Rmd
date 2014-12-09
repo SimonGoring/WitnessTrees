@@ -227,7 +227,7 @@ Mixedwood	| Both BDT (LAI > 1.5) & NET (LAI > 2.5) present | Stem dens. > 19 ste
 
 ### FIA Stem Density, Basal Area and Biomass
 ```{r loadFIAplotsperCell, echo = FALSE, message=FALSE, results = 'hide', warning=FALSE}
-fia.plots <- raster('data/FIA/numplots_alb.tif')
+fia.plots <- raster('../../data/input/rasters/numplots_alb.tif')
 
 ```
 
@@ -276,7 +276,7 @@ Rasterizing the dataset to the Albers 64km^2^ grid produces `r p(sum(!is.na(as.v
 
 ```{r CodeBlockCalculations, echo = FALSE, message=FALSE, results='hide', warning=FALSE}
   
-source('R/base_calculationsv_1.2.R')
+source('R/base_calculationsv_1.3.R')
 #rm(used.data); gc()
 
 ```
