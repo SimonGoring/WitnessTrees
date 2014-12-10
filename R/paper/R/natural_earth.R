@@ -19,7 +19,7 @@ can.domain <- subset(canada, canada$long > xylimits[1] & canada$long < xylimits[
 #  Natural earth data is stored in the Maps folder, and comes from: www.naturalearthdata.com
 #  Here we are using the 10m data.
 
-nat.earth <- crop(stack('Maps/NaturalEarth/BaseRaster/NE1_HR_LC_SR_W_DR.tif'), y=extent(c(-98-1, -83+1, 42-1, 50+1)))
+nat.earth <- crop(stack('../../data/input/NaturalEarth/BaseRaster/NE1_HR_LC_SR_W_DR.tif'), y=extent(c(-98-1, -83+1, 42-1, 50+1)))
 
 if(model.proj == '+init=epsg:4326'){
   ext <- c(-98, -83, 42, 50)
@@ -51,11 +51,11 @@ quick.subset <- function(x, y, ext){
   x.subset
 }
 
-lakes.subset <- quick.subset('Maps/NaturalEarth/Lakes/ne_10m_lakes.shp',
+lakes.subset <- quick.subset('../../data/input/NaturalEarth/Lakes/ne_10m_lakes.shp',
                              'ne_10m_lakes', ext)
-river.subset <- quick.subset('Maps/NaturalEarth/Rivers/ne_10m_rivers_lake_centerlines.shp',
+river.subset <- quick.subset('../../data/input/NaturalEarth/Rivers/ne_10m_rivers_lake_centerlines.shp',
                              'ne_10m_rivers_lake_centerlines', ext)
-coast.subset <- quick.subset('Maps/NaturalEarth/Coasts/ne_10m_coastline.shp',
+coast.subset <- quick.subset('../../data/input/NaturalEarth/Coasts/ne_10m_coastline.shp',
                              'ne_10m_coastline', ext)
 
 nat.crop <- crop(projectRaster(nat.earth, crs = model.proj), y=extent(ext))
