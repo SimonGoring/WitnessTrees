@@ -43,7 +43,7 @@ biom.fp <- all.pl(allometry.plot[allometry.plot$vars == "Biomass" ,],
                   expression('FIA Biomass'~Mg~ha^-1))
 
 diff.biom <- (biomass-fiabiom/1000)
-writeRaster(diff.biom, 'data/output/diffbiom.tif', overwrite=TRUE)
+writeRaster(diff.biom, '../../data/output/aggregated_midwest/rasters/diffbiom.tif', overwrite=TRUE)
 
 biomdiff <- data.frame(xyFromCell(biomass, 1:ncell(biomass)),
                        higher = factor(getValues(biomass-fiabiom/1000)>0))

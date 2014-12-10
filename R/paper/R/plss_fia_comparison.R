@@ -4,7 +4,7 @@
 #  fia.dist  - vector of minimum squared-chord distances between fia raster cells.
 #  plss.fia.dist - minimum squared-chord distances between plss cells and closest fia cells.
 
-fia.trans <- read.csv('data/FIA/FIA_conversion_v0.2.csv', stringsAsFactors = FALSE)
+fia.trans <- read.csv('../../data/input/relation_tables/FIA_conversion_v0.2.csv', stringsAsFactors = FALSE)
 fia.trans[fia.trans == ''] <- NA
 
 #  Load FIA composition data:
@@ -25,10 +25,10 @@ get.fia.stack <- function(x, type){
   fia.vals
 }
 
-fia.dens <- get.fia.stack('data/FIA/albers/density/', type = 'density')
-fia.basa <- get.fia.stack('data/FIA/albers/basal_area/', type = 'basal')
-fia.biom  <- get.fia.stack('data/FIA/albers/biomass/', type = 'biomass')
-fia.diam  <- get.fia.stack('data/FIA/albers/diameter/', type = 'diameter')
+fia.dens <- get.fia.stack('../../data/input/rasters/albers/density/', type = 'density')
+fia.basa <- get.fia.stack('../../data/input/rasters/albers/basal_area/', type = 'basal')
+fia.biom  <- get.fia.stack('../../data/input/rasters/albers/biomass/', type = 'biomass')
+fia.diam  <- get.fia.stack('../../data/input/rasters/albers/diameter/', type = 'diameter')
 
 re.agg <- function(x){
   # This takes the fia data (by species) and aggregates it to PalEON taxa.
@@ -153,7 +153,7 @@ for(i in 1:ncol(fia.agg)){
 
 rownames(sample.test) <- colnames(comp.grid)
 
-biom.table <- read.csv('data/input/plss.pft.conversion_v0.1-1.csv')
+biom.table <- read.csv('../../data/input/relation_tables/plss.pft.conversion_v0.1-1.csv')
 
 biomass_fia <- exp(biom.table[match(rownames(sample.test), biom.table[,1]),2] + 
                    biom.table[match(rownames(sample.test), biom.table[,1]),3] * 
@@ -170,8 +170,11 @@ fia.aligned <- fia.agg[!rowSums(fia.agg) == 0,]
 colnames(fia.aligned) <- name.set[-1]
 
 #rm(agg.basa, agg.biom)
+if('distances_v0.4.RData' %in% list.files('../../data/output/aggregated_midwest/')){
+  load('../../data/output/aggregated_midwest/distances_v0.4.RData')
+}
 
-if(!'distances_v0.31.RData' %in% list.files('data/output')){
+if(!'distances_v0.4.RData' %in% list.files('../../data/output/aggregated_midwest/')){
   #  Check to see what the distances are like within each of the FIA and PLSS datasets
   #  and then between datasets.
 
@@ -226,12 +229,8 @@ if(!'distances_v0.31.RData' %in% list.files('data/output')){
                      fia.plss.dist, 
                      plss.fia.dist)           
   
-  save(distances, file = 'data/output/distances_v0.31.RData')
+  save(distances, file = '../../data/output/aggregated_midwest/distances_v0.4.RData')
   rm(plss.dist, fia.dist, plss.fia, fia.plss)
-}
-
-if('distances_v0.31.RData' %in% list.files('data/output')){
-  load('data/output/distances_v0.31.RData')
 }
 
 #  Test against the number of FIA plots:
