@@ -130,6 +130,7 @@ azimuths <- apply(azimuths, 2, get_angle)
 #####  Cleaning Trees:  
 #      Changing tree codes to lumped names:
 spec.codes <- read.csv('data/input/relation_tables/fullpaleon_conversion_v0.3_1.csv', stringsAsFactor = FALSE)
+spec.codes <- subset(spec.codes, Domain %in% 'Upper Midwest')
 
 lumped <- data.frame(abbr = as.character(spec.codes$Level.1),
                      lump = as.character(spec.codes$Level.3a))

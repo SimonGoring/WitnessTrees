@@ -56,10 +56,15 @@ output <- add.to(michigan, output)
 output <- add.to(illinois, output)
 output <- add.to(paleon, output)
 
-colnames(output)[3:ncol(output)] <- 
+taxon.conv <- read.csv('data/input/relation_tables/fullpaleon_conversion_v0.31.csv', header=TRUE, stringsAsFactors = FALSE)
+restore.cols <- data.frame(input = tolower(gsub('[ ]|[[:punct:]]', '.', unique(taxon.conv$Level.3a))),
+                           output = unique(taxon.conv$Level.3a), stringsAsFactors = FALSE)
 
   plot(y~x, data = subset(output, output[,i]>0), 
        main = colnames(output)[i],
        xlim=range(output$x), ylim=range(output$y), pch=19, cex = 0.2); i <- i+1
 
-write.csv(output, 'data/western_comp_v0.4.csv', row.names=FALSE)
+colnames(output)[3:ncol(output)] <- restore.cols[match(colnames(output)[3:ncol(output)],
+                                                       restore.cols[,1]),2]
+
+write.csv(output, 'data/output/gridded/western_comp_v0.4-1.csv', row.names=FALSE)
