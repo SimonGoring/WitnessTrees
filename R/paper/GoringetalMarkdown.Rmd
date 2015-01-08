@@ -71,6 +71,8 @@ Jason S. McLachlan^8^
 
 ```{r dataLoad, echo = FALSE, message=FALSE, results = 'hide', warning=FALSE}
 
+version <- '0.9-1'
+
 #  Choose one of the two below (3175 is the Albers, 4326 is lat/long):
 model.proj <- '+init=epsg:3175'
 #model.proj <- '+init=epsg:4326'
@@ -116,9 +118,9 @@ Methods:
 
 The U.S. Public Land Survey (PLS) was designed as a system to facilitate the division and sale of land from Ohio westward and south. The survey created a 1 mile^2^ (2.56 km^2^) grid (sections) on the landscape. At each section corner, a stake was placed as the official location marker.  To mark these survey points, PLS surveyors recorded tree stem diameters, measured distances and azimuths of, typically, two to four trees near sample points and identified tree taxa using common (and often regionally idiosyncratic) names. PLS data thus represent measurements by hundreds of surveyors from 1832 until 1907, with changing sets of instructions over time (Stewart, 1979).  
 
-The PLS was undertaken to survey land prior to assigning ownership, replacing earlier town proprietor surveys (TPS) used for the northeastern states [@cogbill2002forests;@thompson2013four].  The TPS provided estimates of relative forest composition at the township level, but no structural attributes. The PLS produced spatially explicit point level data, providing information about tree spacing and diameter across an extensive region. PLS notes include tree identification at the plot level, disturbance [@schulte2005severe] and other features of the pre-settlement landscape. However, potential uncertainties exist within the PLS and township level dataset (Bourdo, 1956).  
+The PLS was undertaken to survey land prior to assigning ownership, replacing earlier town proprietor surveys (TPS) used for the northeastern states [@cogbill2002forests;@thompson2013four].  The TPS provided estimates of relative forest composition at the township level, but no structural attributes. The PLS produced spatially explicit point level data, providing information about tree spacing and diameter across an extensive region. PLS notes include tree identification at the plot level, disturbance [@schulte2005severe] and other features of the pre-settlement landscape. However, potential uncertainties exist within the PLS and township level dataset [@bourdo1956review].
 
-Uncertainty in the PLS arises from the spatial scale of the dataset (fixed sampling every 1 mile), uncertainty in the species taxonomy (Mladenoff et al., 2002) and potential surveyor variability and bias during sampling [@schulte2001original;@bourdo1956review;@manies2001assessing;@liu2011broadscale].  Liu et al [-@liu2011broadscale] estimate the ecological significance of some of the underlying sources of bias in the PLS and show ecologically significant (>10% difference between classes) bias in species and size selection for coner trees, however the authors also indicate that the true sampling error cannot be determined, particularly since these historic ecosystems are largely lost to us. Kronenfeld and Wang [-@kronenfeld2007accounting], working with Historical Land Cover datasets in western New York indicate that direct estimates of density using plotless estimators may be off by nearly 37% due to angular bias, while species composition estimates may be adjusted by between -4 to +6%, varying by taxon, although Kronenfeld [-@kronenfeld2014validating] shows adjustments of less than 1% and Terrail et al. [@terrail2014early] show strong fidelity between taxon abundance in early land surveys and from old growth plot surveys.  Use of the PLS data requires caution, and careful consideration of scale, bias and variability.  Even given the limitations, PLS records remain the best, and only, source of data about both forest composition and structure in the United States prior to Euro-American settlement.
+Uncertainty in the PLS arises from the spatial scale of the dataset (fixed sampling every 1 mile), uncertainty in the species taxonomy [@mladenoff2002narrowing] and potential surveyor variability and bias during sampling [@schulte2001original;@bourdo1956review;@manies2001assessing;@liu2011broadscale].  Liu et al [-@liu2011broadscale] estimate the ecological significance of some of the underlying sources of bias in the PLS and show ecologically significant (>10% difference between classes) bias in species and size selection for coner trees, however the authors also indicate that the true sampling error cannot be determined, particularly since these historic ecosystems are largely lost to us. Kronenfeld and Wang [-@kronenfeld2007accounting], working with Historical Land Cover datasets in western New York indicate that direct estimates of density using plotless estimators may be off by nearly 37% due to angular bias, while species composition estimates may be adjusted by between -4 to +6%, varying by taxon, although Kronenfeld [-@kronenfeld2014validating] shows adjustments of less than 1% and Terrail et al. [@terrail2014early] show strong fidelity between taxon abundance in early land surveys and from old growth plot surveys.  Use of the PLS data requires caution, and careful consideration of scale, bias and variability.  Even given the limitations, PLS records remain the best, and only, source of data about both forest composition and structure in the United States prior to Euro-American settlement.
 
 This analysis builds upon and merges prior state-level efforts to digitize and database the point-level PLS data for Wisconsin, Minnesota and the Upper Peninsula and upper third of the Lower Peninsula of Michigan.  These datasets were combined using spatial tools in R [@team2014r; package *rgdal*: @keitt7rgdal] to form a common dataset for the upper Midwest (Figure 1) using the Albers Great Lakes and St Lawrence projection (see code in Supplement 1, file: *step_one_clean_bind.R*; proj4: *+init:EPSG:3175*).
 
@@ -170,8 +172,8 @@ ggplot(angle.dat, aes(x = azm)) +
   scale_x_continuous(expand=c(0,0), breaks=c(0, 90, 180, 270, 360), 
                      labels = c('', '90', '', '270', '')) +
   scale_y_continuous(expand=c(0,0), breaks = seq(0, .1, by = 0.025), 
-                     labels = c(0, '', 0.5,'', .1)) +
-  theme(axis.text = element_text(family='serif', size = 14),
+                     labels = c(0, '', 0.05,'', .1)) +
+  theme(axis.text = element_text(family='serif', size = 12),
         axis.title = element_text(family='serif', size = 18, face = 'bold'),
         strip.text = element_text(family='serif', size = 14, face = 'bold'))
 
@@ -243,7 +245,7 @@ Most 64km^2^ cells have one or few FIA plots that are sampled intensively.  Ther
 
 The application of the methods presented in Kronenfeld [-@kronenfeld2014validating] are limited. The spatial extent of the region is much larger than western New York and species associations across the region are likely to be non-stationary, thus a much larger number of forest classes may be required to undertake linear disaggregation. Additionally, the variable number of FIA plots per 64km^2^ cell means that the seeding dataset will again be smoothing underlying local-scale heterogeneity. Although we cannot address the issue directly, we can look for signitures of the mixed pixel problem in our estimates, for example, higher between cell dissimilarities in the FIA data than in the PLSS, and lower dissimilarity in the FIA in regions with more plots per cell.  Thus, while we do not explicitly correct for mixed-pixel issues at this scale, we provide supplemental analysis when presenting our results to help identify the potential impact of this mixed-pixel effect.
 
-Standard statistical analysis, including correlations and regression, was carried out in R [@team2014r], and is documented in supplementary material that includes a subset of the raw data to allow reproducibility. Analysis and presentation uses elements from the following R packages: ggplot2 (Wickham, 2009), gridExtra (Auguie, 2012), igraph (Csardi and Nepusz, 2006), mgcv (Wood, 2011), plyr (Wickham, 2011), raster (Hijmans, 2014), reshape2 (Wickham, 2007), rgdal (Bivand et al., 2013), rgeos (Bivand & Rundel, 2013), sp (Pebesma and Bivand, 2005; Bivand et al., 2013), and spdep (Bivand, 2013).
+Standard statistical analysis, including correlations and regression, was carried out in R [@team2014r], and is documented in supplementary material that includes a subset of the raw data to allow reproducibility. Analysis and presentation uses elements from the following R packages: ggplot2 [@wickham2009ggplot2,@ggplot2009], gridExtra [@grid2012], igraph (Csardi and Nepusz, 2006), mgcv (Wood, 2011), plyr (Wickham, 2011), raster (Hijmans, 2014), reshape2 [@reshape2007], rgdal (Bivand et al., 2013), rgeos (Bivand & Rundel, 2013), sp (Pebesma and Bivand, 2005; Bivand et al., 2013), and spdep (Bivand, 2013).
 
 Differences in composition between and within PLS and FIA datasets are examined using Bray-Curtis dissimilarity (vegdist in vegan; Oksanen et al., 2013) for proportional composition within raster cells using basal area measurements. For the purposes of this analysis we are interested only in the minimum distance between a focal cell and its nearest compositional (not spatial) neighbor. The distribution of closest analogs within datasets can give us information about forest heterogeneity, while the search for closest analogs between datasets can give information about whether contemporary forests lack analogs in pre-settlement forests, and vice versa. For the analog analyses,  we compute Bray-Curtis distance between each 64km^2^ cell in either the FIA or the PLS periods to all other cells within the other dataset (FIA to FIA, PLS to PLS), and between datasets (PLS to FIA and FIA to PLS), retaining only the minimum value.  For the FIA to FIA and PLS to PLS analyses, cells were not allowed to match to themselves.
 
@@ -387,7 +389,8 @@ compplots <- melt(comp.intoplot, id = c('x', 'y'))
 
 compplots$species <- factor(compplots$variable, 
                             levels = c('Tamarack', 
-                                       'Cedar', 'Fir', 'Hemlock', 'Pine', 'Spruce',
+                                       'Cedar.juniper', 
+                                       'Fir', 'Hemlock', 'Pine', 'Spruce',
                                        'Ash', 'Basswood', 'Beech', 'Birch', 'Elm',
                                        'Ironwood', 'Maple', 'Oak', 'Poplar'))
 
@@ -399,7 +402,9 @@ base.map +
   theme_bw() +
   facet_wrap(~species, nrow=3) +
   theme(axis.text.x = element_blank(),
-        axis.text.y = element_blank())
+        axis.text.y = element_blank(),
+        strip.text = element_text(family='serif', size = 20, face = 'bold'),
+        legend.position = 'none')
         
 #  This needs to get fixed so that the strip.background = element_rect(fill = c('#ffff99', '#80b1d3', rep('#bebada', 5), rep('#8dd3c7', 8))))
 
