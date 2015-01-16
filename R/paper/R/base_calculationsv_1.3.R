@@ -121,7 +121,7 @@ basal.table <- dcast(spec.table, x + y  + cell~ spec, sum, na.rm=TRUE, value.var
 biomass.table <- dcast(spec.table, x + y  + cell~ spec, sum, na.rm=TRUE, value.var = 'biom')
 diam.table <-  dcast(spec.table, x + y  + cell~ spec, sum, na.rm=TRUE, value.var = 'diams')
 
-#  This function is to 
+#  The function averages the estimates to a point level estimate from the aggregated sum.
 normalize <- function(x, mult = 2, value = points.by.cell) {x[,4:ncol(x)] <-  x[,4:ncol(x)] / value * mult; x}
 
 density.table <- normalize(density.table)
@@ -220,4 +220,20 @@ unique.len <- function(x){length(unique(x))}
 biomass.trees.pft  <- dcast(spec.table, x + y + cell ~ pft, sum, na.rm=TRUE, value.var = 'count')
 biomass.points.pft <- dcast(spec.table, x + y + cell ~ pft, unique.len, value.var = 'point')
 
-rm(spec.table, stem.density, diams, sd.table)
+#  Write.outputs:
+add.v <- function(x, name){
+  write.csv(x, paste0('../../data/output/wiki_outputs/', name, '_v',version, '.csv'))
+}
+
+add.v(count.table, 'plss_trees')
+add.v(biomass.points, 'plss_points')
+add.v(biomass.points.pft, 'plss_points_pft')
+add.v(biomass.trees.pft, 'plss_trees_pft')
+
+add.v(density.table, 'plss_density')
+add.v(basal.table, 'plss_basal')
+add.v(biomass.table, 'plss_biomass')
+
+add.v(dens.pft, 'plss_density_pft')
+add.v(basal.pft, 'plss_basal_pft')
+add.v(biomass.pft, 'plss_biomass_pft')

@@ -16,7 +16,7 @@ strip.index <- function(x){
 }
 
 #  Load the data:
-indiana <- strip.index(read.csv('data/output/gridded//IllinoisData_v0.2.csv'))
+indiana <- strip.index(read.csv('data/output/gridded//IllinoisData_v0.2-1.csv'))
 michigan <- strip.index(read.csv('data/output/gridded/so_Michigan_v0.3.csv'))
 illinois <- strip.index(read.csv('data/output/gridded/IndianaData_v0.2.csv'))
 paleon <- strip.index(read.csv('data/output/aggregated_midwest/glo.forest.composition_v1_91alb.csv'))
@@ -67,4 +67,4 @@ restore.cols <- data.frame(input = tolower(gsub('[ ]|[[:punct:]]', '.', unique(t
 colnames(output)[3:ncol(output)] <- restore.cols[match(colnames(output)[3:ncol(output)],
                                                        restore.cols[,1]),2]
 
-write.csv(output, 'data/output/gridded/western_comp_v0.4-2.csv', row.names=FALSE)
+write.csv(output, 'data/output/gridded/western_comp_v0.4-3.csv', row.names=FALSE)
