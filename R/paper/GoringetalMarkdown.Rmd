@@ -127,16 +127,6 @@ Uncertainty in the PLS arises from the spatial scale of the dataset (fixed sampl
 
 This analysis builds upon and merges prior state-level efforts to digitize and database the point-level PLS data for Wisconsin, Minnesota and the Upper Peninsula and upper third of the Lower Peninsula of Michigan.  These datasets were combined using spatial tools in R [@team2014r; package *rgdal*: @keitt7rgdal] to form a common dataset for the upper Midwest (Figure 1) using the Albers Great Lakes and St Lawrence projection (see code in Supplement 1, file: *step_one_clean_bind.R*; proj4: *+init:EPSG:3175*).
 
-```{r Fig1DomainMap,echo=FALSE,warning=FALSE,message=FALSE,fig.width=4,fig.height = 3,dpi=300}
-
-base.map +
-  geom_path(data = umw.domain, aes(x = long, y = lat, group = group, linesize = paleon)) +
-  geom_path(data = can.domain, aes(x = long, y = lat, group = group))
-
-```
-
-**Figure 1**. *The domain of the Public Land Survey investigated in this study.  The broad domain includes Minnesota, Wisconsin and the upper two thirds of Michigan state.*
-
 Steps used to standardize the dataset are preserved in in the supplementary R code (Supplement 1: *step_one_clean_bind.R*). We exclude line and meander trees (i.e. trees encountered along survey lines, versus trees located at section or quarter corners) because of the variability of and potential for surveyor biases, and the underlying differences between line, meander and corner points [@liu2011broadscale]. We used only the closest two trees at each corner point because of biases with respect to species composition and diameter of the third and fourth furthest trees [@liu2011broadscale]. Corner points were used only if there were at least two trees in different quadrants (defined by the cardinal directions) with valid azimuths to the trees and valid diameters (numeric, non-zero), in a further attempt to reduce uncertainty.
 
 Many species-level identifications used by the surveyors are ambiguous.  Statistical models can predict the identity of ambiguous species [@mladenoff2002narrowing], but these models introduce a second layer of uncertainty into the compositional data, both from the initial surveyors' identification, and from the statistical disambiguation.  Given the regional scale of the analysis, and the inherent uncertainty in the survey data itself, we chose to avoid this added layer of taxonomic uncertainty, and retained only genus level identification (Supplement 2, *Standardized taxonomy*). In areas of open prairie or other treeless areas, e.g. southwestern Minnesota, surveyors recorded distances and bearings to 'Non Tree' objects. When points were to be located in water bodies the point data indicates 'Water'.
@@ -159,26 +149,26 @@ $d_{i} = \kappa \times \frac{q - 1}{\pi \times n} \times \frac{q}{\sum_{j=1}^{q}
  
 Here, $d_{i}$ is the density estimate at point $i$, $q$ is the number of sectors sampled (all $q = 2$), $r_{j}$ is the distance from the plot center to tree $j$ (in meters).  This is the traditional Morisita equation.  Because the PLSS does not follow the standard point-centered quarter method we account for variations in sample design by defining $\kappa$, the modified Cottam correction factor. We account for deviation from the expected pair angle distribution by empirically estimating $\theta$. Since surveyors appear to censor certain azimuths [@kronenfeld2007accounting], particularly along cardinal directions of travel, $\zeta$ is used to correct for censoring, and as such, varies across plot types.  In this model a $\zeta = 1$ would be applied to sets of plots for which no azimuthal censoring is visible.  Plots with a greater degree of censoring, particularly along the cardinal directions obtain higher correction factors, up to 25% (Figure 2).  The last correction factor, $\phi$ is used to correct for the inclusion of stems under 8" in diameter within a region, which would otherwise replace trees of larger diameters at greater distances.  The full application of these measures is described further in [@cogbill2015corrections]. Values for all correction factors are presented in Table 1.
 
-```{r figure2, echo = FALSE, warning=FALSE, message=FALSE, fig.width=4, fig.height = 4, dpi=300}
+```{r figure2_angles, echo = FALSE, warning=FALSE, message=FALSE}
 angle.dat <- data.frame(azm = c(angles$az1, angles$az2), 
                         rbind(correction, correction))
   
 angle.dat <- na.omit(angle.dat[angle.dat$azm > 0, ])
 
-ggplot(angle.dat, aes(x = azm)) + 
-  geom_bar(aes(y = (..count..)/tapply(..count..,..PANEL..,sum)[..PANEL..]),
-           binwidth = 10) +
-  facet_wrap(~zeta) +
-  theme_bw() +
-  ylab('Proportion of Trees at Azimuth') +
-  xlab('Azimuth') +    
-  scale_x_continuous(expand=c(0,0), breaks=c(0, 90, 180, 270, 360), 
-                     labels = c('', '90', '', '270', '')) +
-  scale_y_continuous(expand=c(0,0), breaks = seq(0, .1, by = 0.025), 
-                     labels = c(0, '', 0.05,'', .1)) +
-  theme(axis.text = element_text(family='serif', size = 12),
-        axis.title = element_text(family='serif', size = 18, face = 'bold'),
-        strip.text = element_text(family='serif', size = 14, face = 'bold'))
+angle.plot <- ggplot(angle.dat, aes(x = azm)) + 
+                geom_bar(aes(y = (..count..)/tapply(..count..,..PANEL..,sum)[..PANEL..]),
+                         binwidth = 10) +
+                facet_wrap(~zeta) +
+                theme_bw() +
+                ylab('Proportion of Trees at Azimuth') +
+                xlab('Azimuth') +    
+                scale_x_continuous(expand=c(0,0), breaks=c(0, 90, 180, 270, 360), 
+                                   labels = c('', '90', '', '270', '')) +
+                scale_y_continuous(expand=c(0,0), breaks = seq(0, .1, by = 0.025), 
+                                   labels = c(0, '', 0.05,'', .1)) +
+                theme(axis.text = element_text(family='serif', size = 12),
+                      axis.title = element_text(family='serif', size = 18, face = 'bold'),
+                      strip.text = element_text(family='serif', size = 14, face = 'bold'))
 
 ```
 
@@ -292,9 +282,9 @@ Species assignment resulted in straightforward assignment to the defined tree ge
 
 ### Stem Density, Basal Area and Biomass
 
-```{r fig2stemdensity_basalarea_biomass, echo = FALSE, warning=FALSE, message=FALSE, fig.width=5, fig.height = 5, dpi=300}
+```{r fig3stemdensity_basalarea_biomass, echo = FALSE, warning=FALSE, message=FALSE, fig.width=5, fig.height = 5, dpi=300}
 
-source('R/figures/figure2_panel_means.R')
+source('R/figures/figure3_panel_means.R')
 
 ```
 
@@ -579,11 +569,22 @@ These maps of settlement-era forest composition and structure can also provide a
 Ultimately the pre-settlement vegetation data present an opportunity to develop and refine statistical and mechanistic models of terrestrial vegetation that can take multiple structural and compositional forest attributes into account. The future development of uncertainty estimates for the data remains an opportunity that can help integrate pre-settlement estimates of composition and structure into a data assimilation framework to build more complete and  more accurate reconstructions of past vegetation dynamics, and to help improve predictions of future vegetation under global change scenarios.
 
 ***
-Figure 1.
+```{r Fig1DomainMap,echo=FALSE,warning=FALSE,message=FALSE,fig.width=4,fig.height = 3,dpi=300}
+
+base.map +
+  geom_path(data = umw.domain, aes(x = long, y = lat, group = group, linesize = paleon)) +
+  geom_path(data = can.domain, aes(x = long, y = lat, group = group))
+
+```
+
+**Figure 1**. *The domain of the Public Land Survey investigated in this study.  The broad domain includes Minnesota, Wisconsin and the upper two thirds of Michigan state.*
 
 ***
-Figure 2.
+```{r figure2, echo = FALSE, warning=FALSE, message=FALSE, fig.width=4, fig.height = 4, dpi=300}
 
+angle.plot
+
+```
 ***
 Figure 3.
 
