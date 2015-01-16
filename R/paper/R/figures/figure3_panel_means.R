@@ -1,4 +1,3 @@
-
 #  I stripped the ninefive out of here.
 
 val.plot <- data.frame(xyFromCell(dens, 1:ncell(dens)),
@@ -65,5 +64,3 @@ anders.facet <- base.map +
         axis.text.y = element_blank(),
         legend.position = 'top',
         legend.title = element_blank())
-
-grid.arrange(dens.facet, anders.facet, basa.facet, biom.facet, nrow = 2)

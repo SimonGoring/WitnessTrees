@@ -59,4 +59,3 @@ biomass.comp <- base.map +
                         axis.text.y = element_blank()) +
                   xlab('') + ylab('')
 
-grid.arrange(dens.fp, basa.fp, biom.fp, biomass.comp, nrow = 2)

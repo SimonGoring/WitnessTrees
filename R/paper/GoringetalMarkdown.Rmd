@@ -149,30 +149,11 @@ $d_{i} = \kappa \times \frac{q - 1}{\pi \times n} \times \frac{q}{\sum_{j=1}^{q}
  
 Here, $d_{i}$ is the density estimate at point $i$, $q$ is the number of sectors sampled (all $q = 2$), $r_{j}$ is the distance from the plot center to tree $j$ (in meters).  This is the traditional Morisita equation.  Because the PLSS does not follow the standard point-centered quarter method we account for variations in sample design by defining $\kappa$, the modified Cottam correction factor. We account for deviation from the expected pair angle distribution by empirically estimating $\theta$. Since surveyors appear to censor certain azimuths [@kronenfeld2007accounting], particularly along cardinal directions of travel, $\zeta$ is used to correct for censoring, and as such, varies across plot types.  In this model a $\zeta = 1$ would be applied to sets of plots for which no azimuthal censoring is visible.  Plots with a greater degree of censoring, particularly along the cardinal directions obtain higher correction factors, up to 25% (Figure 2).  The last correction factor, $\phi$ is used to correct for the inclusion of stems under 8" in diameter within a region, which would otherwise replace trees of larger diameters at greater distances.  The full application of these measures is described further in [@cogbill2015corrections]. Values for all correction factors are presented in Table 1.
 
-```{r figure2_angles, echo = FALSE, warning=FALSE, message=FALSE}
-angle.dat <- data.frame(azm = c(angles$az1, angles$az2), 
-                        rbind(correction, correction))
-  
-angle.dat <- na.omit(angle.dat[angle.dat$azm > 0, ])
+```{r fig2_angles, echo = FALSE, warning=FALSE, message=FALSE}
 
-angle.plot <- ggplot(angle.dat, aes(x = azm)) + 
-                geom_bar(aes(y = (..count..)/tapply(..count..,..PANEL..,sum)[..PANEL..]),
-                         binwidth = 10) +
-                facet_wrap(~zeta) +
-                theme_bw() +
-                ylab('Proportion of Trees at Azimuth') +
-                xlab('Azimuth') +    
-                scale_x_continuous(expand=c(0,0), breaks=c(0, 90, 180, 270, 360), 
-                                   labels = c('', '90', '', '270', '')) +
-                scale_y_continuous(expand=c(0,0), breaks = seq(0, .1, by = 0.025), 
-                                   labels = c(0, '', 0.05,'', .1)) +
-                theme(axis.text = element_text(family='serif', size = 12),
-                      axis.title = element_text(family='serif', size = 18, face = 'bold'),
-                      strip.text = element_text(family='serif', size = 14, face = 'bold'))
+source('R/figures/figure2_angles.R')
 
 ```
-
-**Figure 2**. *Correction factors for $\zeta$ in the PLS data, and the associated distribution of azimuths for each $\zeta$ value, by panel.  High peaks represent midpoints for quadrants where azimuth is defined as e.g., NE or SW.  Greater differences between cardinal directions and other azimuths result in higher $\zeta$ values, excluding the peaked values.*
 
 Basal area is calculated by multiplying the point-based stem density estimate by the average stem basal area from the reported diameters at breast height for the closest two trees at the point (n=2). Aboveground dry biomass (Mg/ha) is calculated using the USFS FIA tree volume and dry aboveground biomass equations for the United States [@jenkins2004comprehensive].
 
@@ -198,8 +179,8 @@ Jenkins Species Group | $\beta_{0}$ | $\beta_{1}$ | PalEON Taxa Included (Supp. 
 --- | --- | --- | ---
 Aspen, Alder, Poplar, Willow  | -2.20 | 2.38 | Poplar, Willow, Alder
 Soft Maple, Birch | -1.91  | 2.36	| Birch
-Mixed Hardwood | -2.48 | 2.48 | Ashes, Elm, Maple, Basswood, Ironwood, Walnut, Celtis, Cherries, Cornus, Buckeye
-Hard Maple, Oak, Hickory, Beech | -2.01 | 2.43 | Oak, Hickory, Beech, Hardwood undiff.
+Mixed Hardwood | -2.48 | 2.48 | Ash, Elm, Maple, Basswood, Ironwood, Walnut, Hackberry, Cherries, Dogwood, Buckeye
+Hard Maple, Oak, Hickory, Beech | -2.01 | 2.43 | Oak, Hickory, Beech, Other Hardwood
 Cedar and Larch | -2.03 | 2.26 | Tamarack, Cedar
 Fir and Hemlock | -2.54 | 2.43 | Fir, Hemlock
 Pine | -2.54 | 2.43 | Pine
@@ -282,19 +263,17 @@ Species assignment resulted in straightforward assignment to the defined tree ge
 
 ### Stem Density, Basal Area and Biomass
 
-```{r fig3stemdensity_basalarea_biomass, echo = FALSE, warning=FALSE, message=FALSE, fig.width=5, fig.height = 5, dpi=300}
+```{r fig3_calculations, echo = FALSE, warning=FALSE, message=FALSE}
 
 source('R/figures/figure3_panel_means.R')
 
 ```
 
-**Figure 3.** *Total stem density (a) in the Upper Midwest, along with forest type classification (b) based on Anderson and Anderson [-@anderson1975presettlement]; Table 3).  Fine lines represent major rivers.  Basal area (c) and biomass (d) show similar patterns to stem density.*
-
 The mean stem density for the region (Figure 3a) is `r round(mean(getValues(dens), na.rm=TRUE),-1)` $stems/ha$.  Stem density exclusive of prairie is `r round(mean(getValues(dens)[getValues(dens)> 1], na.rm=TRUE),-1)` $stems/ha$ and is `r round(mean(getValues(dens)[getValues(dens)> 19], na.rm=TRUE),-1)` $stems/ha$ when both prairie and savanna are excluded.  Stem density has a 95 percentile range from 0 to `r round(ninefive(getValues(dens))[2], -1)` stems/ha with cell-level standard deviations between 0 and `r round(ninefive(dens.sd[,2])[2], -1)` stems/ha.  Basal area in the domain (Figure 3c) has a 95 percentile range between 0 and `r round(ninefive(getValues(basal))[2], 0)` m^2^/ha, a mean of `r round(mean(getValues(basal), na.rm=TRUE), 1)` m^2^/ha and cell level standard deviations between 0 and `r round(ninefive(basal.sd[,2])[2], 0)` m^2^/ha.  Biomass has a range from 0 to `r round(ninefive(getValues(biomass))[2], -1)` Mg/ha (Figure 3d), with cell level standard deviations between 0 and `r round(ninefive(biomass.sd[,2])[2], -1)` Mg/ha.  High standard deviations relative to mean values within cells for density, basal area and biomass indicate high levels of heterogeneity within cells, as might be expected for the PLS data, which samples only two trees every mile.
 
 In the PLS data, stem density is lowest in the western and southwestern portions of the region, regions that are defined as prairie and savanna (Figure 3b, Table 3). When the Anderson and Anderson [@anderson1975presettlement] stem density thresholds (<19 stems/ha for Savanna, Table 3) are used, the extent of area classified as savanna is more limited in southern Wisconsin (Figure 3b) than in prior reconstructions, despite generally low stem densities (Figure 3a). The highest stem density values are found in north-central Minnesota and in north-eastern Wisconsin (Figure 3a). The interplay between broad-scale climatic structuring and local scale hydrological controls on forest composition and density can be seen, particularly along the Minnesota River in south-western Minnesota, where a corridor of savanna is sustained in a region mostly occupied by prairie (Figure 3b).
 
-```{r Figure3_differences, echo=FALSE, message=FALSE, warning=FALSE, width=5, fig.height = 5, dpi=300}
+```{r fig4_calc, echo=FALSE, message=FALSE, warning=FALSE}
 
 resids <- data.frame(xyFromCell(dens, 1:ncell(dens)),
                      dens = getValues(ninefive(dens)),
@@ -305,20 +284,18 @@ mean.mod <- lm(biom ~ dens - 1, data = resids)
 resids$resid <- NA
 resids$resid[!is.na(resids$dens)] <- resid(mean.mod, type = 'response')
 
-base.map +
-  geom_tile(data = resids, aes(x = x, y = y, fill = resid)) +
-  scale_fill_gradient2(low='blue', mid = 'white', high='red', na.value = NA) +
-  geom_path(data = umw.domain, aes(x = long, y = lat, group = group, linesize = paleon)) +
-  geom_path(data = can.domain, aes(x = long, y = lat, group = group)) +
-  theme_bw() +
-  theme(axis.text.x = element_blank(),
-        axis.text.y = element_blank(),
-        legend.position = 'none') +
-  xlab('') + ylab('')
+biom_sd <- base.map +
+            geom_tile(data = resids, aes(x = x, y = y, fill = resid)) +
+            scale_fill_gradient2(low='blue', mid = 'white', high='red', na.value = NA) +
+            geom_path(data = umw.domain, aes(x = long, y = lat, group = group, linesize = paleon)) +
+            geom_path(data = can.domain, aes(x = long, y = lat, group = group)) +
+            theme_bw() +
+            theme(axis.text.x = element_blank(),
+                  axis.text.y = element_blank(),
+                  legend.position = 'none') +
+            xlab('') + ylab('')
 
 ```
-
-**Figure 4.** *Variations in the relationship between biomass and stem density can be used to understand forest structure. Regions with high stem density to biomass ratios (blue) indicate dense stands of smaller trees, while regions with low stem density to biomass ratios (red) indicate larger trees with wider spacings. Only cells greater than 1 standard deviation from the ratio mean are classified as low or high.*
 
 Forest structure during the pre-settlement era can be understood in part by the relationships between stem density and biomass, a measure that incorporates both tree size and stocking. Regions in northern Minnesota have low biomass and high stem densities (Figure 4, blue). This indicates the presence of young, small diameter, even-ages stands, due to frequent stand-replacing fire disturbance in the pre-EuroAmerican period.  This is supported by  co-location with fire prone landscapes in Wisconsin [@schulte2005spatial].  High density, low biomass regions also have shallower soils, colder climate, and resulting lower productivity. Higher biomass values relative to stem density (Figure 4, red) are found in southern Wisconsin, and throughout Michigan, as well as regions with greater proportions of deciduous species and higher diameters than northern Minnesota, due to higher productivity soil and climate and much rarer stand-replacing disturbance.
 
@@ -361,7 +338,7 @@ Taxon composition within settlement-era forests is highly heterogenous across th
 
 The proportion of taxa within a cell is linked to basal area for a number of taxa.  Signiicant positive relationships exist for `r sum(taxon.cor[,2]>0 & taxon.cor[,3] < 0.05)` taxa, hemlock, birch, maple and cedar. For `r sum(taxon.cor[,2]<0 & taxon.cor[,3] < 0.05)` taxa including oak, poplar, ironwood, tamarack and elm, high proportions are strongly associated with lower basal areas (Figures 3 and 5). This suggests that hemlock, birch, maple and cedar occur in well stocked forests, with higher average dbh.  These taxa are most common in the east and in upper Wisconsin.  Taxa with negative relationships are more common in the northwest.
 
-```{r Fig4_ForComp, echo = FALSE, warning=FALSE, message=FALSE, fig.width=7, fig.height = 5, dpi=150}
+```{r fig5_calc, echo = FALSE, warning=FALSE, message=FALSE}
 
 #  Composition.table should actually be the basal table, and we've set that already in base_calculations.
 excl <- !colnames(composition.table) %in% c('x', 'y', 'cell', 'Water')
@@ -387,25 +364,23 @@ compplots$species <- factor(compplots$variable,
                                        'Ash', 'Basswood', 'Beech', 'Birch', 'Elm',
                                        'Ironwood', 'Maple', 'Oak', 'Poplar'))
 
-base.map +
-  geom_tile(data = compplots, aes(x = x, y = y, fill=value), alpha = 0.8) +
-  scale_fill_gradient(low='white', high='black', trans='sqrt', na.value = NA) +
-  geom_path(data = umw.domain, aes(x = long, y = lat, group = group, linesize = paleon)) +
-  geom_path(data = can.domain, aes(x = long, y = lat, group = group)) +
-  theme_bw() +
-  facet_wrap(~species, nrow=3) +
-  theme(axis.text.x = element_blank(),
-        axis.text.y = element_blank(),
-        strip.text = element_text(family='serif', size = 20, face = 'bold'),
-        legend.position = 'none')
-        
+composiiton.plots <- base.map +
+      geom_tile(data = compplots, aes(x = x, y = y, fill=value), alpha = 0.8) +
+      scale_fill_gradient(low='white', high='black', trans='sqrt', na.value = NA) +
+      geom_path(data = umw.domain, aes(x = long, y = lat, group = group, linesize = paleon)) +
+      geom_path(data = can.domain, aes(x = long, y = lat, group = group)) +
+      theme_bw() +
+      facet_wrap(~species, nrow=3) +
+      theme(axis.text.x = element_blank(),
+            axis.text.y = element_blank(),
+            strip.text = element_text(family='serif', size = 20, face = 'bold'),
+            legend.position = 'none')
+            
 #  This needs to get fixed so that the strip.background = element_rect(fill = c('#ffff99', '#80b1d3', rep('#bebada', 5), rep('#8dd3c7', 8))))
 
 rm(compplots)
 
 ```
-
-**Figure 5**. *Forest composition as a percent for the 15 most abundant tree taxa. The scale is drawn using a square-root transform to emphasize low abundances.  Shading of the bar above individual taxon maps indicates plant functional type assignments (white: needleleafed deciduous; light gray: needleleafed evergreen; dark gray: broadleafed deciduous).*
 
 Spruce in the PLS represents two species (*Picea glauca*, *Picea mariana*) with a generally close distributional overlap between species, but strongly different site preferences (dry upland and moist sites respectively).  Both cedar (*Thuja occidentalis*) and fir (*Abies balsamea*) are mono-specific genera in this region.
 
@@ -422,18 +397,15 @@ comp.sd <-  round(apply(comp.pft, 2, function(x) sd(x[x>0], na.rm=TRUE)) * 100, 
 
 ```
 
-```{r Fig6PotVeg, dpi=150, echo = FALSE, message = FALSE, warning=FALSE, results='hide', fig.width=6, fig.height=6}
+```{r fig6_calc, dpi=150, echo = FALSE, message = FALSE, warning=FALSE, results='hide'}
 
 source('R/figures/figure6_comp_prep.R')
 
-out.map
-
 ```
-**Figure 6**.  *Proportional distribution of Plant Functional Types (PFTs) in the upper Midwest from PLS data,  for temperate broadleaved deciduous trees (BDT), needleleaved deciduous trees (NDT), and needleleaved evergreen trees (NET). Distributions are shown as proportions relative to total basal area, total biomass, and composition, but do not indicate the magnitude of each of these estimates.  The grassland PFT is determined by non-tree counts with the assumption that if trees were available surveyors would have sampled them.*
 
 ### Settlement-Era Vegetation Types ###
 
-```{r Fig5_ForestClasses, echo = FALSE, warning=FALSE, message=FALSE, fig.width=7, fig.height = 5, dpi=150}
+```{r fig7_calc, echo = FALSE, warning=FALSE, message=FALSE, fig.width=7, fig.height = 5, dpi=150}
 #  Plotting out the qualitative composition data.
 #  Note that I think the Basal Class assignment is wrong for this figure and that MW and TN are reversed.
 
@@ -452,18 +424,17 @@ plot.frame <- data.frame(xyFromCell(base, 1:ncell(base)),
 
 plot.frame <- plot.frame[plot.frame$model %in% c('RK1999', 'Basal Area'),]
 
-base.map +
-  geom_tile(data = plot.frame, aes(x = x, y = y, fill = values)) +
-  scale_fill_brewer(type = 'qual', palette='Set3') +
-  geom_path(data = umw.domain, aes(x = long, y = lat, group = group, linesize = paleon)) +
-  geom_path(data = can.domain, aes(x = long, y = lat, group = group)) +
-  theme_bw() + facet_wrap(~model, nrow=1) +
-  theme(axis.text.x = element_blank(),
-        axis.text.y = element_blank()) +
-  xlab('') + ylab('')
+forest.class <- base.map +
+        geom_tile(data = plot.frame, aes(x = x, y = y, fill = values)) +
+        scale_fill_brewer(type = 'qual', palette='Set3') +
+        geom_path(data = umw.domain, aes(x = long, y = lat, group = group, linesize = paleon)) +
+        geom_path(data = can.domain, aes(x = long, y = lat, group = group)) +
+        theme_bw() + facet_wrap(~model, nrow=1) +
+        theme(axis.text.x = element_blank(),
+              axis.text.y = element_blank()) +
+        xlab('') + ylab('')
 
 ```
-**Figure 7**.  *Forest classification using Ramankutty and Foley [-@ramankutty1999estimating] estimates and those using baseline PLS data (aggregated to PFTs for equivalence) with the Haxeltine and Prentice [-@haxeltine1996biome3] classification scheme (Table 2).  Colors represent forest classes for the region as defined by Ramankutty and Foley [-@ramankutty1999estimating]: (Pr) Prairie; (Sa) Savanna; (TD) Temperate deciduous; (TE) Temperate evergreen; (MW) Mixedwood forest.*
 
 **Table 4**. *Classification proportions, patch size and edge cell proportion for various classification schemes used with the Public Land Survey data.  All patch size estimates are in 1000s of km^2^.*
 ```{r Table3Code, echo = FALSE, message = FALSE, warning=FALSE}
@@ -483,12 +454,11 @@ PLS Data |   `r cl.tab$basa[5]` | `r cl.tab$basa[4]` | `r cl.tab$basa[2]` | `r c
 
 ### Comparison to FIA Composition
 
-```{r Fig9_plsvsfiaplots, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 3, dpi=300}
+```{r fig8_calc, echo = FALSE, message = FALSE, warning=FALSE}
 source('R/plss_fia_comparison.R')
 
 source('R/figures/figure8_fiaplss_plots.R')
 ```
-**Figure 8**. *The relationship between average stem density, total basal area and biomass values in the PLS and FIA datasets. Stem density and total basal area are higher in the FIA than in the PLS, however average cell biomass is higher in the PLS.*
 
 Comparing PLS and FIA estimates for stem density, basal area and biomass indicates that the modern forests (FIA) have higher stem densities and total basal areas, but overall, comparable biomass between the PLS and FIA data (Figure 8).  The similarity in biomass despite lower stem density and total basal area in the PLS data is surprising.  Two likely factors are shifts in allometric scaling associated with changes in species composition, or a higher mean diameter of PLS trees (Figure 8d). 
 
@@ -497,15 +467,11 @@ The FIA appears to have higher average diameters in northern regions, where the 
 
 ### Transect Analysis
 
-```{r Fig6_transectPlots, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 6, dpi=150}
+```{r fig9_calc, echo = FALSE, message = FALSE, warning=FALSE}
 
 source('R/transect_plots.R')
 
-trans.plot
-
 ```
-
-**Figure 9**.  *Transects across the region show clear changes in the forest ecotones from one region to another.  Fitted curves represent smoothed estimates across the transects using Generalized Additive Models using beta fits.*
 
 Transects using FIA and PLS data show differentiation along the ecotone from west to east along a transect from northern prairie (in northern Minnesota) to southern deciduous savanna in southeastern Wisconsin (Transect One) and from southern prairie in southwestern Minnesota to northern mixedwood forest in the Upper Peninsula of Michigan (Transect Two).  For Transect One, GAM models show differentiation (using AIC) in the curves fit to Tamarack, Pine, Birch, Oak, Poplar and Spruce between PLS and FIA data, but not for Elm, Maple or Hemlock (which is almost entirely absent along the transect). Pine used to be a major component of the Tension zone, reaching proportions of up to 80% in north central Wisconsin, however, logging and subsequent regeneration have reduced values, and interestingly, values of pine have increased in southeastern Wisconsin, possibly as a result of the cultivation of pine plantations in the region.
 
@@ -515,12 +481,11 @@ Along the second transect (Transect Two, Figure 9) we again see significant chan
 
 Across the entire domain, $\beta$ diversity is decreasing ($\delta_{beta}$ = -0.172, $t_{1.3e7}$ = 2480, p <0.001), lending support to the hypothesis of overal homogenization, and suggesting that the mixed-pixel problem is less significant at regional scales than at smaller scales, or, at the very least, is unlikely to be driving the patterns, since it would have been expected to increase $\beta$-diversity along linear transects and at larger spatial scales.
 
-```{r Fig7CompositionComparison, echo = FALSE, warning=FALSE, message=FALSE, results='hide', fig.width=7, fig.height = 5, dpi=150}
+```{r fig10_calc, echo = FALSE, warning=FALSE, message=FALSE, results='hide'}
 
 source('R/figures/fig10_dissimilarities.R')
 
 ```
-**Figure 10**. *Minimum dissimilarity maps.  Cells with a high minimum dissimilarity lack close compositional analogs to other cells in the reference dataset.  The top two panels show compositional heterogeneity within the PLS and FIA data, while the bottom two panels identify PLS locations with no close analogs in the FIA data (PLS to FIA) and FIA locations with no close PLS analogs (FIA to PLS).  More than half (55%) of points in the PLS have minimum dissimilarities to the FIA data that are greater than the 95 percentile for minimum dissimilarities within either the FIA or PLS datasets.*
 
 ```{r quantilerange, echo = FALSE, warning=FALSE, message=FALSE}
 
@@ -569,7 +534,26 @@ These maps of settlement-era forest composition and structure can also provide a
 Ultimately the pre-settlement vegetation data present an opportunity to develop and refine statistical and mechanistic models of terrestrial vegetation that can take multiple structural and compositional forest attributes into account. The future development of uncertainty estimates for the data remains an opportunity that can help integrate pre-settlement estimates of composition and structure into a data assimilation framework to build more complete and  more accurate reconstructions of past vegetation dynamics, and to help improve predictions of future vegetation under global change scenarios.
 
 ***
-```{r Fig1DomainMap,echo=FALSE,warning=FALSE,message=FALSE,fig.width=4,fig.height = 3,dpi=300}
+
+**Figure 1**. *The domain of the Public Land Survey investigated in this study.  The broad domain includes Minnesota, Wisconsin and the upper two thirds of Michigan state.*
+
+**Figure 2**. *Correction factors for $\zeta$ in the PLS data, and the associated distribution of azimuths for each $\zeta$ value, by panel.  High peaks represent midpoints for quadrants where azimuth is defined as e.g., NE or SW.  Greater differences between cardinal directions and other azimuths result in higher $\zeta$ values, excluding the peaked values.*
+
+
+**Figure 3.** *Total stem density (a) in the Upper Midwest, along with forest type classification (b) based on Anderson and Anderson [-@anderson1975presettlement]; Table 3).  Fine lines represent major rivers.  Basal area (c) and biomass (d) show similar patterns to stem density.*
+
+
+**Figure 4.** *Variations in the relationship between biomass and stem density can be used to understand forest structure. Regions with high stem density to biomass ratios (blue) indicate dense stands of smaller trees, while regions with low stem density to biomass ratios (red) indicate larger trees with wider spacings. Only cells greater than 1 standard deviation from the ratio mean are classified as low or high.*
+
+**Figure 5**. *Forest composition as a percent for the 15 most abundant tree taxa. The scale is drawn using a square-root transform to emphasize low abundances.  Shading of the bar above individual taxon maps indicates plant functional type assignments (white: needleleafed deciduous; light gray: needleleafed evergreen; dark gray: broadleafed deciduous).*
+
+
+**Figure 6**.  *Proportional distribution of Plant Functional Types (PFTs) in the upper Midwest from PLS data,  for temperate broadleaved deciduous trees (BDT), needleleaved deciduous trees (NDT), and needleleaved evergreen trees (NET). Distributions are shown as proportions relative to total basal area, total biomass, and composition, but do not indicate the magnitude of each of these estimates.  The grassland PFT is determined by non-tree counts with the assumption that if trees were available surveyors would have sampled them.*
+
+**Figure 7**.  *Forest classification using Ramankutty and Foley [-@ramankutty1999estimating] estimates and those using baseline PLS data (aggregated to PFTs for equivalence) with the Haxeltine and Prentice [-@haxeltine1996biome3] classification scheme (Table 2).  Colors represent forest classes for the region as defined by Ramankutty and Foley [-@ramankutty1999estimating]: (Pr) Prairie; (Sa) Savanna; (TD) Temperate deciduous; (TE) Temperate evergreen; (MW) Mixedwood forest.*
+
+***
+```{r fig1_output,echo=FALSE,warning=FALSE,message=FALSE,fig.width=4,fig.height = 3,dpi=300}
 
 base.map +
   geom_path(data = umw.domain, aes(x = long, y = lat, group = group, linesize = paleon)) +
@@ -577,41 +561,72 @@ base.map +
 
 ```
 
-**Figure 1**. *The domain of the Public Land Survey investigated in this study.  The broad domain includes Minnesota, Wisconsin and the upper two thirds of Michigan state.*
-
 ***
-```{r figure2, echo = FALSE, warning=FALSE, message=FALSE, fig.width=4, fig.height = 4, dpi=300}
+```{r fig2_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=4, fig.height = 4, dpi=300}
 
 angle.plot
 
 ```
-***
-Figure 3.
 
 ***
-Figure 4.
+```{r fig3_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=5, fig.height = 5, dpi=300}
+
+grid.arrange(dens.facet, anders.facet, basa.facet, biom.facet, nrow = 2)
+
+```
 
 ***
-Figure 5.
+```{r fig4_output, echo=FALSE, message=FALSE, warning=FALSE, width=5, fig.height = 5, dpi=300}
+
+biom_sd
+
+```
 
 ***
-Figure 6.
+
+```{r fig5_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=7, fig.height = 5, dpi=150}
+composition.plots
+```
 
 ***
-Figure 7.
+```{r fig6_output, dpi=150, echo = FALSE, message = FALSE, warning=FALSE, results='hide', fig.width=6, fig.height=6}
+
+out.map
+
+```
 
 ***
-Figure 8.
+
+```{r fig7_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=7, fig.height = 5, dpi=150}
+
+forest.class
+
+```
 
 ***
-Figure 9.
+```{r fig8_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 3, dpi=300}
+
+grid.arrange(dens.fp, basa.fp, biom.fp, biomass.comp, nrow = 2)
+```
+
+**Figure 8**. *The relationship between average stem density, total basal area and biomass values in the PLS and FIA datasets. Stem density and total basal area are higher in the FIA than in the PLS, however average cell biomass is higher in the PLS.*
 
 ***
-Figure 10.
-```{r Fig10CompositionComparison, echo = FALSE, warning=FALSE, message=FALSE, results='hide', fig.width=7, fig.height = 5, dpi=150}
+```{r fig9_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 6, dpi=150}
+trans.plot
+```
+
+
+**Figure 9**.  *Transects across the region show clear changes in the forest ecotones from one region to another.  Fitted curves represent smoothed estimates across the transects using Generalized Additive Models using beta fits.*
+
+***
+```{r fig10_output, echo = FALSE, warning=FALSE, message=FALSE, results='hide', fig.width=7, fig.height = 5, dpi=150}
 
 grid.arrange(histogram, spatial.internal, spatial.external, ncol = 1)
 
 ```
+
+**Figure 10**. *Minimum dissimilarity maps.  Cells with a high minimum dissimilarity lack close compositional analogs to other cells in the reference dataset.  The top two panels show compositional heterogeneity within the PLS and FIA data, while the bottom two panels identify PLS locations with no close analogs in the FIA data (PLS to FIA) and FIA locations with no close PLS analogs (FIA to PLS).  More than half (55%) of points in the PLS have minimum dissimilarities to the FIA data that are greater than the 95 percentile for minimum dissimilarities within either the FIA or PLS datasets.*
+
 ***
 ### Literature Cited
