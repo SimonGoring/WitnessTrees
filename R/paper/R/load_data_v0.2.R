@@ -19,7 +19,7 @@ pot.veg <- raster(read.asciigrid(fname='../../data/input/rasters/glpotveg_5min.a
 projection(pot.veg) <- '+init=epsg:4326'
 
 #   Get the us & canadian lines into the right projection
-usa <-    spTransform(readOGR('../../data/input/shapes/usa', 'us'), 
+usa <-    spTransform(readOGR('../../data/input/shapes/usa/us.shp', 'us'), 
                       CRSobj=CRS(model.proj))
 canada <- spTransform(readOGR('../../data/input/shapes/canada', 'PROVINCE'), 
                       CRSobj=CRS(model.proj))

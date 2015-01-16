@@ -11,7 +11,7 @@ bibliography: goringetal_references.bib
 csl: ecology.csl
 ---
 
-Changes in Forest Composition, Stem Density, and Biomass from the Settlement Era to Present in for the Upper Midwestern United States
+Changes in Forest Composition, Stem Density, and Biomass from the Settlement Era to Present in the Upper Midwestern United States
 ===============================
 
 <!--
@@ -68,6 +68,7 @@ Jason S. McLachlan^8^
 
 ^8^Department of Biological Sciences, University of Notre Dame, 100 Galvin Life Sciences Center, Notre Dame, IN 46556
 
+******
 
 ```{r dataLoad, echo = FALSE, message=FALSE, results = 'hide', warning=FALSE}
 
@@ -89,11 +90,13 @@ source('R/natural_earth.R')
 
 Abstract
 ---------------------
-Change in forest structure and composition since Euro-American settlement is unequivocal in many regions of the United States. In particular, forest composition in the Upper Midwestern United States has changed significantly in the last 200 years. The legacies of historic land use can have important implications for our understanding of modern forest ecology.  More accurate reconstructions of historical states are critical to predicting current and future dynamics.
+*EuroAmerican land use and its legacies have transformed forest structure and composition in many regions of the United States. More accurate reconstructions of historical states are critical to understanding the processes governing past, current, and future forest dynamics.*
 
-We developed gridded (8x8km) estimates of pre-settlement vegetation from the Upper Midwestern United States (Minnesota, Wisconsin, and most of Michigan) using the Public Land Survey (PLS). We applied these estimates to map forest, prairie and savanna distributions, and to reconstruct spatial patterns in forest composition and structure, which we compare to modeled potential vegetation maps that are widely used by terrestrial ecosystem modelers as historic baselines.  We also compare pre-settlement to modern forests using Forest Inventory and Analysis (FIA) data, both with respect to structural changes and the prevalence of forests with no current or past analogs.
+*We develop and present a new dataset of gridded (8x8km) estimates of pre-settlement vegetation from the upper Midwestern United States (Minnesota, Wisconsin, and most of Michigan) using the Public Land Survey (PLS), with estimates of relative composition for XX tree genera and total biomass, stem density,  and basal area. These estimates of stem density correct for variations in surveyor sampling by applying spatially varying correction factors that accommodate alternate sampling designs, azimuthal censoring, and biases in tree selection.  We applied these estimates to map forest, prairie and savanna distributions, and to reconstruct spatial patterns in forest composition and structure, which we compare to modeled potential vegetation maps that are widely used by terrestrial ecosystem modelers as historic baselines. We compare pre-settlement to modern forests using Forest Inventory and Analysis (FIA) data, both with respect to structural changes and the prevalence of forests with no current or past analogs.*
 
-PLS reconstructions of past forest, savanna, and prairie distributions are highly heterogeneous at a broad regional scale, with small patch sizes and extensive edge.  Stem density and total basal area are higher in contemporary forests than in settlement-era forests, but aboveground biomass is higher in settlement-era forests, in part because settlement-era trees are larger on average.  Forest composition has changed significantly since Euro-American settlement in the upper Midwest. Almost 24% of FIA cells represent novel forests, with no close analog to settlement-era forest composition, while 20% of pre-settlement forests no longer exist in a modern context. The loss of PLS forest types is spatially structured, concentrated particularly in hemlock- and beech-dominated forests at the tension zone between deciduous and evergreen forests.  This loss changes the structure of major ecotones across the region, including forest-prairie, sub-boreal-deciduous and mixed-wood to prairie ecotones.  Novel FIA forest assemblages are distributed evenly across the region, representing a broad-scale homogenization of forest composition and structure that is strongly influenced by current and historic land use.
+*Stem density and total basal area are higher in contemporary forests than in settlement-era forests, but aboveground biomass is higher in settlement-era forests, in part because individual settlement-era trees are larger on average. Modern forests are more homogenous than settlement-era forests, and ecotonal gradients are less sharp today than in the past. Almost 24% of FIA cells represent novel forests, with no close analog to settlement-era forest composition, while 20% of pre-settlement forests no longer exist in a modern context. The loss of PLS forest types is spatially structured, concentrated particularly in hemlock- and beech-dominated forests at the tension zone between deciduous and evergreen forests. This loss changes the structure of major ecotones across the region, including forest-prairie, sub-boreal-deciduous and mixed-wood to prairie ecotones. Novel FIA forest assemblages are distributed evenly across the region, representing a broad-scale homogenization of forest composition and structure that is strongly influenced by current and historic land use.  All datasets and open-source analytical scripts are publicly available, and work is underway to extend these settlement-era reconstructions across the northeastern US forests.*
+
+**Key Words**: forest composition, land use change, paleoecology, public land survey
 
 Introduction:
 ------------------
@@ -519,7 +522,7 @@ Across the entire domain, $\beta$ diversity is decreasing ($\delta_{beta}$ = -0.
 
 ```{r Fig7CompositionComparison, echo = FALSE, warning=FALSE, message=FALSE, results='hide', fig.width=7, fig.height = 5, dpi=150}
 
-source('R/figures/fig9_dissimilarities.R')
+source('R/figures/fig10_dissimilarities.R')
 
 ```
 **Figure 10**. *Minimum dissimilarity maps.  Cells with a high minimum dissimilarity lack close compositional analogs to other cells in the reference dataset.  The top two panels show compositional heterogeneity within the PLS and FIA data, while the bottom two panels identify PLS locations with no close analogs in the FIA data (PLS to FIA) and FIA locations with no close PLS analogs (FIA to PLS).  More than half (55%) of points in the PLS have minimum dissimilarities to the FIA data that are greater than the 95 percentile for minimum dissimilarities within either the FIA or PLS datasets.*
@@ -570,4 +573,39 @@ These maps of settlement-era forest composition and structure can also provide a
 
 Ultimately the pre-settlement vegetation data present an opportunity to develop and refine statistical and mechanistic models of terrestrial vegetation that can take multiple structural and compositional forest attributes into account. The future development of uncertainty estimates for the data remains an opportunity that can help integrate pre-settlement estimates of composition and structure into a data assimilation framework to build more complete and  more accurate reconstructions of past vegetation dynamics, and to help improve predictions of future vegetation under global change scenarios.
 
-### References
+***
+Figure 1.
+
+***
+Figure 2.
+
+***
+Figure 3.
+
+***
+Figure 4.
+
+***
+Figure 5.
+
+***
+Figure 6.
+
+***
+Figure 7.
+
+***
+Figure 8.
+
+***
+Figure 9.
+
+***
+Figure 10.
+```{r Fig10CompositionComparison, echo = FALSE, warning=FALSE, message=FALSE, results='hide', fig.width=7, fig.height = 5, dpi=150}
+
+grid.arrange(histogram, spatial.internal, spatial.external, ncol = 1)
+
+```
+***
+### Literature Cited
