@@ -103,35 +103,35 @@ Abstract
 Introduction:
 ------------------
 
-The composition, demography, and structure of forests in eastern North America have changed continuously over the last millennium, driven by human land use [@ramankutty1999estimating;@thompson2013four;@munoz2014defining;@ellis2008putting;@foster1998land] and climate variability [@pederson2014legacy, @booth2012multi, @hotchkiss2007response, @umbanhowar2006asymmetric].  At a regional scale many forests in the upper Midwest (Minnesota, Wisconsin and Michigan) now have decreased species richness and functional diversity relative to forests of the pre-Euro-American settlement period [hereafter pre-settlement) [@schulte2007homogenization] due to near complete logging. For example, forests in Wisconsin are in a state of regrowth, continuing to sequester carbon (Rhemtulla *et al*. 2009) as a consequence of these extensive land use and land cover conversions and subsequent recovery.  The upper Midwestern United States represents a unique ecological setting.  The region encompases the prairie-forest boundary, historic savanna, and the tension zone between southern deciduous forests and northern evergreen forests.  This mix leads to multiple ecotones across the region.  The extent to which these ecotones have shifted, and their extent both prior to and following settlement at a regional scale is of critical importance to global change studies, but also to regional management and conservation policy [@knoot2010state;@gimmi2013assessing;@radeloff2000historical;@fritschle2008reconstructing].
+The composition, demography, and structure of forests in eastern North America have changed continuously over the last millennium, driven by human land use [@ramankutty1999estimating;@thompson2013four;@munoz2014defining;@ellis2008putting;@foster1998land] and climate variability [@pederson2014legacy, @booth2012multi, @hotchkiss2007response, @umbanhowar2006asymmetric].  Legacies of past land use in the upper Midwest [@grossmann2008farms] and elsewhere have been shown to persist at local and regional scales [@foster1998land;@dupouey2002irreversible;@etienne2013searching], and nearly all North American forests have been impacted by changing land use in the past three centuries.  Hence, observed ecological processes in North American forests reflect both anthropogenic and natural influences at decadal to centennial scales.  These dual influences pose the challenge that natural processes may be masked, or heavily modified by anthropogenic effects.
 
-Pockets of primary forest originating before the settlement period exist in the Midwestern United States, but because land use has been both extensive and strongly selective, these pockets are an incomplete and unrepresentative sample of past vegetation.  Legacies of past land use in the upper Midwest [@grossmann2008farms] and elsewhere have been shown to persist at local and regional scales [@foster1998land;@dupouey2002irreversible;@etienne2013searching], and nearly all North American forests have been impacted by changing land use in the past three centuries.  Hence, observed ecological processes in North American forests reflect both anthropogenic and natural influences at decadal to centennial scales.  These dual influences pose the challenge that natural processes may be masked, or heavily modified by anthropogenic effects.  Thus the anthropogenic effects of land use change andsubsequent regrowth may affect realized niches for many taxa, particularly if realized niches are strongly biased by land use change.  
+At a regional scale many forests in the upper Midwest (Minnesota, Wisconsin and Michigan) now have decreased species richness and functional diversity relative to forests of the pre-Euro-American settlement period [hereafter pre-settlement) [@schulte2007homogenization] due to near complete logging. For example, forests in Wisconsin are in a state of regrowth, with an unfilled carbon sequestration potential of 69 TgC [@rhemtulla2009historical] as a consequence of these extensive land cover conversions and subsequent recovery. The upper Midwestern United States represents a unique ecological setting, with multiple major ecotones, including the prairie-forest boundary, historic savanna, and the tension zone between southern deciduous forests and northern evergreen forests. The extent to which these ecotones have shifted, and their extent both prior to and following settlement at a regional scale is of critical importance to biogeochemical and biogeophysical vegetation-atmosphere feedbacks [@matthes_inprep], carbon sequestration [@rhemtulla2009historical], and regional management and conservation policy [@radeloff2000historical;@fritschle2008reconstructing;@knoot2010state;@gimmi2013assessing].
 
-If land use change is impacting the shape of the realized niche then species distribution modeling, based on correlative models relating current extent to local climatic and edaphic factors, may have much weaker ability to interpret species responses to climate change than model diagnostics might indicate.  Indeed, re-organization following land use change may result in shifts in species co-occurance, and the development of novel ecosystems.  Thus, while Hobbs *et al*. [-@hobbs2006novel] argued that novel ecosystems were understudied, it may well be the case that in some regions they are all that's been studied.
+The extent to which changes in forest composition since Euro-American settlement [e.g. @schulte2007homogenization] has altered species co-occurance and affects our ability to understand individual or community responses to climate change is unknown: Are we measuring contemporary forests that have no past analogs to predict a future with no contemporary analogs?  At what scales is homogenization ocuring?  How has forest change affected ecotones across the region? Pockets of primary forest originating before the settlement period exist in the Midwestern United States and have been heavily studied by ecologists **REFS**, but because land use has been both extensive and strongly selective, these pockets are an incomplete and unrepresentative sample of past vegetation.
 
-Modern forest structure and composition data [e.g., from the USDA Forest Service's Forest Inventory and Analysis National Program, FIA; @gray2012forest] play a ubiquitous role in forest management, conservation, carbon accounting, and basic research on forest ecosystems and community dynamics.  These recent surveys (the earliest FIA surveys began in the 1930s) can be extended with longer-term historical data to understand how forest composition has changed since Euro-American settlement. The Public Land Survey provides broad coverage of the United States prior to Euro-American settlement [@almendinger1996minnesota;@liu2011broadscale]. Better understanding of settlement-era forest composition and post-settlement trajectories can serve multiple purposes.  For example, distributional models of tree species often rely upon FIA or other contemporary observational data to build species-climate relationships that can be used to predict potential range shifts [@iverson1998predicting;@iverson2013tree].  The extent to which changes in forest composition since Euro-American settlement [e.g. @schulte2007homogenization] has altered species co-occurance and affects our ability to understand individual or community responses to climate change is unknown: Are we measuring contemporary forests that have no past analogs to predict a future with no contemporary analogs?  At what scales is homogenization ocuring?  How has forest change affected ecotones across the region?
+Modern forest structure and composition data [e.g., from the USDA Forest Service's Forest Inventory and Analysis National Program, FIA; @gray2012forest] play a ubiquitous role in forest management, conservation, carbon accounting, and basic research on forest ecosystems and community dynamics.  These recent surveys (the earliest FIA surveys began in the 1930s) can be extended with longer-term historical data to understand how forest composition has changed since Euro-American settlement. The Public Land Survey provides broad coverage of the United States prior to Euro-American settlement [@almendinger1996minnesota;@liu2011broadscale].  In general, FIA datasets are well organized and widely available to the forest ecology and modeling community, whereas most PLS studies have been limited to local to state-level extents. This absence of widely available data on settlement-era forest composition and structure severely limits our ability to understand and model the current and future processes governing forest dynamics. For example, distributional models of tree species often rely upon FIA or other contemporary observational data to build species-climate relationships that can be used to predict potential range shifts [@iverson1998predicting;@iverson2013tree]. If land use change is impacting the shape of the realized niche then species distribution modeling, based on correlative models relating current extent to local climatic and edaphic factors, may have much weaker ability to interpret species responses to climate change than model diagnostics might indicate.  Indeed, re-organization following land use change may result in shifts in species co-occurance, and the development of novel ecosystems.  Thus, while Hobbs *et al*. [-@hobbs2006novel] argued that novel ecosystems were understudied, it may well be the case that in some regions they are all that's been studied.
 
-Here we use survey data from the original Public Lands Surveys (PLS) in the upper Midwest (here defined as Minnesota, Wisconsin, and Michigan) to derive estimates of pre-settlement (ca. mid-late 1800s) forest composition, basal area, stem density, and biomass and compare these to a) previous maps of potential vegetation [@ramankutty1999estimating] and b) late-20th-century estimates of forest composition, tree stem density, basal area and biomass from FIA data. Digitization and classification of PLS data has previously been performed for Wisconsin [@manies2000testing;@schulte2002quantitative] and for parts of Minnesota [@hanberry2012comparison;@friedman2005regional]. Most prior PLS-based reconstructions are for individual states or smaller extents (among others: @duren2012vegetation; @hanberry2012comparison; @rhemtulla2009historical; @friedman2005regional] often with coarser spatial aggregations [@schulte2007homogenization;@hanberry2012comparison], although aggregation may also occur at the township scale [@rhemtulla2009historical;@kronenfeld2010influence]. Extending the forest characterization across broader spatial domains can help improve our understanding of species distributions, forest composition and climate relationships [@klassen2014climatic]. The integration and cross-harmonization the PLS data at a regional scale thus extends our ability to use this data in management, conservation and scientific inquiry.
+Here we use survey data from the original Public Lands Surveys (PLS) in the upper Midwest (here defined as Minnesota, Wisconsin, and Michigan) to derive estimates of pre-settlement (ca. mid-late 1800s) forest composition, basal area, stem density, and biomass.  This work builds upon prior digitization and classification of PLS data for Wisconsin [@manies2000testing;@schulte2002quantitative] and for parts of Minnesota [@hanberry2012comparison;@friedman2005regional] and Michigan. Most prior PLS-based reconstructions are for individual states or smaller extents (among others: @duren2012vegetation; @hanberry2012comparison; @rhemtulla2009historical; @friedman2005regional] often with coarser spatial aggregations [@schulte2007homogenization;@hanberry2012comparison], although aggregation may also occur at the township scale [@rhemtulla2009historical;@kronenfeld2010influence]. Our work  addresses several major challenges to using PLS data, including lack of standardization in tree species names, azimuthal censoring by surveyors, variations in sampling design over time, and differential biases in tree selection among different kinds of survey points within the survey design at any point in time.
 
-We aggregate point based estimates of stem density, basal area and biomass to an 8 x 8km grid to help reduce local scale uncertainty, and classify forest types in the upper Midwest to facilitate comparisons between FIA and PLS data. Using the gridded data we examine species co-occurence and two spatial transects across the domain to understand the extent of change along forest ecotones at a broad spatial scale, and along well-understood ecotones from southern deciduous to northern evergreen forests and to the forest-prairie boundary. Our comparison between FIA and PLSS data will help to indicate the extent and nature of change between pre-settlement and modern forest structure and composition, and the degree to which this change could impact our understanding of future forest responses to global change.
+We aggregate point based estimates of stem density, basal area and biomass to an 8 x 8km grid to help reduce local scale uncertainty, and classify forest types in the upper Midwest to facilitate comparisons between FIA and PLS data. We compare the PLS data to late-20th-century estimates of forest composition, tree stem density, basal area and biomass from FIA data. Using the gridded data we examine species co-occurence and two spatial transects across the domain to understand the extent of change along forest ecotones at a broad spatial scale, and along well-understood ecotones from southern deciduous to northern evergreen forests and to the forest-prairie boundary.
 
 Methods:
 --------------------
 ### Public Lands Survey Data: Assembly, and Standardization
 
-The U.S. Public Land Survey (PLS) was designed as a system to facilitate the division and sale of land from Ohio westward and south. The survey created a 1 mile^2^ (2.56 km^2^) grid (sections) on the landscape. At each section corner, a stake was placed as the official location marker.  To mark these survey points, PLS surveyors recorded tree stem diameters, measured distances and azimuths of, typically, two to four trees near sample points and identified tree taxa using common (and often regionally idiosyncratic) names. PLS data thus represent measurements by hundreds of surveyors from 1832 until 1907, with changing sets of instructions over time (Stewart, 1979).  
+The U.S. Public Land Survey (PLS) was designed to facilitate the division and sale of land from Ohio westward and south. The survey created a 1 mile^2^ (2.56 km^2^) grid (sections) on the landscape. At each section corner, a stake was placed as the official location marker.  To mark these survey points, PLS surveyors recorded tree stem diameters, measured distances and azimuths of two to four trees near sample points and identified tree taxa using common (and often regionally idiosyncratic) names. PLS data thus represent measurements by hundreds of surveyors from 1832 until 1907, with changing sets of instructions over time (Stewart, 1979).
 
-The PLS was undertaken to survey land prior to assigning ownership, replacing earlier town proprietor surveys (TPS) used for the northeastern states [@cogbill2002forests;@thompson2013four].  The TPS provided estimates of relative forest composition at the township level, but no structural attributes. The PLS produced spatially explicit point level data, providing information about tree spacing and diameter across an extensive region. PLS notes include tree identification at the plot level, disturbance [@schulte2005severe] and other features of the pre-settlement landscape. However, potential uncertainties exist within the PLS and township level dataset [@bourdo1956review].
+The PLS was undertaken to survey land prior to assigning ownership, replacing earlier town proprietor surveys (TPS) used for the northeastern states [@cogbill2002forests;@thompson2013four].  The TPS provided estimates of relative forest composition at the township level, but no structural attributes. The PLS produced spatially explicit point level data, providing information about tree spacing and diameter across an extensive region. PLS notes include tree identification at the plot level, disturbance [@schulte2005severe] and other features of the pre-settlement landscape. However, uncertainties exist within the PLS and township level dataset [@bourdo1956review].
 
-Uncertainty in the PLS arises from the spatial scale of the dataset (fixed sampling every 1 mile), uncertainty in the species taxonomy [@mladenoff2002narrowing] and potential surveyor variability and bias during sampling [@schulte2001original;@bourdo1956review;@manies2001assessing;@liu2011broadscale].  Liu et al [-@liu2011broadscale] estimate the ecological significance of some of the underlying sources of bias in the PLS and show ecologically significant (>10% difference between classes) bias in species and size selection for coner trees, however the authors also indicate that the true sampling error cannot be determined, particularly since these historic ecosystems are largely lost to us. Kronenfeld and Wang [-@kronenfeld2007accounting], working with Historical Land Cover datasets in western New York indicate that direct estimates of density using plotless estimators may be off by nearly 37% due to angular bias, while species composition estimates may be adjusted by between -4 to +6%, varying by taxon, although Kronenfeld [-@kronenfeld2014validating] shows adjustments of less than 1% and Terrail et al. [@terrail2014early] show strong fidelity between taxon abundance in early land surveys and from old growth plot surveys.  Use of the PLS data requires caution, and careful consideration of scale, bias and variability.  Even given the limitations, PLS records remain the best, and only, source of data about both forest composition and structure in the United States prior to Euro-American settlement.
+Ecological uncertainty in the PLS arises from dispersed spatial sampling within the dataset (fixed sampling every 1 mile), uncertainty in converting surveyor's use of common names for tree species to scientific nomenclature [@mladenoff2002narrowing], digitization of the original survey notes, and surveyor bias during sampling [@schulte2001original;@bourdo1956review;@manies2001assessing;@liu2011broadscale].  Estimates vary regarding the ecological significance of survey bias.  Terrail et al. [-@terrail2014early] show strong fidelity between taxon abundance in early land surveys and from old growth plot surveys. Liu et al [-@liu2011broadscale] estimate the ecological significance of some of the underlying sources of bias in the PLS and show ecologically significant (>10% difference between classes) bias in species and size selection for corner trees, however the authors also indicate that the true sampling error cannot be determined, particularly since these historic ecosystems are largely lost to us. Kronenfeld and Wang [-@kronenfeld2007accounting], working with Historical Land Cover datasets in western New York indicate that direct estimates of density using plotless estimators may be off by nearly 37% due to angular bias bias (*i.e.*, tendency of surveyors  to avoid trees close to cardinal directions), while species composition estimates may be adjusted by between -4 to +6%, varying by taxon, although Kronenfeld [-@kronenfeld2014validating] shows adjustments of less than 1%. These biases can be minimized by appropriate analytical decisions; many efforts over the years have assessed and corrected for the idiosyncrasies of the original surveyor data to minimize sampling bias [@liu2011broadscale;@kronenfeld2007accounting;@williams2011testing;@manies2001assessing;@cogbill2015corrections;@hanberry2012adjusting;@hanberry2012comparison;@bouldin2008some;@hanberry2011spatial]. Use of the PLS data requires caution, and careful consideration of scale, bias and variability.  And, even given these caveats, PLS records remain the best source of data about both forest composition and structure in the United States prior to Euro-American settlement.
 
 This analysis builds upon and merges prior state-level efforts to digitize and database the point-level PLS data for Wisconsin, Minnesota and the Upper Peninsula and upper third of the Lower Peninsula of Michigan.  These datasets were combined using spatial tools in R [@team2014r; package *rgdal*: @keitt7rgdal] to form a common dataset for the upper Midwest (Figure 1) using the Albers Great Lakes and St Lawrence projection (see code in Supplement 1, file: *step_one_clean_bind.R*; proj4: *+init:EPSG:3175*).
 
-Steps used to standardize the dataset are preserved in in the supplementary R code (Supplement 1: *step_one_clean_bind.R*). We exclude line and meander trees (i.e. trees encountered along survey lines, versus trees located at section or quarter corners) because of the variability of and potential for surveyor biases, and the underlying differences between line, meander and corner points [@liu2011broadscale]. We used only the closest two trees at each corner point because of biases with respect to species composition and diameter of the third and fourth furthest trees [@liu2011broadscale]. Corner points were used only if there were at least two trees in different quadrants (defined by the cardinal directions) with valid azimuths to the trees and valid diameters (numeric, non-zero), in a further attempt to reduce uncertainty.
+We took several steps to standardize the dataset and minimize the potential effects of surveyor bias upon estimates of forest composition, density, and biomass. All steps are preserved in in the supplementary R code (Supplement 1: *step_one_clean_bind.R*). First, we excluded line and meander trees (i.e. trees encountered along survey lines, versus trees located at section or quarter corners) because surveyor selection biases appear to have been more strongly expressed for line trees, the  non-random habitat preferences of meander trees [@liu2011broadscale], and the inherent differences in sampling design between line, meander and corner points. We used only the closest two trees at each corner point because the third and fourth furthest trees have stronger biases with respect to species composition and diameter [@liu2011broadscale]. Corner points were used only if 1) there were at least two trees at a survey point, 2) the two trees were from different quadrants (defined by the cardinal directions), and 3) there were valid azimuths to the trees (a defined quadrant with an angle between 0 and 90) and valid diameters (numeric, non-zero).
 
-Many species-level identifications used by the surveyors are ambiguous.  Statistical models can predict the identity of ambiguous species [@mladenoff2002narrowing], but these models introduce a second layer of uncertainty into the compositional data, both from the initial surveyors' identification, and from the statistical disambiguation.  Given the regional scale of the analysis, and the inherent uncertainty in the survey data itself, we chose to avoid this added layer of taxonomic uncertainty, and retained only genus level identification (Supplement 2, *Standardized taxonomy*). In areas of open prairie or other treeless areas, e.g. southwestern Minnesota, surveyors recorded distances and bearings to 'Non Tree' objects. When points were to be located in water bodies the point data indicates 'Water'.
+Many species-level identifications used by the surveyors are ambiguous.  Statistical models can predict the identity of ambiguous species [@mladenoff2002narrowing], but these models introduce a second layer of uncertainty into the compositional data, both from the initial surveyors' identification, and from the statistical disambiguation.  Given the regional scale of the analysis, and the inherent uncertainty in the survey data itself, we chose to avoid this added layer of taxonomic uncertainty, and retained only genus level identification (Supplement 2, *Standardized taxonomy*). In areas of open prairie or other treeless areas, e.g. southwestern Minnesota, surveyors recorded distances and bearings to 'Non Tree' objects. When points were to be located in water bodies the point data indicates 'Water'.  Points recorded "No Tree" are considered to have been extremely open, with an estimated point level stem density of 0 stems/ha.  We based our estimates on terrestrial coverage, so water cells are excluded completely so that absence does not reduce overal terrestrial stem density.
 
-Digitization of the original surveyor notebooks incorporates the possibility of several opportunities for transcription errors. The Wisconsin dataset was compiled by the Mladenoff lab group, and has undergone several revisions in an effort to provide accurate data [@manies2000testing;@radeloff2000historical;@schulte2002quantitative;@mladenoff2002narrowing;@liu2011broadscale]. The Minnesota transcription error rate is likely between 1 and 5%, and the treatment of azimuths to trees varies across the dataset [@almendinger1996minnesota]. Michigan surveyor observations were transcribed to mylar sheets and then digititized (Ed Schools, pers. comm.; Great Lakes Ecological Assessment. USDA Forest Service Northern Research Station. Rhinelander, WI. http://www.ncrs.fs.fed.us/gla/), carrying two potential sources of transciption error. Assessment of Southern Michigan data by the current PalEON working group indicates a transcrition error rate of 3 - 6%.  To reduce errors associated with transcription we exclude sites for which multiple large trees have a distance of 1 link (20.12 cm) to plot center, trees with very large diameters (dbh > 100"; 254 cm), plots where the azimuth to the tree is unclear, and plots where the tree is at plot center but has a recorded azimuth. All removed plots are documented in the code used for analysis (Supplement 1: *step_one_clean_bind.R*) and are commented for review.
+Digitization of the original surveyor notebooks introduces the possibility of transcription errors. The Wisconsin dataset was compiled by the Mladenoff lab group, and has undergone several revisions over the last two decades in an effort to provide accurate data [@manies2000testing;@radeloff2000historical;@schulte2002quantitative;@mladenoff2002narrowing;@liu2011broadscale]. The Minnesota transcription error rate is likely between 1 and 5%, and the treatment of azimuths to trees varies across the dataset [@almendinger1996minnesota]. Michigan surveyor observations were transcribed to mylar sheets overlaid on State Quadrangle maps, so that the points were displayed geographically, and then digititized to a point based shapefile (Ed Schools, pers. comm.; Great Lakes Ecological Assessment. USDA Forest Service Northern Research Station. Rhinelander, WI. http://www.ncrs.fs.fed.us/gla/), carrying two potential sources of transciption error. Preliminary assessment of Southern Michigan data indicates a transcrition error rate of 3 - 6%.  To reduce errors associated with transcription across all datasets, we exclude sites for which multiple large trees have a distance of 1 link (20.12 cm) to plot center, trees with very large diameters (dbh > 100"; 254 cm), plots where the azimuth to the tree is unclear, and plots where the tree is at plot center but has a recorded azimuth. All removed plots are documented in the code used for analysis (Supplement 1: *step_one_clean_bind.R*) and are commented for review.
 
 ### Data Aggregation
 
@@ -139,7 +139,7 @@ We binned the point data using an 64km^2^ grid (Albers Gt. Lakes St Lawrence pro
 
 ### Stem Density, Basal Area and Biomass
 
-Many efforts over the years have assessed and corrected for the idiosyncrasies of the original surveyor data to minimize sampling bias [@liu2011broadscale;@kronenfeld2007accounting;@williams2011testing;@manies2001assessing;@cogbill2015corrections;@hanberry2012adjusting;@hanberry2012comparison;@bouldin2008some;@hanberry2011spatial]. Survey sampling instructions changed throughout the implementation of the PLS in this region and differed between section and quarter section points, and between internal and external points within townships [@liu2011broadscale;@white1983history]. The changing plot geometry across the region thus precludes uniform aggregative methods [e.g. @hanberry2011spatial] because there is significant variability between sampling geometries among plots [@cogbill2015corrections]. Our approach allows for spatial variation in surveyor methods by applying correction factors based on plot geometry, angle distributions and diameter censoring within the data set.
+Survey sampling instructions changed throughout the implementation of the PLS in this region and differed between section and quarter section points, and between internal and external points within townships [@liu2011broadscale;@white1983history]. The changing plot geometry across the region thus precludes uniform aggregative methods [e.g. @hanberry2011spatial] because there is significant variability between sampling geometries among plots [@cogbill2015corrections]. Our approach allows for spatial variation in surveyor methods by applying correction factors based on plot geometry, angle distributions and diameter censoring within the data set.
 
 We estimate stem density (stems m^-2^) based on a modification of the distance-to-tree measurements for the two closest trees at each point [@morisita1954estimation] using explicit and spatially varying correction factors, modeled after the Cottam correction factor [@cottam1956use], that accounts for variations in sampling designs over time and among surveyors. All code to perform the analysis is included in Supplement 3. 
 
@@ -157,49 +157,16 @@ source('R/figures/figure2_angles.R')
 
 Basal area is calculated by multiplying the point-based stem density estimate by the average stem basal area from the reported diameters at breast height for the closest two trees at the point (n=2). Aboveground dry biomass (Mg/ha) is calculated using the USFS FIA tree volume and dry aboveground biomass equations for the United States [@jenkins2004comprehensive].
 
-**Table 1**. *Correction values based on plot level survey design using state, year, and location within township as a basis for assignment.  Years reported represent the upper bound for each set of survey years.*
-```{r CorrectionTableBlock, results = 'asis', echo = FALSE}
-corr.table <- corr.vals
-corr.table$State <- substr(corr.table$State, 1, 4)
-corr.table$Internal <- substr(corr.table$Internal, 1, 3)
-levels(corr.table$Section) <- c('QSec', 'Sec')
-
-pandoc.table(corr.table, justify = "left", style = 'simple')
-```
-
 Biomass equations share the basic form:
 
 $m = Exp(\beta_{0} + \beta_{1} * \ln dbh)$
 
 where $m$ represents stem biomass for an individual tree in kg. $\beta_{0}$ and $\beta_{1}$ are the parameters described in Table 2 and $dbh$ is the stem diameter at breast height (converted to cm) recorded in the survey notes.  The biomass estimates are summed by plot and multiplied by the stem density to produce an estimate of aboveground biomass that is reported in Mg/ha^-1^ [@jenkins2004comprehensive].
 
-**Table 2.** *Biomass parameters used for the calculation of biomass in the pre-settlement dataset(rounded for clarity).*
-
-Jenkins Species Group | $\beta_{0}$ | $\beta_{1}$ | PalEON Taxa Included (Supp. 2)
---- | --- | --- | ---
-Aspen, Alder, Poplar, Willow  | -2.20 | 2.38 | Poplar, Willow, Alder
-Soft Maple, Birch | -1.91  | 2.36	| Birch
-Mixed Hardwood | -2.48 | 2.48 | Ash, Elm, Maple, Basswood, Ironwood, Walnut, Hackberry, Cherries, Dogwood, Buckeye
-Hard Maple, Oak, Hickory, Beech | -2.01 | 2.43 | Oak, Hickory, Beech, Other Hardwood
-Cedar and Larch | -2.03 | 2.26 | Tamarack, Cedar
-Fir and Hemlock | -2.54 | 2.43 | Fir, Hemlock
-Pine | -2.54 | 2.43 | Pine
-Spruce | -2.08 | 2.33 | Spruce
-
 Matching PLSS tree taxa to the species groups defined by Jenkins *et al*. [-@jenkins2004comprehensive] is straightforward, placing with the 22 taxa used in this study placed into 9 allometric groups (Table 2). However, all maples in the PLSS are defined to genus and so we place maple in the generic Hardwood group since separate allometric relationships exist for soft and hard maple (Table 2). Biomass estimates for "Non tree" regions are assigned 0 Mg/ha.
 	
 ### Forest Classification
 We use global potential vegetation categories as defined by Haxeltine and Prentice [-@haxeltine1996biome3] (Table 3) to assign initial vegetation states. We use the stem density thresholds of Anderson and Anderson [-@anderson1975presettlement] to discriminate prairie, savanna, and forest. We set >70% relative abundance of NE and ND, or BD as a threshold for PFT dominance and to discriminate among the temperate deciduous, temperate evergreen, and mixedwood forest types. (Table 3).
-
-**Table 3**. *Forest classification scheme used in this paper for comparison between pre-settlement forests and the Haxeltine and Prentice [-@haxeltine1996biome3] potential vegetation classes represented in Ramankutty and Foley [@ramankutty1999estimating]. Plant functional types (PFTs) for grasslands (CG, grassland; Non-Tree samples in the PLS), broad leafed deciduous taxa (BDT) and needleleaded evergreen taxa (NET) are used, but leaf area index used in Haxeltine and Prentice [-@haxeltine1996biome3] is replaced by stem density classes from Anderson and Anderson [@anderson1975presettlement].*
-
-Forest Class | Haxeltine & Prentice Rules | Current Study
-------- | ------- | -------
-Prairie  | Dominant PFT CG, LAI > 0.4 | Stem dens. < 1 stem/ha
-Savanna  | Dominant PFT CG, LAI > 0.6 | 1 < Stem dens. < 19 stems/ha
-Temperate Deciduous |	Dominant PFT BDT, LAI > 2.5 | Stem dens. > 19 stems/ha, BDT > 70% composition
-Temperate Conifer	| Dominant PFT (NET + NDT), LAI > 2.5 | Stem dens. > 19 stems/ha, NET + NDT > 70% composition
-Mixedwood	| Both BDT (LAI > 1.5) & NET (LAI > 2.5) present | Stem dens. > 19 stems/ha, BDT & NET both < 70% composition
 
 ### FIA Stem Density, Basal Area and Biomass
 ```{r loadFIAplotsperCell, echo = FALSE, message=FALSE, results = 'hide', warning=FALSE}
@@ -219,9 +186,9 @@ Most 64km^2^ cells have one or few FIA plots that are sampled intensively.  Ther
 
 The application of the methods presented in Kronenfeld [-@kronenfeld2014validating] are limited. The spatial extent of the region is much larger than western New York and species associations across the region are likely to be non-stationary, thus a much larger number of forest classes may be required to undertake linear disaggregation. Additionally, the variable number of FIA plots per 64km^2^ cell means that the seeding dataset will again be smoothing underlying local-scale heterogeneity. Although we cannot address the issue directly, we can look for signitures of the mixed pixel problem in our estimates, for example, higher between cell dissimilarities in the FIA data than in the PLSS, and lower dissimilarity in the FIA in regions with more plots per cell.  Thus, while we do not explicitly correct for mixed-pixel issues at this scale, we provide supplemental analysis when presenting our results to help identify the potential impact of this mixed-pixel effect.
 
-Standard statistical analysis, including correlations and regression, was carried out in R [@team2014r], and is documented in supplementary material that includes a subset of the raw data to allow reproducibility. Analysis and presentation uses elements from the following R packages: ggplot2 [@wickham2009ggplot2,@ggplot2009], gridExtra [@grid2012], igraph (Csardi and Nepusz, 2006), mgcv (Wood, 2011), plyr (Wickham, 2011), raster (Hijmans, 2014), reshape2 [@reshape2007], rgdal (Bivand et al., 2013), rgeos (Bivand & Rundel, 2013), sp (Pebesma and Bivand, 2005; Bivand et al., 2013), and spdep (Bivand, 2013).
+Standard statistical analysis, including correlations and regression, was carried out in R [@team2014r], and is documented in supplementary material that includes a subset of the raw data to allow reproducibility. Analysis and presentation uses elements from the following R packages: ggplot2 [@wickham2009ggplot2,@ggplot2009], gridExtra [@grid2012], igraph [@csardi2006], mgcv [@wood2011], plyr [@wickham2011plyr], raster [@hijmans2014], reshape2 [@reshape2007], rgdal [@bivand2014], rgeos [@bivand2014rgeos], sp [@pebesma2005sp,@bivand2013], and spdep [@bivand2014spdep].
 
-Differences in composition between and within PLS and FIA datasets are examined using Bray-Curtis dissimilarity (vegdist in vegan; Oksanen et al., 2013) for proportional composition within raster cells using basal area measurements. For the purposes of this analysis we are interested only in the minimum distance between a focal cell and its nearest compositional (not spatial) neighbor. The distribution of closest analogs within datasets can give us information about forest heterogeneity, while the search for closest analogs between datasets can give information about whether contemporary forests lack analogs in pre-settlement forests, and vice versa. For the analog analyses,  we compute Bray-Curtis distance between each 64km^2^ cell in either the FIA or the PLS periods to all other cells within the other dataset (FIA to FIA, PLS to PLS), and between datasets (PLS to FIA and FIA to PLS), retaining only the minimum value.  For the FIA to FIA and PLS to PLS analyses, cells were not allowed to match to themselves.
+Differences in composition between and within PLS and FIA datasets are examined using Bray-Curtis dissimilarity (vegdist in vegan; [@oksanen2014vegan]) for proportional composition within raster cells using basal area measurements. For the purposes of this analysis we are interested only in the minimum distance between a focal cell and its nearest compositional (not spatial) neighbor. The distribution of closest analogs within datasets can give us information about forest heterogeneity, while the search for closest analogs between datasets can give information about whether contemporary forests lack analogs in pre-settlement forests, and vice versa. For the analog analyses,  we compute Bray-Curtis distance between each 64km^2^ cell in either the FIA or the PLS periods to all other cells within the other dataset (FIA to FIA, PLS to PLS), and between datasets (PLS to FIA and FIA to PLS), retaining only the minimum value.  For the FIA to FIA and PLS to PLS analyses, cells were not allowed to match to themselves.
 
 Results:
 ---------------------------
@@ -436,22 +403,6 @@ forest.class <- base.map +
 
 ```
 
-**Table 4**. *Classification proportions, patch size and edge cell proportion for various classification schemes used with the Public Land Survey data.  All patch size estimates are in 1000s of km^2^.*
-```{r Table3Code, echo = FALSE, message = FALSE, warning=FALSE}
-
-patch.mean <- round(sapply(patch.ests, mean) * 64/1000, 0)
-
-cl.tab <- data.frame(rk   = c(round(table(getValues(base))*64/1000,0), 
-                              patch.mean[1], edge.est[1]),
-                     basa = c(round(table(getValues(basal.class))*64/1000,0), 
-                              patch.mean[4], edge.est[4]))
-```
-
-Classification  Metric | Prairie | Savanna | Temperate Deciduous | Temperate Evergreen | Mixed Wood | Mean Patch Size (km^2^) | Edge Cells (%)
---------- | --------- | ----- | ------ | ------ | ------ | -------- | ------ | ------
-Ramankutty and Foley [-@ramankutty1999estimating] | `r cl.tab$rk[5]` | `r cl.tab$rk[4]` | `r cl.tab$rk[2]` | `r cl.tab$rk[1]` | `r cl.tab$rk[3]` | `r cl.tab$rk[6]` | `r cl.tab$rk[7]`
-PLS Data |   `r cl.tab$basa[5]` | `r cl.tab$basa[4]` | `r cl.tab$basa[2]` | `r cl.tab$basa[1]` | `r cl.tab$basa[3]` | `r cl.tab$basa[6]` | `r cl.tab$basa[7]`
-
 ### Comparison to FIA Composition
 
 ```{r fig8_calc, echo = FALSE, message = FALSE, warning=FALSE}
@@ -535,6 +486,64 @@ Ultimately the pre-settlement vegetation data present an opportunity to develop 
 
 ***
 
+
+**Table 1**. *Correction values based on plot level survey design using state, year, and location within township as a basis for assignment.  Years reported represent the upper bound for each set of survey years.*
+```{r CorrectionTableBlock, results = 'asis', echo = FALSE}
+corr.table <- corr.vals
+corr.table$State <- substr(corr.table$State, 1, 4)
+corr.table$Internal <- substr(corr.table$Internal, 1, 3)
+levels(corr.table$Section) <- c('QSec', 'Sec')
+
+pandoc.table(corr.table, justify = "left", style = 'simple')
+```
+
+***
+
+**Table 2.** *Biomass parameters used for the calculation of biomass in the pre-settlement dataset(rounded for clarity).*
+
+Jenkins Species Group | $\beta_{0}$ | $\beta_{1}$ | PalEON Taxa Included (Supp. 2)
+--- | --- | --- | ---
+Aspen, Alder, Poplar, Willow  | -2.20 | 2.38 | Poplar, Willow, Alder
+Soft Maple, Birch | -1.91  | 2.36  | Birch
+Mixed Hardwood | -2.48 | 2.48 | Ash, Elm, Maple, Basswood, Ironwood, Walnut, Hackberry, Cherries, Dogwood, Buckeye
+Hard Maple, Oak, Hickory, Beech | -2.01 | 2.43 | Oak, Hickory, Beech, Other Hardwood
+Cedar and Larch | -2.03 | 2.26 | Tamarack, Cedar
+Fir and Hemlock | -2.54 | 2.43 | Fir, Hemlock
+Pine | -2.54 | 2.43 | Pine
+Spruce | -2.08 | 2.33 | Spruce
+
+***
+
+**Table 3**. *Forest classification scheme used in this paper for comparison between pre-settlement forests and the Haxeltine and Prentice [-@haxeltine1996biome3] potential vegetation classes represented in Ramankutty and Foley [@ramankutty1999estimating]. Plant functional types (PFTs) for grasslands (CG, grassland; Non-Tree samples in the PLS), broad leafed deciduous taxa (BDT) and needleleaded evergreen taxa (NET) are used, but leaf area index used in Haxeltine and Prentice [-@haxeltine1996biome3] is replaced by stem density classes from Anderson and Anderson [@anderson1975presettlement].*
+
+Forest Class | Haxeltine & Prentice Rules | Current Study
+------- | ------- | -------
+Prairie  | Dominant PFT CG, LAI > 0.4 | Stem dens. < 1 stem/ha
+Savanna  | Dominant PFT CG, LAI > 0.6 | 1 < Stem dens. < 19 stems/ha
+Temperate Deciduous |  Dominant PFT BDT, LAI > 2.5 | Stem dens. > 19 stems/ha, BDT > 70% composition
+Temperate Conifer	| Dominant PFT (NET + NDT), LAI > 2.5 | Stem dens. > 19 stems/ha, NET + NDT > 70% composition
+Mixedwood	| Both BDT (LAI > 1.5) & NET (LAI > 2.5) present | Stem dens. > 19 stems/ha, BDT & NET both < 70% composition
+
+***
+
+**Table 4**. *Classification proportions, patch size and edge cell proportion for various classification schemes used with the Public Land Survey data.  All patch size estimates are in 1000s of km^2^.*
+```{r table4_code, echo = FALSE, message = FALSE, warning=FALSE}
+
+patch.mean <- round(sapply(patch.ests, mean) * 64/1000, 0)
+
+cl.tab <- data.frame(rk   = c(round(table(getValues(base))*64/1000,0), 
+                              patch.mean[1], edge.est[1]),
+                     basa = c(round(table(getValues(basal.class))*64/1000,0), 
+                              patch.mean[4], edge.est[4]))
+```
+
+Classification  Metric | Prairie | Savanna | Temperate Deciduous | Temperate Evergreen | Mixed Wood | Mean Patch Size (km^2^) | Edge Cells (%)
+--------- | --------- | ----- | ------ | ------ | ------ | -------- | ------ | ------
+Ramankutty and Foley [-@ramankutty1999estimating] | `r cl.tab$rk[5]` | `r cl.tab$rk[4]` | `r cl.tab$rk[2]` | `r cl.tab$rk[1]` | `r cl.tab$rk[3]` | `r cl.tab$rk[6]` | `r cl.tab$rk[7]`
+PLS Data |   `r cl.tab$basa[5]` | `r cl.tab$basa[4]` | `r cl.tab$basa[2]` | `r cl.tab$basa[1]` | `r cl.tab$basa[3]` | `r cl.tab$basa[6]` | `r cl.tab$basa[7]`
+
+***
+
 **Figure 1**. *The domain of the Public Land Survey investigated in this study.  The broad domain includes Minnesota, Wisconsin and the upper two thirds of Michigan state.*
 
 **Figure 2**. *Correction factors for $\zeta$ in the PLS data, and the associated distribution of azimuths for each $\zeta$ value, by panel.  High peaks represent midpoints for quadrants where azimuth is defined as e.g., NE or SW.  Greater differences between cardinal directions and other azimuths result in higher $\zeta$ values, excluding the peaked values.*
@@ -552,31 +561,47 @@ Ultimately the pre-settlement vegetation data present an opportunity to develop 
 
 **Figure 7**.  *Forest classification using Ramankutty and Foley [-@ramankutty1999estimating] estimates and those using baseline PLS data (aggregated to PFTs for equivalence) with the Haxeltine and Prentice [-@haxeltine1996biome3] classification scheme (Table 2).  Colors represent forest classes for the region as defined by Ramankutty and Foley [-@ramankutty1999estimating]: (Pr) Prairie; (Sa) Savanna; (TD) Temperate deciduous; (TE) Temperate evergreen; (MW) Mixedwood forest.*
 
-***
-```{r fig1_output,echo=FALSE,warning=FALSE,message=FALSE,fig.width=4,fig.height = 3,dpi=300}
+**Figure 8**. *The relationship between average stem density, total basal area and biomass values in the PLS and FIA datasets. Stem density and total basal area are higher in the FIA than in the PLS, however average cell biomass is higher in the PLS.*
 
-base.map +
+**Figure 9**.  *Transects across the region show clear changes in the forest ecotones from one region to another.  Fitted curves represent smoothed estimates across the transects using Generalized Additive Models using beta fits.*
+
+**Figure 10**. *Minimum dissimilarity maps.  Cells with a high minimum dissimilarity lack close compositional analogs to other cells in the reference dataset.  The top two panels show compositional heterogeneity within the PLS and FIA data, while the bottom two panels identify PLS locations with no close analogs in the FIA data (PLS to FIA) and FIA locations with no close PLS analogs (FIA to PLS).  More than half (55%) of points in the PLS have minimum dissimilarities to the FIA data that are greater than the 95 percentile for minimum dissimilarities within either the FIA or PLS datasets.*
+
+***
+```{r fig1_output,echo=FALSE,warning=FALSE,message=FALSE,fig.width=4,fig.height = 3,dpi=300, dev=c('png','postscript','tiff')}
+
+val.plot <- data.frame(xyFromCell(dens, 1:ncell(dens)),
+                       dens = !is.na(getValues(dens)))
+
+fig1plot <- base.map +
+  geom_tile(data = val.plot, 
+            aes(x = x, y = y, fill = dens), alpha = 0.8) +
   geom_path(data = umw.domain, aes(x = long, y = lat, group = group, linesize = paleon)) +
-  geom_path(data = can.domain, aes(x = long, y = lat, group = group))
+  geom_path(data = can.domain, aes(x = long, y = lat, group = group)) +
+  theme_bw() +
+  theme(axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        legend.position = 'top',
+        legend.title = element_blank())
 
 ```
 
 ***
-```{r fig2_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=4, fig.height = 4, dpi=300}
+```{r fig2_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=4, fig.height = 4, dpi=300, dev=c('png','postscript','tiff')}
 
 angle.plot
 
 ```
 
 ***
-```{r fig3_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=5, fig.height = 5, dpi=300}
+```{r fig3_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=5, fig.height = 5, dpi=300, dev=c('png','postscript','tiff')}
 
 grid.arrange(dens.facet, anders.facet, basa.facet, biom.facet, nrow = 2)
 
 ```
 
 ***
-```{r fig4_output, echo=FALSE, message=FALSE, warning=FALSE, width=5, fig.height = 5, dpi=300}
+```{r fig4_output, echo=FALSE, message=FALSE, warning=FALSE, width=5, fig.height = 5, dpi=300, dev=c('png','postscript','tiff')}
 
 biom_sd
 
@@ -584,12 +609,12 @@ biom_sd
 
 ***
 
-```{r fig5_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=7, fig.height = 5, dpi=150}
+```{r fig5_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=7, fig.height = 5, dpi=300, dev=c('png','postscript','tiff')}
 composition.plots
 ```
 
 ***
-```{r fig6_output, dpi=150, echo = FALSE, message = FALSE, warning=FALSE, results='hide', fig.width=6, fig.height=6}
+```{r fig6_output, echo = FALSE, message = FALSE, warning=FALSE, results='hide', fig.width=6, fig.height=6, dpi=300, dev=c('png','postscript','tiff')}
 
 out.map
 
@@ -597,36 +622,30 @@ out.map
 
 ***
 
-```{r fig7_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=7, fig.height = 5, dpi=150}
+```{r fig7_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=7, fig.height = 5, dpi=300, dev=c('png','postscript','tiff')}
 
 forest.class
 
 ```
 
 ***
-```{r fig8_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 3, dpi=300}
+```{r fig8_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 3, dpi=300, dev=c('png','postscript','tiff')}
 
 grid.arrange(dens.fp, basa.fp, biom.fp, biomass.comp, nrow = 2)
 ```
 
-**Figure 8**. *The relationship between average stem density, total basal area and biomass values in the PLS and FIA datasets. Stem density and total basal area are higher in the FIA than in the PLS, however average cell biomass is higher in the PLS.*
-
 ***
-```{r fig9_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 6, dpi=150}
+```{r fig9_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 6, dpi=300, dev=c('png','postscript','tiff')}
 trans.plot
 ```
 
 
-**Figure 9**.  *Transects across the region show clear changes in the forest ecotones from one region to another.  Fitted curves represent smoothed estimates across the transects using Generalized Additive Models using beta fits.*
-
 ***
-```{r fig10_output, echo = FALSE, warning=FALSE, message=FALSE, results='hide', fig.width=7, fig.height = 5, dpi=150}
+```{r fig10_output, echo = FALSE, warning=FALSE, message=FALSE, results='hide', fig.width=7, fig.height = 5, dpi=300, dev=c('png','postscript','tiff')}
 
 grid.arrange(histogram, spatial.internal, spatial.external, ncol = 1)
 
 ```
-
-**Figure 10**. *Minimum dissimilarity maps.  Cells with a high minimum dissimilarity lack close compositional analogs to other cells in the reference dataset.  The top two panels show compositional heterogeneity within the PLS and FIA data, while the bottom two panels identify PLS locations with no close analogs in the FIA data (PLS to FIA) and FIA locations with no close PLS analogs (FIA to PLS).  More than half (55%) of points in the PLS have minimum dissimilarities to the FIA data that are greater than the 95 percentile for minimum dissimilarities within either the FIA or PLS datasets.*
 
 ***
 ### Literature Cited
