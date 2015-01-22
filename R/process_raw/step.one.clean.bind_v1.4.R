@@ -295,6 +295,6 @@ coordinates(final.data) <- coordinates(nwmw)
 
 #  Write the data out as a shapefile.
 writeOGR(final.data, 
-         'data/output/aggregated_midwest/minn.wisc.mich.clean_v1_5.shp', 
-         'minn.wisc.mich.clean_v1_5', 'ESRI Shapefile',
+         'data/output/aggregated_midwest/minn.wisc.mich.clean_v1_6.shp', 
+         'minn.wisc.mich.clean_v1_6', 'ESRI Shapefile',
          overwrite_layer = TRUE, check_exists = TRUE)

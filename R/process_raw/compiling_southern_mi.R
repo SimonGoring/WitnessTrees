@@ -32,7 +32,7 @@ start.stop <- data.frame(start = sapply(gregexpr('/', shapes, fixed = TRUE), max
 
 shape.layer <- substr(shapes, start.stop[,1], start.stop[,2])
 
-for(i in i:length(shapes)){
+for(i in 1:length(shapes)){
   aa <- try(readOGR(shapes[i], shape.layer[i]))
   
   
@@ -92,7 +92,6 @@ new.match <- which(close$close < 1 & is.na(michigan.re@data$SPP1)[close$point])
 same.twp <- as.numeric(substr(mich.repro@data$Township[new.match], 1, 2)) == as.numeric(as.character(michigan.re@data$twp[chooser]))
 same.rng <- as.numeric(substr(mich.repro@data$Range[new.match], 1, 2)) == as.numeric(as.character(michigan.re@data$rng[chooser]))
 
-
 add.values <- function(x){
   if(regexpr('AZIM|SPP', x[1])>0)michigan.re@data[,x[1]] <<- 
     as.character(michigan.re@data[,x[1]])
@@ -112,10 +111,9 @@ alignment <-   cbind(c('SPP1', 'DBH1', 'AZIMUTH',  'DIST1',
 
 apply(alignment, 1, add.values)
 
-
 writeOGR(michigan.re, 
          'data/output/aggregated_midwest/michigan_filled/michigan_filled.shp',
-         'michigan_filled', 'ESRI Shapefile')
+         'michigan_filled', 'ESRI Shapefile', overwrite = TRUE)
 
 #  now clean out the points in southern michigan that are close but are repeats:
 new.match <- which(close$close < 1 & !is.na(michigan.re@data$SPP1)[close$point])
@@ -126,4 +124,4 @@ mich.repro <- mich.repro[drop.mich,]
 
 writeOGR(mich.repro, 
          'data/output/southern_MI/so_michigan.shp',
-         'so_michigan', 'ESRI Shapefile')
+         'so_michigan', 'ESRI Shapefile', overwrite = TRUE)

@@ -21,10 +21,10 @@ taxon.conv$Level.3a[taxon.conv$Level.3a == '']       <- NA
 taxon.conv$Level.3a[taxon.conv$Level.3a %in% '#N/A'] <- 'Other hardwood'
 
 #  Create a long data frame by lat& long:
-long.data <- data.frame(long = c(brugam$long, nd_il$PointX),# arboretum$POINT_X),
-                        lat  = c(brugam$Lat, nd_il$PointY),# arboretum$POINT_Y),
-                        SP1  = as.character(c(brugam$Tree, nd_il$L1.tree1)),# arboretum$Tree)),
-                        SP2  = as.character(c(rep(NA, nrow(brugam)), nd_il$L1.tree2)),# rep(NA, nrow(arboretum)))),
+long.data <- data.frame(long = nd_il$PointX, #c(brugam$long, ),# arboretum$POINT_X),
+                        lat  = nd_il$PointY, #c(brugam$Lat, ),# arboretum$POINT_Y),
+                        SP1  = as.character(nd_il$L1.tree1),#c(brugam$Tree, )),# arboretum$Tree)),
+                        SP2  = as.character(nd_il$L1.tree2),#c(rep(NA, nrow(brugam)), ),# rep(NA, nrow(arboretum)))),
                         stringsAsFactors=FALSE)
 
 long.data$SP1[long.data$SP1 %in% c('No tree', 'No Tree', 'No Trees')] <- 'No tree'
@@ -65,4 +65,4 @@ colnames(rast.set) <- taxa
 rast.coord <- xyFromCell(base.rast, 1:ncell(base.rast))
 rast.out <- cbind(rast.coord, rast.set)
 
-write.csv(rast.out, 'data/output/gridded/IllinoisData_v0.2-1.csv')
+write.csv(rast.out, 'data/output/gridded/IllinoisData_v0.2-2.csv')
