@@ -19,16 +19,22 @@ Changes in Forest Composition, Stem Density, and Biomass from the Settlement Era
 ```{r setup-knitr, echo = FALSE, message = FALSE}
 knitr::opts_chunk$set(
   comment = " ",
-  error = TRUE,
+  error = FALSE,
   eval = TRUE,
   cache = TRUE,
-  tidy = TRUE
-
+  tidy = FALSE,
+  fig.path = "figure/",
+  cache.path = "cache/"
 )
+
+
 
 library("pander")
 library("plyr")
 panderOptions('table.style', 'rmarkdown')
+panderOptions('table.split.table', 300)
+ps.options(fonts='serif')
+
 ```
 -->
 
@@ -160,6 +166,7 @@ The parameter $\zeta$ is used to correct for azimuthal censoring, since surveyor
 ```{r fig2_angles, echo = FALSE, warning=FALSE, message=FALSE}
 
 source('R/figures/figure2_angles.R')
+source('R/figures/figureX_angles.R')
 
 ```
 
@@ -178,6 +185,7 @@ We convert the PLS data to global vegetation categories as defined by Haxeltine 
 
 ### FIA Stem Density, Basal Area and Biomass
 ```{r loadFIAplotsperCell, echo = FALSE, message=FALSE, results = 'hide', warning=FALSE}
+
 fia.plots <- raster('../../data/input/rasters/numplots_alb.tif')
 
 ```
@@ -242,9 +250,9 @@ source('R/figures/figure3_panel_means.R')
 
 ```
 
-The mean stem density for the region (Figure 3a) is `r round(mean(getValues(dens), na.rm=TRUE),-1)` stems/ha.  Stem density exclusive of prairie is `r round(mean(getValues(dens)[getValues(dens)> 1], na.rm=TRUE),-1)` stems/ha and is `r round(mean(getValues(dens)[getValues(dens)> 19], na.rm=TRUE),-1)` stems/ha when both prairie and savanna are excluded.  Stem density has a 95th percentile range from 0 to `r round(ninefive(getValues(dens))[2], -1)` stems/ha with cell-level standard deviations between 0 and `r round(ninefive(dens.sd[,2])[2], -1)` stems/ha.  Basal area in the domain (Figure 3c) has a 95th percentile range between 0 and `r round(ninefive(getValues(basal))[2], 0)` m^2^/ha, a mean of `r round(mean(getValues(basal), na.rm=TRUE), 1)` m^2^/ha and cell level standard deviations between 0 and `r round(ninefive(basal.sd[,2])[2], 0)` m^2^/ha.  Biomass ranges from 0 to `r round(ninefive(getValues(biomass))[2], -1)` Mg/ha (Figure 3d), with cell level standard deviations between 0 and `r round(ninefive(biomass.sd[,2])[2], -1)` Mg/ha.  High cell level standard deviations relative to mean values within cells for density, basal area and biomass indicate high levels of heterogeneity within cells, as might be expected for the PLS data, which samples only two trees every mile.
+The mean stem density for the region (Figure 3a) is `r round(mean(getValues(dens), na.rm=TRUE),-1)` stems/ha.  Stem density exclusive of prairie is `r round(mean(getValues(dens)[getValues(dens)> 0.5], na.rm=TRUE),-1)` stems/ha and is `r round(mean(getValues(dens)[getValues(dens)> 47], na.rm=TRUE),-1)` stems/ha when both prairie and savanna are excluded.  Stem density has a 95th percentile range from 0 to `r round(ninefive(getValues(dens))[2], -1)` stems/ha with cell-level standard deviations between 0 and `r round(ninefive(dens.sd[,2])[2], -1)` stems/ha.  Basal area in the domain (Figure 3c) has a 95th percentile range between 0 and `r round(ninefive(getValues(basal))[2], 0)` m^2^/ha, a mean of `r round(mean(getValues(basal), na.rm=TRUE), 1)` m^2^/ha and cell level standard deviations between 0 and `r round(ninefive(basal.sd[,2])[2], 0)` m^2^/ha.  Biomass ranges from 0 to `r round(ninefive(getValues(biomass))[2], -1)` Mg/ha (Figure 3d), with cell level standard deviations between 0 and `r round(ninefive(biomass.sd[,2])[2], -1)` Mg/ha.  High cell level standard deviations relative to mean values within cells for density, basal area and biomass indicate high levels of heterogeneity within cells, as might be expected for the PLS data, which samples only two trees every mile.
 
-In the PLS data, stem density is lowest in the western and southwestern portions of the region, regions defined as prairie and savanna (Figure 3b, Table 3). When the Anderson and Anderson [-@anderson1975presettlement] stem density thresholds (<19 stems/ha for Savanna, Table 3) are used, the extent of area classified as savanna is more limited in southern Wisconsin (Figure 3b) than in prior reconstructions [@curtis1959vegetation;@rhemtulla2009legacies;@bolliger2004assessing], despite generally low stem densities (Figure 3a), likely a result of differential stem density classification, where Bollinger et al use a cutoff of 47 stems/ha we use 19 stems/ha [@bolliger2004assessing]. The highest stem densities occur in north-central Minnesota and in north-eastern Wisconsin (Figure 3a), indicating younger forests and/or regions of lower forest productivity. The interplay between broad-scale climatic structuring and local hydrological controls on forest composition and density can be seen, particularly along the Minnesota River in south-western Minnesota, where a corridor of savanna is sustained in a region mostly occupied by prairie (Figure 3b).
+In the PLS data, stem density is lowest in the western and southwestern portions of the region, regions defined as prairie and savanna (Figure 3b, Table 3). When the Anderson and Anderson [-@anderson1975presettlement] stem density thresholds (<47 stems/ha for Savanna, Table 3) are used, the extent of area classified as savanna is more limited in southern Wisconsin (Figure 3b) than in prior reconstructions [@curtis1959vegetation;@rhemtulla2009legacies;@bolliger2004assessing], despite generally low stem densities (Figure 3a). The highest stem densities occur in north-central Minnesota and in north-eastern Wisconsin (Figure 3a), indicating younger forests and/or regions of lower forest productivity. The interplay between broad-scale climatic structuring and local hydrological controls on forest composition and density can be seen, particularly along the Minnesota River in south-western Minnesota, where a corridor of savanna is sustained in a region mostly occupied by prairie (Figure 3b).
 
 ```{r fig4_calc, echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -300,7 +308,7 @@ taxon.cor[,2] <- round(taxon.cor[,2], 2)
 
 taxon.pct <- data.frame(all = colMeans(composition.table[,4:ncol(composition.table)]*100,
                                        na.rm=TRUE),
-                        forested = colMeans(composition.table[getValues(dens)>19,4:ncol(composition.table)]*100,
+                        forested = colMeans(composition.table[getValues(dens)>47,4:ncol(composition.table)]*100,
                                        na.rm=TRUE))
 
 taxon.pct <- round(taxon.pct, 0)
@@ -337,7 +345,7 @@ compplots$species <- factor(compplots$variable,
                                        'Ash', 'Basswood', 'Beech', 'Birch', 'Elm',
                                        'Ironwood', 'Maple', 'Oak', 'Poplar'))
 
-composiiton.plots <- base.map +
+composition.plots <- base.map +
       geom_tile(data = compplots, aes(x = x, y = y, fill=value), alpha = 0.8) +
       scale_fill_gradient(low='white', high='black', trans='sqrt', na.value = NA) +
       geom_path(data = umw.domain, aes(x = long, y = lat, group = group, linesize = paleon)) +
@@ -526,11 +534,11 @@ Spruce | -2.08 | 2.33 | Spruce
 
 Forest Class | Haxeltine & Prentice Rules | Current Study
 ------- | ------- | -------
-Prairie  | Dominant PFT CG, LAI > 0.4 | Stem dens. < 1 stem/ha
-Savanna  | Dominant PFT CG, LAI > 0.6 | 1 < Stem dens. < 19 stems/ha
-Temperate Deciduous |  Dominant PFT BDT, LAI > 2.5 | Stem dens. > 19 stems/ha, BDT > 70% composition
-Temperate Conifer	| Dominant PFT (NET + NDT), LAI > 2.5 | Stem dens. > 19 stems/ha, NET + NDT > 70% composition
-Mixedwood	| Both BDT (LAI > 1.5) & NET (LAI > 2.5) present | Stem dens. > 19 stems/ha, BDT & NET both < 70% composition
+Prairie  | Dominant PFT CG, LAI > 0.4 | Stem dens. < 0.5 stem/ha
+Savanna  | Dominant PFT CG, LAI > 0.6 | 1 < Stem dens. < 47 stems/ha
+Temperate Deciduous |  Dominant PFT BDT, LAI > 2.5 | Stem dens. > 48 stems/ha, BDT > 70% composition
+Temperate Conifer	| Dominant PFT (NET + NDT), LAI > 2.5 | Stem dens. > 47 stems/ha, NET + NDT > 70% composition
+Mixedwood	| Both BDT (LAI > 1.5) & NET (LAI > 2.5) present | Stem dens. > 47 stems/ha, BDT & NET both < 70% composition
 
 ***
 
@@ -559,11 +567,9 @@ PLS Data |   `r cl.tab$basa[5]` | `r cl.tab$basa[4]` | `r cl.tab$basa[2]` | `r c
 
 **Figure 3.** *Total stem density (a) in the Upper Midwest, along with forest type classification (b) based on PLS data and the stem density thresholds defined by Anderson and Anderson [-@anderson1975presettlement]; Table 3).  Fine lines represent major rivers.  To a first order, basal area (c) and biomass (d) show similar patterns to stem density (but see* Figure 4*).*
 
-
 **Figure 4.** *Variations in the relationship between biomass and stem density can be used to understand forest structure. Regions with high stem density to biomass ratios (blue) indicate dense stands of smaller trees, while regions with low stem density to biomass ratios (red) indicate larger trees with wider spacings. Only cells greater than 1 standard deviation from the ratio mean are classified as low or high.*
 
 **Figure 5**. *Forest composition as a percent for the 15 most abundant tree taxa. The scale is drawn using a square-root transform to emphasize low abundances.  Shading of the bar above individual taxon maps indicates plant functional type assignments (white: needleleafed deciduous; light gray: needleleafed evergreen; dark gray: broadleafed deciduous).*
-
 
 **Figure 6**.  *Proportional distribution of Plant Functional Types (PFTs) in the upper Midwest from PLS data,  for broadleaved deciduous trees (BDT), needleleaved deciduous trees (NDT), and needleleaved evergreen trees (NET). Distributions are shown as proportions relative to total basal area, total biomass, and composition (*Figure 3*).  The grassland PFT is mapped onto non-tree cells with the assumption that if trees were available surveyors would have sampled them.*
 
@@ -592,6 +598,7 @@ fig1plot <- base.map +
         legend.position = 'top',
         legend.title = element_blank())
 
+fig1plot
 ```
 
 ***
@@ -600,6 +607,16 @@ fig1plot <- base.map +
 angle.plot
 
 ```
+
+***
+
+```{r figX_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=4, fig.height = 4, dpi=300, dev=c('png','postscript','tiff')}
+
+angle.diff.plot
+
+```
+
+**Currently Unscripted Plot**  Angle pairs for theta.
 
 ***
 ```{r fig3_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=5, fig.height = 5, dpi=300, dev=c('png','postscript','tiff')}
