@@ -46,9 +46,9 @@ biom.facet <-   base.map +
 
 anders.data <- val.plot[val.plot$class == 'Density',]
 anders.data$dclass <- NA
-anders.data$dclass[anders.data$dens < 19] <- 'Savanna'
-anders.data$dclass[anders.data$dens < 1] <- 'Prairie'
-anders.data$dclass[anders.data$dens >19] <- 'Forest'
+anders.data$dclass[anders.data$dens < 47] <- 'Savanna'
+anders.data$dclass[anders.data$dens < 0.5] <- 'Prairie'
+anders.data$dclass[anders.data$dens >47] <- 'Forest'
 
 
 anders.facet <- base.map +

@@ -3,9 +3,9 @@ library(igraph)
 which.forest <- function(){
   #  This classifies forest composition based on the Anderson 1972 classes.
   cutoffs <- data.frame(prairie = 0,
-                        savanna = 1,
-                        open = 19,
-                        forest = 40)
+                        savanna = 0.5,
+                        open = 47,
+                        forest = 99)
   
   condition <- getValues(dens)
   
