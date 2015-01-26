@@ -44,5 +44,3 @@ spatial.external <- base.map + # base.map is defined in 'R/naturalearth.R'
   geom_path(data = umw.domain, aes(x = long, y = lat, group = group, linesize = paleon)) +
   geom_path(data = can.domain, aes(x = long, y = lat, group = group)) +
   theme(legend.position = 'none')
-
-

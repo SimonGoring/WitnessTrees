@@ -169,10 +169,10 @@ data.table <- data.frame(xyFromCell(dens, 1:ncell(dens)),
 data.table <- data.table[!is.na(data.table[,3]), ]
 
 if(model.proj == '+init=epsg:3175'){
-  write.csv(data.table, paste0('../../data/output/aggregated_midwest/density.basal.biomass_alb','_v',version, '.csv')
+  write.csv(data.table, paste0('../../data/output/aggregated_midwest/density.basal.biomass_alb','_v',version, '.csv'))
 }
 if(model.proj == '+init=epsg:4326'){
-  write.csv(data.table, paste0('../../data/output/aggregated_midwest/density.basal.biomass_ll','_v',version, '.csv')
+  write.csv(data.table, paste0('../../data/output/aggregated_midwest/density.basal.biomass_ll','_v',version, '.csv'))
 }
 
 #  Now we need to add zero cells to the dataframe:
