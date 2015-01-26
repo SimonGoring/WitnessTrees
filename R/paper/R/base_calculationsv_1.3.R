@@ -39,11 +39,12 @@ if(model.proj == '+init=epsg:3175'){
 #  The idea is to use cast/melt to put everything together.
 #  This is a large & time consuming step.  Again, we place it within an if statement to help save time:
 
-if('pointwise.ests_v0_91.Rdata' %in% list.files('../../data/output/aggregated_midwest/')){
-  load('../../data/output/aggregated_midwest/pointwise.ests_v0_91.Rdata')
-}
+if(paste0('pointwise.ests','_v',version, '.RDS') %in% list.files('../../data/output/aggregated_midwest/')){
 
-if(!'pointwise.ests_v0_91.Rdata' %in% list.files('../../data/output/aggregated_midwest/')){
+  spec.table <- readRDS(paste0('../../data/output/aggregated_midwest/pointwise.ests','_v',version, '.RDS'))
+
+} else {
+
   numbered.rast <- setValues(base.rast, 1:ncell(base.rast))
   numbered.cell <- extract(numbered.rast, spTransform(stem.density,CRSobj=CRS(model.proj)))
   
@@ -90,7 +91,7 @@ if(!'pointwise.ests_v0_91.Rdata' %in% list.files('../../data/output/aggregated_m
   
   spec.table$spec[spec.table$spec == 'No Tree'] <- 'No tree'
   
-  save(spec.table, file='../../data/output/aggregated_midwest/pointwise.ests_v0_91.Rdata')
+  saveRDS(spec.table, file=paste0('../../data/output/aggregated_midwest/pointwise.ests','_v',version, '.RDS'))
 }
 
 nine.nine.pct <- apply(spec.table[,6:9], 2, quantile, probs = 0.99, na.rm=TRUE)
@@ -168,10 +169,10 @@ data.table <- data.frame(xyFromCell(dens, 1:ncell(dens)),
 data.table <- data.table[!is.na(data.table[,3]), ]
 
 if(model.proj == '+init=epsg:3175'){
-  write.csv(data.table, '../../data/output/aggregated_midwest/density.basal.biomass_v1_9alb.csv')
+  write.csv(data.table, paste0('../../data/output/aggregated_midwest/density.basal.biomass_alb','_v',version, '.csv')
 }
 if(model.proj == '+init=epsg:4326'){
-  write.csv(data.table, 'data/output/density.basal.biomass_v1_9ll.csv')
+  write.csv(data.table, paste0('../../data/output/aggregated_midwest/density.basal.biomass_ll','_v',version, '.csv')
 }
 
 #  Now we need to add zero cells to the dataframe:
@@ -188,14 +189,6 @@ reform <- function(x){
 
 composition.table <- reform(basal.table)
 composition.table[,4:ncol(composition.table)] <- composition.table[,4:ncol(composition.table)]/rowSums(composition.table[,4:ncol(composition.table)], na.rm=TRUE)
-
-if(model.proj == '+init=epsg:4326'){
-  write.csv(count.table, 'data/output/glo.forest.composition_v1_9ll.csv')
-}
-
-if(model.proj == '+init=epsg:3175'){
-  write.csv(count.table, '../../data/output/aggregated_midwest/glo.forest.composition_v1_91alb.csv')
-}
 
 pft.trans <- read.csv('../../data/input/relation_tables/pft.trans.table.csv', stringsAsFactor = FALSE)
 
@@ -222,9 +215,19 @@ biomass.points.pft <- dcast(spec.table, x + y + cell ~ pft, unique.len, value.va
 
 #  Write.outputs:
 add.v <- function(x, name){
-  write.csv(x, paste0('../../data/output/wiki_outputs/', name, '_v',version, '.csv'))
+  
+  #  Quick file name formatter:
+  
+  if(model.proj == '+init=epsg:4326'){
+    p.ext <- '_ll'
+  } else {
+    p.ext <- '_alb'
+  }
+  
+  write.csv(x, paste0('../../data/output/wiki_outputs/', name, p.ext, '_v',version, '.csv'))
 }
 
+#  Write everything out:
 add.v(count.table, 'plss_trees')
 add.v(biomass.points, 'plss_points')
 add.v(biomass.points.pft, 'plss_points_pft')

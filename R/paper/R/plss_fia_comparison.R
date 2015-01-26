@@ -170,11 +170,9 @@ fia.aligned <- fia.agg[!rowSums(fia.agg) == 0,]
 colnames(fia.aligned) <- name.set[-1]
 
 #rm(agg.basa, agg.biom)
-if('distances_v0.4.RData' %in% list.files('../../data/output/aggregated_midwest/')){
-  load('../../data/output/aggregated_midwest/distances_v0.4.RData')
-}
-
-if(!'distances_v0.4.RData' %in% list.files('../../data/output/aggregated_midwest/')){
+if(paste0('distances_v', version, '.Rds') %in% list.files('../../data/output/aggregated_midwest/')){
+  distances <- readRDS(paste0('../../data/output/aggregated_midwest/distances_v', version, '.Rds'))
+} else {
   #  Check to see what the distances are like within each of the FIA and PLSS datasets
   #  and then between datasets.
 
@@ -229,7 +227,7 @@ if(!'distances_v0.4.RData' %in% list.files('../../data/output/aggregated_midwest
                      fia.plss.dist, 
                      plss.fia.dist)           
   
-  save(distances, file = '../../data/output/aggregated_midwest/distances_v0.4.RData')
+  saveRDS(distances, file = paste0('../../data/output/aggregated_midwest/distances_v', version, '.Rds'))
   rm(plss.dist, fia.dist, plss.fia, fia.plss)
 }
 
