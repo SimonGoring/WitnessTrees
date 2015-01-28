@@ -447,6 +447,11 @@ fia.PLS.quant <- quantile(distances$dist[distances$class %in% c('FIA-PLSS')],
 
 diffs <- (1 - (c(findInterval(intern.quant[96], PLS.fia.quant) - 1, findInterval(intern.quant[96], fia.PLS.quant) - 1)/100)) * 100
 
+PLS.na <- cor(comp.grid, distances$dist[distances$class == 'PLSS-FIA'] > PLS.fia.quant[95])
+
+fia.na <- cor(fia.aligned, distances$dist[distances$class == 'FIA-PLSS'] > fia.PLS.quant[95])
+
+
 ```
 
 Both the PLS- and FIA-era compositional data show similar patterns of within-dataset dissimilarity, wth the highest dissimilarities found in central Minnesota and northwestern Wisconsin (Figure 10b,c).  In the PLS-PLS comparisons (10b) high dissimilarities are associated with high proportions of maple, birch and fir (Figure 5).  High FIA-FIA dissimilarities are associated with high proportions of hemlock, cedar and fir.  Dissimilarity values in the FIA dataset are less spatially structured than in the PLSS.  Moran's I for dissimilarities within the FIA ($I_{FIA}$ = `r moran.stats[1]`, p < 0.001) are lower than the dissimilarities within the PLSS ($I_{PLSS}$ = `r moran.stats[2]`, p < 0.001), suggesting lower spatial autocorrelation in the FIA dataset. Cells with identical pairs represent `r round(sum(distances$dist[distances$class=='PLSS'] == 0) / sum(distances$class=='PLSS')*100, 1)`% of the PLS cells and `r round(sum(distances$dist[distances$class=='FIA'] == 0) / sum(distances$class=='FIA')*100, 1)` of FIA cells.  Identical cells in the PLS are largely located along the southern margin and most (`r round(sum(distances$dist[distances$class=='PLSS'] == 0 & comp.grid[,'Oak'] == 1)/sum(distances$dist[distances$class=='PLSS'] == 0)*100, 0)`%) are composed entirely of oak.  Cells in the FIA with identical neighbors are composed of either pure oak (`r round(sum(distances$dist[distances$class=='FIA'] == 0 & fia.aligned[,'Oak'] == 1)/sum(distances$dist[distances$class=='FIA'] == 0)*100, 0)`%), pure poplar (`r round(sum(distances$dist[distances$class=='FIA'] == 0 & fia.aligned[,'Poplar'] == 1)/sum(distances$dist[distances$class=='FIA'] == 0)*100, 0)`%) or pure ash (`r round(sum(distances$dist[distances$class=='FIA'] == 0 & fia.aligned[,'Ash'] == 1)/sum(distances$dist[distances$class=='FIA'] == 0)*100, 0)`%).
@@ -457,7 +462,7 @@ We define no-analog communities as those whose nearest neighbour is beyond the 9
 
 ```{r fig10_calc, echo = FALSE, message = FALSE, warning=FALSE}
 
-source('R/fig10_transect_plots.R')
+source('R/figures/fig10_transect_plots.R')
 
 ```
 
@@ -468,15 +473,6 @@ For Transect One, GAM models shows significant differences (using AIC) in the cu
 Contemporary forests show broader homogenization and increased heterogeneity (evidenced by the lower FIA-FIA Moran's I estimates) at a local scale in the region.  Homogenization is evident across Transect One, where Bray-Curtis dissimilarity between adjacent cells declines from the PLSS to the FIA ($\delta_{beta}$ = -0.22, $t_{113}$ = -7.93, p<0.001), mirroring declines in the pine barrens between the 1950s and the present [-@li2014drivers].   The PLS shows strong differentiation in the central region of Transect Two where Maple-Pine-Oak shifts to Pine-Poplar-Birch forest.  This sharp ecotone is not apparent in the FIA data, which shows gradual and blurred changes in species composition across the ecotone. $\beta$-diversity along Transect Two is lower in the FIA than in the PLSS ($\delta_{beta}$ = -0.19, $t_{65}$=-7.34, p < 0.01), indicating higher heterogeneity in the PLS data at the 64 km^2^ meso-scale.
 
 Across the entire domain, $\beta$ diversity is lower in the FIA than in the PLS ($\Delta_{beta}$ = -0.172, $t_{1.3e7}$ = 2480, p <0.001), lending support to the hypothesis of overall homogenization. Differences in sampling design between PLS and FIA data cannot explain this homogenzation, since its effect would have been expected to increase $\beta$-diversity along linear transects and at larger spatial scales.
-
-```{r TaxaNoAnalogues, message=FALSE, echo=FALSE, warning=FALSE}
-
-PLS.na <- cor(comp.grid, distances$dist[distances$class == 'PLSS-FIA'] > PLS.fia.quant[95])
-
-fia.na <- cor(fia.aligned, distances$dist[distances$class == 'FIA-PLSS'] > fia.PLS.quant[95])
-
-```
-
 
 Discussion
 ------------------------------
