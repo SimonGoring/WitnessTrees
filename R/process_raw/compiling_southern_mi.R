@@ -77,6 +77,8 @@ min.dist <- function(x, xy){
              point = which.min(dist))
 }
 
+#  mich.repro is the new southern data (and northern samples).  This code returns
+#  a two column data frame with the distance in meters (not kilometers)
 closest <- apply(coordinates(mich.repro), 1, min.dist, xy = coordinates(michigan.re))
 close <- do.call(rbind.data.frame, closest)
 
@@ -85,8 +87,8 @@ close <- do.call(rbind.data.frame, closest)
 #  species 1 is NA and it's one of the points close to the newly digitized data:
 
 # It's got to be within at least a kilometer and have a missing SPP
-chooser <- subset(close, close < 1)$point[is.na(michigan.re@data$SPP1)[subset(close, close < 1)$point]]
-new.match <- which(close$close < 1 & is.na(michigan.re@data$SPP1)[close$point])
+chooser <- subset(close, close < 400)$point[is.na(michigan.re@data$SPP1)[subset(close, close < 400)$point]]
+new.match <- which(close$close < 400 & is.na(michigan.re@data$SPP1)[close$point])
 
 #  It's also got to be in the same township and range:
 same.twp <- as.numeric(substr(mich.repro@data$Township[new.match], 1, 2)) == as.numeric(as.character(michigan.re@data$twp[chooser]))
