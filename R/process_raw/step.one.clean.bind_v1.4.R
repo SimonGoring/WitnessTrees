@@ -55,16 +55,10 @@ wisc$RANGDIR[wisc$RANGDIR %in% '4'] <- 'E'
 
 wisc$RANGDIR[wisc$RANGDIR %in% 'W' & coordinates(wisc)[,1] > 5e+05] <- 'E'
 
-#  Character vectors are read into R as factors, to merge them they need to
-#  be converted to character strings first and then bound together.  To ensure
-#  township and ranges are unique we add a state abbreviation to the front of
-#  the twonship name.
-twp <- c(paste('mn', as.character(minn$TWP)), 
-         paste('wi', as.character(wisc$TOWNSHIP)), 
-         paste('mi', as.character(mich$twp)))
-rng <- c(as.character(minn$RNG), 
-         paste(as.character(wisc$RANGE),as.character(wisc$RANGDIR), sep=''), 
-               as.character(mich$rng))
+#  Michigan's point numbers are wrong in the dataset.  I'm not sure where the 
+#  error arose from, but we need them to be able to assign section & quartersection
+#  points.
+mich$pnt <- as.numeric((substr(as.character(mich$RECNUM_C), 9,11)))
 
 #  The index of column names in Minnesota becomes the same as the Wisconsin.
 names(minn)[c(8, 10:25)] <- names(wisc)[c(5, 13:28)]
@@ -81,14 +75,51 @@ minn$DIST4 <- as.numeric(levels(minn$DIST4)[minn$DIST4])
 #  Bluebeech, or, in our dataset, Ironwood.
 minn@data[minn@data == 'BE'] <- 'IR'
 
+#  We want the Minnesota data to reflect water in the same way that the Wisconsin data does.
+#  Almendinger references the following land cover codes that are likely to have water:
+#  'A' - Creek (unlikely to be exclusively water)
+#  'M' - Marsh
+#  'S' - Swamp
+#  'L' - Lake
+
+minn$SP1 <- as.character(minn$SP1)
+minn$SP2 <- as.character(minn$SP2)
+minn$SP1[minn$VEGTYPE %in% c('L', 'M', 'S', 'R', 'A') & minn$SP1 %in% '_'] <- 'QQ'
+minn$SP2[minn$VEGTYPE %in% c('L', 'M', 'S', 'R', 'A') & minn$SP2 %in% '_'] <- 'QQ'
+
+#  There are also some weird Michigan points:
+#  1.  Michigan has a set of points with NA as SPP1 but identifiable trees listed as
+#      'tree'.  1549 of these are quartersection points, 45 are section points.  This
+#      is clearly an artifact of the sampling method.  We remove these points.
+#  2.  There are also 2909 'no tree points in Michigan.  Most of these points are quarter
+#      section points, and there is clear grographic bias.  We assume these points are
+#      early survey points and remove them entirely.
+not.no.tree <- !(!is.na(mich$TREE) & is.na(mich$SP1))
+no.tree     <- is.na(mich$SP1)
+mich <- mich[not.no.tree & !no.tree,]
+
+#  Character vectors are read into R as factors, to merge them they need to
+#  be converted to character strings first and then bound together.  To ensure
+#  township and ranges are unique we add a state abbreviation to the front of
+#  the twonship name.
+twp <- c(paste('mn', as.character(minn$TWP)), 
+         paste('wi', as.character(wisc$TOWNSHIP)), 
+         paste('mi', as.character(mich$twp)))
+rng <- c(as.character(minn$RNG), 
+         paste(as.character(wisc$RANGE),as.character(wisc$RANGDIR), sep=''), 
+         as.character(mich$rng))
+
 #  The merged dataset is called nwmw, Minnesota comes first, then Wisconsin.
 nwmw <- rbind(minn[,c(8, 10:25)], wisc[,c(5, 13:28)], mich[,c(36, 13:28)])
+
+nwmw$twp <- twp
+nwmw$rng <- rng
 
  #  There are a set of 9999 values for distances which I assume are meant to be NAs.  Also, there are a set of points where
 #  the distance to the tree is 1 or 2 feet.  They cause really big density estimates!
 nwmw@data [ nwmw@data == '9999'] <- NA
 nwmw@data [ nwmw@data == '8888'] <- NA
-nwmw@data [ nwmw@data == '_'] <- NA
+nwmw@data [ nwmw@data == '_'] <- NA       # Except those that have already been assigned to 'QQ'
 nwmw@data [ nwmw@data == '99999'] <- NA
 nwmw@data [ nwmw@data == '999999'] <- NA
 nwmw@data [ nwmw@data == '6666'] <- NA
@@ -98,12 +129,9 @@ nwmw@data [ nwmw@data == '999'] <- NA
 #  a number of points, although we hope to at some point in the future:
 #  No stem density removals, none of the plots look like they have 'weird' points.
 #  Basal area removals:
-nwmw@data[456454,] <- rep(NA, ncol(nwmw))  #  in Michigan, second tree diameter 120", too big!
-nwmw@data[458684,] <- rep(NA, ncol(nwmw))  #  in Michigan, second tree diameter 114", too big!
-nwmw@data[459133,] <- rep(NA, ncol(nwmw))  #  in Michigan, second tree diameter 1014", too big!
-nwmw@data[512571,] <- rep(NA, ncol(nwmw))  #  in Michigan, second tree diameter 61", but trees are listed as NA
-nwmw@data[516526,] <- rep(NA, ncol(nwmw))  #  second tree diameter 112". In WI?
-nwmw@data[516526,] <- rep(NA, ncol(nwmw))  #  second tree diameter 112".  In WI?
+nwmw@data[which(as.numeric(nwmw$DIAM1) >100),] <- rep(NA, ncol(nwmw))  #  removes 19 trees with reported diameters over 250cm.
+nwmw@data[which(as.numeric(nwmw$DIAM2) >100),] <- rep(NA, ncol(nwmw))  #  removes an additional 14 trees.
+nwmw@data[(is.na(nwmw$SP1) & nwmw$DIAM1>0) | (is.na(nwmw$SP2) & nwmw$DIAM2>0),] <- rep(NA, ncol(nwmw))  #  removes four records with no identified trees, but identified diameters
 
 diams <-  cbind(as.numeric(nwmw$DIAM1), 
                 as.numeric(nwmw$DIAM2), 
@@ -129,7 +157,7 @@ azimuths <- apply(azimuths, 2, get_angle)
 
 #####  Cleaning Trees:  
 #      Changing tree codes to lumped names:
-spec.codes <- read.csv('data/input/relation_tables/fullpaleon_conversion_v0.3_1.csv', stringsAsFactor = FALSE)
+spec.codes <- read.csv('data/input/relation_tables/fullpaleon_conversion_v0.3-2.csv', stringsAsFactor = FALSE)
 spec.codes <- subset(spec.codes, Domain %in% 'Upper Midwest')
 
 lumped <- data.frame(abbr = as.character(spec.codes$Level.1),
@@ -143,9 +171,10 @@ species.old <- data.frame(as.character(nwmw$SP1),
 species <- t(apply(species.old, 1, 
                    function(x) lumped[match(x, lumped[,1]), 2]))
 
-#  Here there needs to be a check, comparing species.old against species.
-test.table <- table(unlist(species.old), unlist(species), useNA='always')
-write.csv(test.table, 'data/output/tests/clean.bind.test.csv')
+#  We need to indicate water and remove it.  There are 43495 cells with 'water'
+#  indicated, and another 784 cells with 'missing' data.
+#  when we limit these to the first two columns of the species table we get
+#  a total of 25416 samples removed.
 
 #  There are a set of dead taxa (DA, DB & cetera) that we exclude.  Only AM is
 #  unknown at this point.  This excludes 213 trees.
@@ -153,6 +182,10 @@ species[species %in% ''] <- 'No tree'
 
 #  Now we assign species that don't fit to the 'No tree' category.
 species[is.na(species)] <- 'No tree'
+
+#  Here there needs to be a check, comparing species.old against species.
+test.table <- table(unlist(species.old), unlist(species), useNA='always')
+write.csv(test.table, 'data/output/tests/clean.bind.test.csv')
 
 ######
 #  Some annoying things that need to be done:
@@ -173,7 +206,7 @@ dists[rowSums(dists == 1, na.rm=T) > 1, ] <- rep(NA, 4)
 
 #  When the object is NA, or the species is not a tree (NonTree or Water), set
 #  the distance to NA.
-dists[is.na(species) | species == 'No tree' | species == 'Water'] <- NA
+dists[is.na(species) | species %in% c('No tree', 'Water', 'Missing')] <- NA
 
 #  Now we're looking at 36843 points with no usable data,
 #  5022 points with only one tree
@@ -276,8 +309,8 @@ survey.year <- factor(c(minn.year, wisc.year, mich.year))
 #  These are the columns for the final dataset.
 
 final.data <- data.frame(nwmw$POINT,
-                        twp,
-                        rng,
+                        nwmw$twp,
+                        nwmw$rng,
                         ranked.data[,1:8],
                         species,
                         ranked.data[,13:16],
@@ -293,8 +326,12 @@ colnames(final.data) <- c('Point', 'Township', 'Range',
 #  Turn it into a SpatialPointsDataFrame:
 coordinates(final.data) <- coordinates(nwmw)
 
+# now kill missing cells:
+final.data <- final.data[!final.data$species1 %in% c('Water', 'Missing'),]
+final.data <- final.data[!final.data$species2 %in% c('Water', 'Missing'),]
+
 #  Write the data out as a shapefile.
 writeOGR(final.data, 
-         'data/output/aggregated_midwest/minn.wisc.mich.clean_v1_6.shp', 
-         'minn.wisc.mich.clean_v1_6', 'ESRI Shapefile',
+         'data/output/aggregated_midwest/minn.wisc.mich.clean_v1_7.shp', 
+         'minn.wisc.mich.clean_v1_7', 'ESRI Shapefile',
          overwrite_layer = TRUE, check_exists = TRUE)
