@@ -358,7 +358,7 @@ composition.plots <- base.map +
             legend.position = 'none')
             
 #  This needs to get fixed so that the strip.background = element_rect(fill = c('#ffff99', '#80b1d3', rep('#bebada', 5), rep('#8dd3c7', 8))))
-
+ggsave(composition.plots, filename = 'figures/fig5_compositionplots.tiff', dpi = 300, width = 15, height = 9)
 rm(compplots)
 
 ```
@@ -566,19 +566,19 @@ PLS Data |   `r cl.tab$basa[5]` | `r cl.tab$basa[4]` | `r cl.tab$basa[2]` | `r c
 
 **Figure 6**.  *Proportional distribution of Plant Functional Types (PFTs) in the upper Midwest from PLS data, for broadleaved deciduous trees (BDT), needleleaved deciduous trees (NDT), and needleleaved evergreen trees (NET). Distributions are shown as proportions relative to total basal area, total biomass, and composition (*Figure 3*).  The grassland PFT is mapped onto non-tree cells with the assumption that if trees were available surveyors would have sampled them.*
 
-**Figure 7**.  *Forest classification using Ramankutty and Foley [-@ramankutty1999estimating] estimates and those using baseline PLS data (aggregated to PFTs for equivalence) with the Haxeltine and Prentice [-@haxeltine1996biome3] classification scheme (Table 2).  Colors represent forest classes for the region as defined by Ramankutty and Foley [-@ramankutty1999estimating]: (Pr) Prairie; (Sa) Savanna; (TD) Temperate deciduous; (TE) Temperate evergreen; (MW) Mixedwood forest.*
+**Figure 7**. *The relationship between average stem density, total basal area and biomass values in the PLS and FIA datasets. Stem density and total basal area are higher in the FIA than in the PLS, however average cell biomass is higher in the PLS.*
 
-**Figure 8**. *The relationship between average stem density, total basal area and biomass values in the PLS and FIA datasets. Stem density and total basal area are higher in the FIA than in the PLS, however average cell biomass is higher in the PLS.*
+**Figure 8**. *Minimum dissimilarity maps.  Cells with a high minimum dissimilarity lack close compositional analogs to other cells in the reference dataset.  The top two panels show compositional heterogeneity within the PLS and FIA data, while the bottom two panels identify PLS locations with no close analogs in the FIA data (PLS to FIA) and FIA locations with no close PLS analogs (FIA to PLS).  More than half (55%) of points in the PLS have minimum dissimilarities to the FIA data that are greater than the 95 percentile for minimum dissimilarities within either the FIA or PLS datasets.*
 
-**Figure 9**. *Minimum dissimilarity maps.  Cells with a high minimum dissimilarity lack close compositional analogs to other cells in the reference dataset.  The top two panels show compositional heterogeneity within the PLS and FIA data, while the bottom two panels identify PLS locations with no close analogs in the FIA data (PLS to FIA) and FIA locations with no close PLS analogs (FIA to PLS).  More than half (55%) of points in the PLS have minimum dissimilarities to the FIA data that are greater than the 95 percentile for minimum dissimilarities within either the FIA or PLS datasets.*
-
-**Figure 10**.  *Transects across the region show clear changes in the forest ecotones from one region to another.  Fitted curves represent smoothed estimates across the transects using Generalized Additive Models using beta fits.*
+**Figure 9**.  *Transects across the region show clear changes in the forest ecotones from one region to another.  Fitted curves represent smoothed estimates across the transects using Generalized Additive Models using beta fits.*
 
 ***
 ```{r fig1_output,echo=FALSE,warning=FALSE,message=FALSE,fig.width=4,fig.height = 3,dpi=300, dev=c('png','postscript','tiff')}
 
 val.plot <- data.frame(xyFromCell(dens, 1:ncell(dens)),
                        dens = !is.na(getValues(dens)))
+
+val.plot$dens[!val.plot$dens] <- NA
 
 fig1plot <- base.map +
   geom_tile(data = val.plot, 
@@ -639,15 +639,7 @@ out.map
 ```
 
 ***
-
-```{r fig7_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=7, fig.height = 5, dpi=300, dev=c('png','postscript','tiff')}
-
-forest.class
-
-```
-
-***
-```{r fig8_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 3, dpi=300, dev=c('png','postscript','tiff')}
+```{r fig8_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 7, dpi=300, dev=c('png','postscript','tiff')}
 
 grid.arrange(dens.fp, basa.fp, biom.fp, biomass.comp, nrow = 2)
 ```
