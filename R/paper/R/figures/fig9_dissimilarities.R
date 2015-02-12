@@ -1,12 +1,17 @@
-histogram <- ggplot(distances, aes(x = dist, fill = class)) + 
+histogram <- ggplot(distances, aes(x = dist, linetype = class, size = class)) + 
   geom_density(alpha = 0.5) +
   xlab('Composition Dissimilarity') +
   ylab('Density') +
   scale_x_continuous(expand = c(0,0)) +
   scale_y_sqrt(expand = c(0,0)) +
+  scale_linetype_manual(values = c(1, 1, 2, 2)) +
+  scale_size_manual(values = c(1, 2, 1, 2)) +
   theme_bw() +
-  theme(axis.text = element_text(family='serif', size = 14),
-        axis.title = element_text(family='serif', size = 16, face = 'bold'))
+  theme(axis.text = element_text(family='serif', size = 20),
+        axis.title = element_text(family='serif', size = 24, face = 'bold'),
+        legend.position = 'none')
+
+ggsave(histogram, filename = paste0('figures/fig9_densities_v', version, '.tiff'), width = 9, height = 4, dpi = 300)
 
 plss.dissim <- distances
 

@@ -24,4 +24,8 @@ out.map <- base.map +
   facet_wrap(~measure + pfts, nrow = 3) +
   theme_bw() +
   theme(axis.text.x = element_blank(),
-        axis.text.y = element_blank())
+        axis.text.y = element_blank(),
+        strip.text = element_text(family='serif', size = 18, face = 'bold'),
+        legend.position = 'none')
+
+ggsave(out.map, filename = paste0('figures/fig6_pftComp_v', version, '.tiff'), dpi = 300, width = 7, height = 7)

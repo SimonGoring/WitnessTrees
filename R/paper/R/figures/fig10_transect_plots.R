@@ -78,6 +78,8 @@ trans.plot <- ggplot(transects, aes(x = cell,
         legend.text = element_text(family='serif', size = 14),
         strip.text =  element_text(family='serif', size = 18, face = 'bold')) 
 
+ggsave(trans.plot, filename = paste0('figures/fig10_transectplot_v', version, '.tiff'), dpi = 300, width = 10, height = 6)
+
 colnames(transects)[3] <- 'taxon'
 transects$taxon <- as.character(transects$taxon)
 
