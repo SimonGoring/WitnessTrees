@@ -11,7 +11,7 @@ indiana$L1.tree2 <- gsub('^[ \t]+|[ \t]+$', '', indiana$L1.tree2)
 indiana$L1.tree2 <- gsub('[ ]{2}', ' ', indiana$L1.tree2)
 
 #  Conversion table load and convert.
-taxon.conv <- read.csv('data/input/relation_tables/fullpaleon_conversion_v0.3_1.csv', header=TRUE, stringsAsFactors = FALSE)
+taxon.conv <- read.csv('data/input/relation_tables/fullpaleon_conversion_v0.3-2.csv', header=TRUE, stringsAsFactors = FALSE)
 
 taxon.conv[taxon.conv[,6] == '', 6] <- NA
 taxon.conv[taxon.conv[,6] %in% '#N/A', 6] <- 'Other hardwood'

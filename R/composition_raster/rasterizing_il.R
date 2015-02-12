@@ -14,7 +14,7 @@ nd_il$L1.tree2 <- gsub('^[ \t]+|[ \t]+$', '', nd_il$L1.tree2)
 nd_il$L1.tree2 <- gsub('[ ]{2}', ' ', nd_il$L1.tree2)
 
 #  Conversion table load and convert.
-taxon.conv <- read.csv('data/input/relation_tables/fullpaleon_conversion_v0.3_1.csv', header=TRUE, stringsAsFactors = FALSE)
+taxon.conv <- read.csv('data/input/relation_tables/fullpaleon_conversion_v0.3-2.csv', header=TRUE, stringsAsFactors = FALSE)
 
 #  Get rid of the wonky taxon conversions we know about:
 taxon.conv$Level.3a[taxon.conv$Level.3a == '']       <- NA

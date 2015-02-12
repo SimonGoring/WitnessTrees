@@ -2,7 +2,7 @@ library(rgdal)
 
 mich.shape <- readOGR('data/output/southern_MI/so_michigan.shp', 'so_michigan')
 
-taxon.conv <- read.csv('data/input/relation_tables/fullpaleon_conversion_v0.3_1.csv')
+taxon.conv <- read.csv('data/input/relation_tables/fullpaleon_conversion_v0.3-2.csv')
 
 mich.table <- data.frame(rbind(coordinates(mich.shape), coordinates(mich.shape)),
                          taxa = c(as.character(mich.shape@data$species1), 
