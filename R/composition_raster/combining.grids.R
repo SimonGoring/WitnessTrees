@@ -47,6 +47,7 @@ library(reshape2)
 add.to <- function(x, input){
   #  function to take input data and add it to 
   
+  x     <- x[,!colnames(x) %in% 'cell']
   input <- input[,!colnames(input) %in% 'cell']
   
   out.melt <- melt(input, id=c('x', 'y'))
