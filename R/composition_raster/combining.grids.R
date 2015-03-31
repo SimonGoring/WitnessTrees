@@ -7,7 +7,7 @@ source('R/composition_raster/rasterizing_MI.R')
 source('R/composition_raster/rasterizing_IN.R')
 source('R/composition_raster/rasterizing_il.R')
 
-base.rast <- raster('data/input/rasters/numplots_alb.tif')
+base.rast <- raster('data/input/rasters/paleon.unit.alb_01.tif')
 base.rast <- setValues(base.rast, 1:ncell(base.rast))
 
 strip.index <- function(x){
