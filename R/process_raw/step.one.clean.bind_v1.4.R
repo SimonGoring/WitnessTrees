@@ -157,7 +157,7 @@ azimuths <- apply(azimuths, 2, get_angle)
 
 #####  Cleaning Trees:  
 #      Changing tree codes to lumped names:
-spec.codes <- read.csv('data/input/relation_tables/fullpaleon_conversion_v0.3-2.csv', stringsAsFactor = FALSE)
+spec.codes <- read.csv('data/input/relation_tables/fullpaleon_conversion_v0.3-3.csv', stringsAsFactor = FALSE)
 spec.codes <- subset(spec.codes, Domain %in% 'Upper Midwest')
 
 lumped <- data.frame(abbr = as.character(spec.codes$Level.1),
@@ -169,7 +169,7 @@ species.old <- data.frame(as.character(nwmw$SP1),
                           as.character(nwmw$SP4), stringsAsFactors = FALSE)
 
 species <- t(apply(species.old, 1, 
-                   function(x) lumped[match(x, lumped[,1]), 2]))
+                   function(x) lumped[match(tolower(x), tolower(lumped[,1])), 2]))
 
 #  We need to indicate water and remove it.  There are 43495 cells with 'water'
 #  indicated, and another 784 cells with 'missing' data.
@@ -332,6 +332,6 @@ final.data <- final.data[!final.data$species2 %in% c('Water', 'Missing'),]
 
 #  Write the data out as a shapefile.
 writeOGR(final.data, 
-         'data/output/aggregated_midwest/minn.wisc.mich.clean_v1_7.shp', 
-         'minn.wisc.mich.clean_v1_7', 'ESRI Shapefile',
+         'data/output/aggregated_midwest/minn.wisc.mich.clean_v1_8.shp', 
+         'minn.wisc.mich.clean_v1_8', 'ESRI Shapefile',
          overwrite_layer = TRUE, check_exists = TRUE)

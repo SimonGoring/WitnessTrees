@@ -30,7 +30,7 @@ canada <- fortify(canada, region = 'NAME')
 #  This file was processed in the first file in this chain.
 #  replace with 'minn.wisc.mich.clean_v1_2'
 
-used.data <- readOGR('../../data/output//aggregated_midwest//minn.wisc.mich.clean_v1_7.shp', 'minn.wisc.mich.clean_v1_7')
+used.data <- readOGR('../../data/output//aggregated_midwest//minn.wisc.mich.clean_v1_8.shp', 'minn.wisc.mich.clean_v1_8')
 if(is.na(proj4string(used.data))) proj4string(used.data) <- CRS('+proj=longlat +ellps=WGS84')
 
 data.box <- bbox(used.data)

@@ -225,7 +225,9 @@ if(paste0('distances_v', version, '.Rds') %in% list.files('../../data/output/agg
   distances <- rbind(fia.dist, 
                      plss.dist, 
                      fia.plss.dist, 
-                     plss.fia.dist)           
+                     plss.fia.dist)  
+  
+  distances$cell <- extract(num.rast, distances[,1:2])
   
   saveRDS(distances, file = paste0('../../data/output/aggregated_midwest/distances_v', version, '.Rds'))
   rm(plss.dist, fia.dist, plss.fia, fia.plss)

@@ -82,7 +82,7 @@ Jason S. McLachlan^8^
 
 ```{r dataLoad, echo = FALSE, message=FALSE, results = 'hide', warning=FALSE}
 
-version <- '0.9-3'
+version <- '0.9-4'
 
 #  Choose one of the two below (3175 is the Albers, 4326 is lat/long):
 model.proj <- '+init=epsg:3175'
@@ -117,9 +117,7 @@ The composition, demography, and structure of forests in eastern North America h
 
 At a regional scale many forests in the upper Midwest (*i.e.*, Minnesota, Wisconsin and Michigan) now have decreased species richness and functional diversity relative to forests of the pre-Euro-American settlement (hereafter pre-settlement) period [@schulte2007homogenization; @hanberry2012comparison; @li2014drivers] due to near complete logging. For example, forests in Wisconsin are in a state of regrowth, with an unfilled carbon sequestration potential of 69 TgC [@rhemtulla2009historical] as a consequence of these extensive land cover conversions and subsequent partial recovery. The upper Midwestern United States represents a unique ecological setting, with multiple major ecotones, including the prairie-forest boundary, historic savanna, and the tension zone between southern deciduous forests and northern evergreen forests. The extent to which these ecotones have shifted, and their extent both prior to and following settlement at a regional scale is of critical importance to biogeochemical and biogeophysical vegetation-atmosphere feedbacks [@matthes_inprep], carbon sequestration [@rhemtulla2009historical], and regional management and conservation policy [@radeloff2000historical;@fritschle2008reconstructing;@knoot2010state;@gimmi2013assessing].
 
-At both the local and state-level land use change has been shown to affect both the structure and composition for forests in the Midwestern United States [e.g. @schulte2007homogenization; @hanberry2012homogenization]. Both homogenization and shifts in overall forest composition are evident, but the spatial extent of this effect is less well understood.  In the absence of broader spatial coverage at a fine scale it is difficult to 
-
-has altered species co-occurance and affects our ability to understand individual or community change at longer time scales is unknown: Are we measuring contemporary forests that have no past analogs to predict a future with neither past nor contemporary analogs? Given evidence of forest homogenization [@schulte2007homogenization], at what scales is this homogenization ocuring?  How has pre-settlement forest change affected ecotones across the region? Pockets of primary forest originating before the settlement period exist in the Midwestern United States and have been heavily studied by ecologists [e.g., @woods2000dynamics], but because land use has been both extensive and strongly selective, these pockets are an incomplete and unrepresentative sample of past vegetation.
+At land use change at the local and state-level has been shown to affect both the structure and composition for forests in the Midwestern United States [e.g. @schulte2007homogenization; @hanberry2012comparison]. Homogenization and shifts in overall forest composition are evident, but the spatial extent and structure of this effect is less well understood.  Studies in Wisconsin have shown differential patterns of change in the mixedwood and evergreen dominated north versus the southern driftless and hardwood south.  Does this pattern of differential change extend to Minnesota and Michigan? To what extent are land-use effects common across the region, and where are responses ecozone specific? In particular has the extent of homogenization [@schulte2007homogenization] resulted in novel forest assemblages relative to pre-settlement baselines across the region, and the loss of pre-settlement forest types?  Is the spatial distribution of these novel and lost forest types overlapping, or do they have non-overlapping extents?
 
 Modern forest structure and composition data [e.g., from the United States Department of Agriculture - Forest Service's Forest Inventory and Analysis National Program, FIA; @gray2012forest] play a ubiquitous role in forest management, conservation, carbon accounting, and basic research on forest ecosystems and community dynamics.  These recent surveys (the earliest FIA surveys began in the 1930s) can be extended with longer-term historical data to understand how forest composition has changed since Euro-American settlement. The Public Land Survey was largely carried out ahead of mass EuroAmerican settlement west and south of Ohio to provide for delineation and sale of the public domain beyond the original East Coast states (Stewart 1935, White 1983).  Therefore ecological data can be derived that provides broad coverage of the United States prior to large-scale Euro-American settlement ***(add references across the region)***[@almendinger1996minnesota;@liu2011broadscale].  In general, FIA datasets are systematically organized and widely available to the forest ecology and modeling community, whereas most PLS data compilations are of local or, at most, state-level extent. This absence of widely available data on settlement-era forest composition and structure limits our ability to understand and model the current and future processes governing forest dynamics at broader, regional scales. For example, distributional models of tree species often rely upon FIA or other contemporary observational data to build species-climate relationships that can be used to predict potential range shifts [@iverson1998predicting;@iverson2013tree]. If land use change affects the shape of the realized niche then species distribution modeling, based on correlative models relating current extent to local climatic and edaphic factors, may have much weaker ability to interpret species responses to climate change than model diagnostics might indicate.  Indeed, re-organization following land use change may result in shifts in species co-occurance, and the development of novel ecosystems. If broad-scale reorganization is the norm following Eruo-American settlement, then the conditions we have been studying as ecologists for the past century may indeed be novel relative to the 'pristine' conditions of the pre-settlement era.
 
@@ -237,7 +235,7 @@ rm(quadrant)
 
 ```
 
-The original PLS dataset contains `r length(used.data)` corner points (excluding line and meander points), with `r sum(regexpr('wi', used.data$Township)>0)` points from Wisconsin, `r sum(regexpr('mn', used.data$Township)>0)` points from Minnesota and `r (sum(regexpr('mi', used.data$Township)>0))` points from Michigan.  Standardizing data and accounting for potential outliers, described above, removed approximately 1.5% points from the dataset, yielding a final total of `r sum(!is.na(estimates[1]]))` points with estimates used in our analysis.
+The original PLS dataset contains `r length(used.data)` corner points (excluding line and meander points), with `r sum(regexpr('wi', used.data$Township)>0)` points from Wisconsin, `r sum(regexpr('mn', used.data$Township)>0)` points from Minnesota and `r (sum(regexpr('mi', used.data$Township)>0))` points from Michigan.  Standardizing data and accounting for potential outliers, described above, removed approximately 1.5% points from the dataset, yielding a final total of `r sum(!is.na(estimates[[1]]))` points with estimates used in our analysis.
 
 Rasterizing the PLS dataset to the Albers 64km^2^ grid produces `r p(sum(!is.na(as.vector(count.plot))))` raster cells with data.  Each cell contains between `r min(getValues(count.plot), na.rm=TRUE)` and `r max(getValues(count.plot), na.rm=TRUE)` corner points, with a mean of `r round(mean(getValues(count.plot), na.rm=TRUE), 0)` ($\sigma$ = `r round(sd(getValues(count.plot), na.rm=TRUE), 0)`) and a median of `r median(getValues(count.plot), na.rm=TRUE)` corners (Supplement 3).  Cells with a low number of points were mainly near water bodies or along political boundaries such as the Canadian/Minnesota border, or southern Minnesota and Wisconsin borders.  Only `r round(sum(getValues(count.plot) < 10, na.rm=TRUE) / sum(!is.na(getValues(count.plot)), na.rm=TRUE) * 100, 0)`% of cells have fewer than 10 points per cell.
 
@@ -394,7 +392,10 @@ source('R/figures/figure6_comp_prep.R')
 source('R/composition.clusters.R')
 
 factor.vals <- factor(c(getValues(base), 
-                        getValues(dens.class), getValues(basal.class), getValues(biom.class)))
+                        getValues(dens.class), 
+                        getValues(basal.class), 
+                        getValues(biom.class)))
+
 levels(factor.vals) <- c('TN', 'TD', 'MW', 'Sa', 'Pr')
 factor.vals <- factor(factor.vals, levels = c('Sa', 'Pr', 'TN', 'TD', 'MW'))
 
@@ -404,7 +405,7 @@ plot.frame <- data.frame(xyFromCell(base, 1:ncell(base)),
                          model = factor(rep(c('RK1999', 'Density', 'Basal Area', 'Biomass'), each = ncell(base)),
                                         levels = c('Density', 'RK1999', 'Basal Area', 'Biomass')))
 
-plot.frame <- plot.frame[plot.frame$model %in% c('RK1999', 'Basal Area'),]
+plot.frame <- plot.frame[plot.frame$model %in% c('Density'),]
 
 forest.class <- base.map +
         geom_tile(data = plot.frame, aes(x = x, y = y, fill = values)) +
@@ -434,8 +435,30 @@ diff.ts <- list(density = t.test(getValues((fiadens)) - getValues((dens))),
 
 Modern forests (FIA) have higher stem densities (`r diff.ts[[1]]$estimate` stems/ha, $t_{1,5177}$ = `r diff.ts[[1]]$statistic`, $p$ < 0.01) and basal areas (`r diff.ts[[2]]$estimate` m^2^/ha, $t_{1,5177}$ = `r diff.ts[[2]]$statistic`, $p$ < 0.01) than PLS forests, but overall, lower biomass (`r diff.ts[[3]]$estimate` Mg/ha, $t_{1,5177}$ = `r diff.ts[[3]]$statistic`, $p$ < 0.01) than historical forests (Figure 7). We use only point pairs where both FIA and PLS data occur since non-forested regions are excluded from the FIA and as such . The similarity in biomass despite lower stem density and total basal area in the PLS data is surprising. Two likely factors are shifts in allometric scaling associated with changes in species composition, or a higher mean diameter of PLS trees (Figure 7d).
 
-The FIA appears to have higher average diameters than the PLS in northern regions, where the relationship between increases in diameter and increases in biomass is expected to be lower because of allometric scaling.  Mixedwood and Temperate Deciduous forests in the east have higher average diameters during the PLS than in the FIAin the Mixedwood and Temperate Deciduous forests of the east (Figure 7d) may be the mechanism by which low density and basal area produce roughly equivalent biomass estimates between the FIA and PLS.  Differences between FIA and PLS data in sampling design are unlikely to be a factor; these differences are expected to affect how these datasets sample local- to  landscape-scale heterogeneity, but should not affect the overall trends between datasets. Differences in variability introduce noise into the relationship, but given the large number of samples used here, the trends should be robust.
+```{r diamdiff, echo = FALSE, message = FALSE, warning=FALSE}
+  diam.diff <- t.test(getValues(mdiam) - getValues(fiadiam))
 
+  diam.diff.fia <- t.test((getValues(mdiam) - getValues(fiadiam))[getValues(mdiam) < getValues(fiadiam)])
+                          
+  diam.diff.pls <- t.test((getValues(mdiam) - getValues(fiadiam))[getValues(mdiam) > getValues(fiadiam)])
+
+  ranger <- ninefive(getValues(mdiam) - getValues(fiadiam))
+
+  cor.tests <- list(to.pls = cor.test((getValues(mdiam) - getValues(fiadiam)),
+                                       getValues(mdiam), 
+                                       use = 'pairwise.complete.obs'),
+                    to.fia = cor.test((getValues(mdiam) - getValues(fiadiam)),
+                                       getValues(fiadiam), 
+                                       use = 'pairwise.complete.obs'))
+
+  biom.test <- cor.test((getValues(mdiam) - getValues(fiadiam)),
+                                       getValues(biomass), 
+                                       use = 'pairwise.complete.obs')
+```
+
+The PLS has a lower overall mean diameter than the FIA ($delta_{diam}$ = `r round(diam.diff$estimate, 2)` cm, 95%CI from `r round(ranger[1], 2)` to `r round(ranger[2], 2)`cm). FIA diameters are higher than PLS diameters in the northwestern parts of the domain (on average `r round(diam.diff.fia$estimate,2)` cm higher), overlapping almost exactly with regions where we have shown low biomass-high density stands (Figure 4). At the same time, regions with high biomass and low density stands, in northeastern Wisconsin, and the Upper and Lower Peninsulas of Michigan, had higher average diameters during the PLS than in the FIA, on average `r round(diam.diff.pls$estimate,2)` cm higher.  Thus we are seeing an overal increase in tree size in the sub-boreal region and a decrease in temperate mixedwood forests, where we find tree species with much higher dbh:biomass ratios.  This is coupled with declining variance in DBH across the domain (from `r round(var(getValues(fiadiam), na.rm=TRUE), 2)` cm during the PLS to `r round(var(getValues(fiadiam), na.rm=TRUE), 2)` cm in the FIA).  Thus, the mechanism by which low density and basal area produce roughly equivalent biomass estimates between the FIA and PLS is likely due to the differential impacts of land clearence and subesequent forest management in the south east vs the northwest. The loss of high biomass southern hardwood forests is balanced by higher biomass in the northeast due to fire supression and regeneration of hardwoods in the northwest. Declining diameters from the PLS to FIA are most strongly associated with higher abundances of poplar, ironwood and oak, while declining diameters are associated with maple and hemlock, further supporting the assertion that much of the loss in diameter, and, subsequently biomass, is occuring in southeastern mixedwood/hardwood forest, while diameter and biomass increases are occuring in the northwest.
+
+Differences between FIA and PLS data in sampling design are unlikely to be a factor; these differences are expected to affect how these datasets sample local- to  landscape-scale heterogeneity, but should not affect the overall trends between datasets. Differences in variability introduce noise into the relationship, but given the large number of samples used here, the trends should be robust.
 
 ### Compositional Changes Between PLS and FIA Forests 
 
@@ -454,18 +477,103 @@ fia.PLS.quant <- quantile(distances$dist[distances$class %in% c('FIA-PLSS')],
 
 diffs <- (1 - (c(findInterval(intern.quant[96], PLS.fia.quant) - 1, findInterval(intern.quant[96], fia.PLS.quant) - 1)/100)) * 100
 
-PLS.na <- cor(comp.grid, distances$dist[distances$class == 'PLSS-FIA'] > PLS.fia.quant[95])
+PLS.na <- cor(comp.grid, distances$dist[distances$class == 'PLSS-FIA'] > intern.quant[95])
 
-fia.na <- cor(fia.aligned, distances$dist[distances$class == 'FIA-PLSS'] > fia.PLS.quant[95])
-
+fia.na <- cor(fia.aligned[agg.basa$cell %in% distances$cell[distances$class == 'FIA-PLSS'],], distances$dist[distances$class == 'FIA-PLSS'] > intern.quant[95])
 
 ```
 
-Both the PLS- and FIA-era compositional data show similar patterns of within-dataset dissimilarity, with the highest dissimilarities found in central Minnesota and northwestern Wisconsin (Figure 8b,c).  High within-PLS dissimilarities (Figure 8b) are associated with high proportions of maple, birch and fir (Figure 5).  High within-FIA dissimilarities are associated with high proportions of hemlock, cedar and fir.  Dissimilarity values in the FIA dataset are less spatially structured than in the PLSS.  Moran's I for dissimilarities within the FIA ($I_{FIA}$ = `r moran.stats[1]`, p < 0.001) are lower than the dissimilarities within the PLSS ($I_{PLSS}$ = `r moran.stats[2]`, p < 0.001), suggesting lower spatial autocorrelation in the FIA dataset. Cells with identical pairs represent `r round(sum(distances$dist[distances$class=='PLSS'] == 0) / sum(distances$class=='PLSS')*100, 1)`% of the PLS cells and `r round(sum(distances$dist[distances$class=='FIA'] == 0) / sum(distances$class=='FIA')*100, 1)` of FIA cells.  Identical cells in the PLS are largely located along the southern margin and most (`r round(sum(distances$dist[distances$class=='PLSS'] == 0 & comp.grid[,'Oak'] == 1)/sum(distances$dist[distances$class=='PLSS'] == 0)*100, 0)`%) are composed entirely of oak.  Cells in the FIA with identical neighbors are composed of either pure oak (`r round(sum(distances$dist[distances$class=='FIA'] == 0 & fia.aligned[,'Oak'] == 1)/sum(distances$dist[distances$class=='FIA'] == 0)*100, 0)`%), pure poplar (`r round(sum(distances$dist[distances$class=='FIA'] == 0 & fia.aligned[,'Poplar'] == 1)/sum(distances$dist[distances$class=='FIA'] == 0)*100, 0)`%) or pure ash (`r round(sum(distances$dist[distances$class=='FIA'] == 0 & fia.aligned[,'Ash'] == 1)/sum(distances$dist[distances$class=='FIA'] == 0)*100, 0)`%).
+Both the PLS- and FIA-era compositional data show similar patterns of within-dataset dissimilarity, with the highest dissimilarities found in central Minnesota and northwestern Wisconsin.  High within-PLS dissimilarities are associated with high proportions of maple, birch and fir while high within-FIA dissimilarities are associated with high proportions of hemlock, cedar and fir.  Dissimilarity values in the FIA dataset are less spatially structured than in the PLSS.  Moran's I for dissimilarities within the FIA ($I_{FIA}$ = `r moran.stats[1]`, p < 0.001) are lower than the dissimilarities within the PLSS ($I_{PLSS}$ = `r moran.stats[2]`, p < 0.001), suggesting lower spatial autocorrelation in the FIA dataset. Cells with identical pairs represent `r round(sum(distances$dist[distances$class=='PLSS'] == 0) / sum(distances$class=='PLSS')*100, 1)`% of the PLS cells and `r round(sum(distances$dist[distances$class=='FIA'] == 0) / sum(distances$class=='FIA')*100, 1)` of FIA cells.  Identical cells in the PLS are largely located along the southern margin and most (`r round(sum(distances$dist[distances$class=='PLSS'] == 0 & comp.grid[,'Oak'] == 1)/sum(distances$dist[distances$class=='PLSS'] == 0)*100, 0)`%) are composed entirely of oak.  Cells in the FIA with identical neighbors are composed of either pure oak (`r round(sum(distances$dist[distances$class=='FIA'] == 0 & fia.aligned[,'Oak'] == 1)/sum(distances$dist[distances$class=='FIA'] == 0)*100, 0)`%), pure poplar (`r round(sum(distances$dist[distances$class=='FIA'] == 0 & fia.aligned[,'Poplar'] == 1)/sum(distances$dist[distances$class=='FIA'] == 0)*100, 0)`%) or pure ash (`r round(sum(distances$dist[distances$class=='FIA'] == 0 & fia.aligned[,'Ash'] == 1)/sum(distances$dist[distances$class=='FIA'] == 0)*100, 0)`%).
 
 There is a small but significant relationship ($F_{1,5964}$= `r round(anova(fia.num.model)$'F value', -1)`, p < 0.001) between the number of FIA plots and within-FIA dissimilarity. The relationship accounts for 10% of total variance and estimates an increase of $\delta_{d}$ = `r coef(fia.num.model)[2]` for every FIA plot within a cell. This increase represents only `r round(coef(fia.num.model)[2]/range(fia.plot.num$dists)[2]*100,1)`% of the total range of dissimilarity values for the FIA data. There is a gradient of species richness that is co-linear with the number of FIA plots within a cell, where plot number increases from open forest in the south-west to closed canopy, mixed forest in the Upper Peninsula of Michigan. Hence, differences in within- and between-cell variability between the PLS and FIA datasets seem to be having only a minor effect on these regional-scale dissimilarity analyses.
 
-We define no-analog communities as those whose nearest neighbour is beyond the 95%ile for dissimilarities within a particular dataset. In the PLS dataset, forests that have no modern analogs are defined here as lost forests, while forest types in the FIA data with no past analogs are defined as novel. More than `r diffs[1]`% of PLS sites have no analogue in the FIA dataset ('lost forests'; PLS-FIA dissmimilarity, Figure 8d), while `r diffs[2]`% of FIA sites have no analogue in the PLS data ('novel forests'; FIA-PLS dissimilarity, Figure 8e). Lost forests show strong spatial coherence, centered on the "Tension Zone" [@curtis1959vegetation], the ecotone between deciduous forests and hemlock-dominated mixed forest (Figure 5). The distribution of novel ecosystems (Figure 8e) is spatially diffuse and appears to be shifted north of the lost forests distribution. Lost forests contain higher proportions of beech (r = `r round(PLS.na['Beech',], 2)`), ironwood (r = `r round(PLS.na['Ironwood',], 2)`), and hemlock (r = `r round(PLS.na['Hemlock',], 2)`) than the average PLS forest. Pine and oak show no significant relationship to novelty because they are present throughout the region. This analysis suggests that the loss of particular forest types associated with post-settlement land use was concentrated in mesic deciduous forests and the ecotonal transition between southern and northern hardwood forests.
+We define no-analog communities as those whose nearest neighbour is beyond the 95%ile for dissimilarities within a particular dataset. In the PLS dataset, forests that have no modern analogs are defined as "lost forests", while forest types in the FIA with no past analogs are defined as "novel forests". More than `r diffs[1]`% of PLS sites have no analogue in the FIA dataset ('lost forests'; PLS-FIA dissmimilarity, Figure 8c), while `r diffs[2]`% of FIA sites have no analogue in the PLS data ('novel forests'; FIA-PLS dissimilarity, Figure 8d). Lost forests show strong spatial coherence, centered on the "Tension Zone" [@curtis1959vegetation], the ecotone between deciduous forests and hemlock-dominated mixed forest (Figure 5).
+
+```{r quantifyingLost_n_found, echo = FALSE, warning=FALSE, message=FALSE, results='hide'}
+
+pls.types <- comp.grid[distances$dist[distances$class == 'PLSS-FIA'] > intern.quant[95],]
+
+pls.points <- distances[distances$dist > intern.quant[95] & distances$class == 'PLSS-FIA', 1:2]
+
+#  Matching the FIA points seems to be a bit more difficult than I anticipated:
+novel.distances <- distances[distances$class == 'FIA-PLSS' & distances$dist > intern.quant[95]  & distances$cell %in% count.table$cell, ]
+
+fia.types <- fia.aligned[match(novel.distances$cell, agg.basa$cell),]
+fia.points <- novel.distances[,1:2]
+
+fia.points <- fia.points[fia.types$Willow < 1,]
+fia.types <- fia.types[fia.types$Willow < 1,]
+
+#  About 5 clusters for each taxon:
+pls.types.clust <- kmeans((pls.types), centers = 5)
+fia.types.clust <- kmeans((fia.types), centers = 5)
+
+pls.forest.types <- apply(pls.types.clust$centers, 1, 
+                          function(x){
+                            paste(names(sort(x[x>.1],decreasing=TRUE)), collapse='-')
+                          })
+
+fia.forest.types <- apply(fia.types.clust$centers, 1, 
+                          function(x){
+                            paste(names(sort(x[x>.1],decreasing=TRUE)), collapse='-')
+                          })
+
+pls.dominants <- data.frame(types = pls.forest.types, 
+                            pct   = 100 * (table(pls.types.clust$cluster) / length(pls.types.clust$cluster)),
+                            tot   = 100 * (table(pls.types.clust$cluster) / nrow(comp.grid)),
+                            stringsAsFactors = FALSE)
+
+fia.dominants <- data.frame(types = fia.forest.types, 
+                            pct   = 100 * (table(fia.types.clust$cluster) / length(fia.types.clust$cluster)),
+                            tot   = 100 * (table(fia.types.clust$cluster) / nrow(fia.aligned)),
+                            stringsAsFactors = FALSE)
+
+
+pls.lost <- SpatialPointsDataFrame(coords = pls.points, 
+                                   data   = data.frame(type = pls.types.clust$cluster,
+                                                       class = pls.dominants[pls.types.clust$cluster,1]),
+                                   proj4string = CRS('+init=epsg:3175'))
+
+fia.gain <- SpatialPointsDataFrame(coords      = fia.points, 
+                                   data   = data.frame(type = fia.types.clust$cluster,
+                                                       class = fia.dominants[fia.types.clust$cluster,1]),
+                                   proj4string = CRS('+init=epsg:3175'))
+
+writeOGR(pls.lost, 
+         dsn = paste0('../../data/output/wiki_outputs/mapped_lost_v',version,'.shp'),
+         layer = paste0('mapped_lost_v',version),
+         driver = 'ESRI Shapefile', overwrite=TRUE)
+
+writeOGR(fia.gain, 
+         dsn = paste0('../../data/output/wiki_outputs/mapped_gain_v',version,'.shp'),
+         layer = paste0('mapped_gain_v',version),
+         driver = 'ESRI Shapefile', overwrite=TRUE)
+
+#  The problem with k-means is that because there's a random start the order can change.
+#  So we need to do something:
+
+pls.dominants <- pls.dominants[order(pls.dominants[,3], decreasing = TRUE),]
+fia.dominants <- fia.dominants[order(fia.dominants[,3], decreasing = TRUE),]
+
+```
+
+Lost forests are drawn from across the domain, and show strong ecological and spatial coherence (Figure 8c).  
+
+Forest classes generally fall into five classes: `r pls.dominants[1,1]` accounts for `r round(pls.dominants[1,3],1)`% of all lost forests and `r round(pls.dominants[1,5],2)`% of the total region. This forest type is largely found in northern Minnesota, extending southward to central Minnesota and into Wisconsin and along the Upper Peninsula of Michigan, as well as in scattered locations on the Lower Peninsula of Michigan.  The forest likely represents a mesic to hydric forest assemblage.  Modern forests overlapping this lost type are largely composed of poplar, oak and maple. `r pls.dominants[2,1]` accounts for `r round(pls.dominants[2,3],1)`% of all lost forests and `r round(pls.dominants[2,5],2)`% of the total region.  The region is centerd largely within savanna and parairie forest margin, both in south-central Minnesota and in eastern Wisconsin, but, interestingly is largely absent from the Driftless area of southwestern Wisconsin. This lost forest type has been predominantly replaced by oak, ash and maple.  Within these forests oak has increased (from 18 - 24%) while elm has declined (from 18% to 10%).
+
+`r pls.dominants[3,1]` accounts for `r round(pls.dominants[3,3],1)`% of all lost forests and `r round(pls.dominants[3,5],2)`% of the total region. This forest covers portions of the Upper Peninsula and the western Lower Peninsula of Michigan, as well as portions of north central Wisconsin.  In these forests hemlock has declined from 26% to only 4%, replaced by maple (increasing from 7% to 22%) and poplar which increases from 2% to 14%. This shift from older forest types to early seral forests is seen in other PLS forests. `r pls.dominants[4,1]` accounts for `r round(pls.dominants[4,3],1)`% of all lost forests and `r round(pls.dominants[4,5],2)`% of the total region. This forest type was likely dominated by late seral yellow birch (a mean of 26% composition, declining to 9%), replaced largely by maple (from 15 - 25%).  Poplar increases from 2% to 14% in the FIA, again indicating a shift to earlier seral forests in the FIA.  Hemlock is almost entirely lost from the forests, declining from 12% to 3% in the FIA.
+
+Lastly, `r pls.dominants[5,1]` accounts for `r round(pls.dominants[5,3],1)`% of all lost forests and `r round(pls.dominants[5,5],2)`% of the total region. This forest type is found exclusively on the central, western shore of Lake Michigan and in the Lower Peninsula, in part due to the limited geographic range of Beech in the PLS dataset (Figure 5).  Beech is almost entirely excluded from the modern forests in this region, declining from a PLS mean of 36% to an FIA mean of 4%. Pine in the region increases from 9% to 16%, while maple increases from 14 - 24%.
+
+On average lost forests contain higher proportions of ironwood (r = `r round(PLS.na['Ironwood',], 2)`), beech (r = `r round(PLS.na['Beech',], 2)`), birch  (r = `r round(PLS.na['Birch',], 2)`) and hemlock (r = `r round(PLS.na['Hemlock',], 2)`) than the average PLS forest, and lower proportions of oak (r = `r round(PLS.na['Oak',], 2)`), poplar (r = `r round(PLS.na['Poplar',], 2)`), and pine (r = `r round(PLS.na['Pine',], 2)`).
+
+The distribution of novel ecosystems (Figure 8d) is spatially diffuse relative the lost forest of the PLS and the forest types are dominated by monotypic forests. FIA novel forest types have a more uneven distribution in proportion than the PLS lost forests. 
+
+By far the largest novel forest type is `r fia.dominants[1,1]`, which accounts for `r round(fia.dominants[1,3],1)`% of all novel forests and `r round(fia.dominants[1,5],2)`% of the total region. This forest type is associated with a mean proportion of Maple of 41%, and appears to replace the lost `r round(pls.dominants[4,3],1)` forests, although the distribution of `r round(fia.dominants[1,1],1)` forests is shifted slightly northward and eastward of the lost forests.  On average hemlock has declined significantly, from 18% to 3%, while maple has increased from 17% to 41%, dominating all other taxa.  The next most common taxa in these cells is poplar, with a mean proportion of 9%. `r fia.dominants[2,1]`, accounts for `r round(fia.dominants[2,3],1)`% of all novel forests and `r round(fia.dominants[2,5],2)`% of the total region. The broad distributiof these novel forests makes assigning a past forest type more difficult than for the PLS lost forests, the distribution replaces two classes of past forest, one dominated by oak, the other by mixed hemlock, beech, birch and cedar forests. 
+
+`r fia.dominants[3,1]` forest accounts for `r round(fia.dominants[3,3],1)`% of all novel forests and `r round(fia.dominants[3,5],2)`% of the total region. This forest type is again broadly distributed, replacing mixed pine, birch and hemlock forests.  In these forests poplar in the PLS increases from 7% to 37%, along with maple, which increases from 9% to 16%. Pine declines from 15% to 3% and birch declines from 12% to 6%. This forest type is dominated by early seral taxa (poplar, maple - likely ) and is widely distributed across the region, representing a homogenous, early seral forest type, likely associated with more mesic sites. `r fia.dominants[4,1]` forest accounts for `r round(fia.dominants[4,3],1)`% of all novel forests and `r round(fia.dominants[4,5],2)`% of the total region. This monotypic grouping again shows a pattern of broad distribution across the region, associated with Ash percentages near 40%, with smaller components of maple (10%) and poplar (9%). This forest type generally replaces forests dominated by tamarack (12%), pine (12%) and oak (9%).  Pine declines most severely from the PLS to the FIA era, dropping to 2% in the novel `r fia.dominants[4,1]` forests. `r fia.dominants[5,1]` forest accounts for `r round(fia.dominants[5,3],1)`% of all novel forests and `r round(fia.dominants[5,5],2)`% of the total region.  This forest type spans much of the region, again replacing a number of different forest types, but largely representing a shift in taxa from pine (22%) and hemlock (12%) to pine (31%) and maple (15%). 
+
+Overall, novel forests are associated with higher proportions of maple (r = `r round(PLS.na['Maple',], 2)`), ash (r = `r round(PLS.na['Ash',], 2)`) and basswood (r = `r round(PLS.na['Basswood',], 2)`), and lower proportions of oak  (r = `r round(PLS.na['Oak',], 2)`), and pine  (r = `r round(PLS.na['Pine',], 2)`). This analysis suggests that the loss of particular forest types associated with post-settlement land use was concentrated in mesic deciduous forests and the ecotonal transition between southern and northern hardwood forests, while the gains in novelty were more dispersed.
 
 ```{r fig10_calc, echo = FALSE, message = FALSE, warning=FALSE}
 
@@ -473,9 +581,10 @@ source('R/figures/fig10_transect_plots.R')
 
 ```
 
-To understand how the ecotone has been transformed by post-settlement land use, we constructed two transects of the FIA and PLS data (Figure 10a), and fitted GAM models to genus abundances along these transects. Transect One (T1) runs from northern prairie (in northern Minnesota) to southern deciduous savanna in southeastern Wisconsin, while Transect Two (T2) runs from southern prairie in southwestern Minnesota to northern mixedwood forest in the Upper Peninsula of Michigan.
+To understand how the ecotone has been transformed by post-settlement land use, we constructed two transects of the FIA and PLS data (Figure 10a), and fitted GAM models to genus abundances along these transects. Transect One (T1) runs from northern prairie (in northern Minnesota) to southern deciduous savanna in southeastern Wisconsin (left to right in Figures 10c-f), while Transect Two (T2) runs from southern prairie in southwestern Minnesota to northern mixedwood forest in the Upper Peninsula of Michigan (let to right in Figures 10g-j).
 
-For T1, GAM models show significant differences (using AIC) in the curves fit to tamarack, pine, birch, oak, poplar and spruce between PLS and FIA data, but not for elm, maple or hemlock, which is almost entirely absent along the transect (Figures 10b and c). Pine used to be a major component of the tension zone, reaching proportions of up to 80% in north central Wisconsin (Figure but has declined due to logging and subsequent regeneration of other taxa. Increases in pine in southeastern Wisconsin are likely due to the cultivation of pine plantations in the region. Significant changes in taxon composition between PLS and FIA data are also apparent in T2, particularly for tamarack, pine, birch, maple, oak, and hemlock. Oak is almost completely eliminated from the central to western portions of the transect in the FIA data, largely due to land conversion to agriculture. The eastern portion of T2 shows a shift from a landscape dominated by multiple taxa -- pine, birch, maple and hemlock -- to one dominated by maple, along with lower proportions of poplar (T2, FIA: Figure 9d and e).
+For T1, GAM models show significant differences (using AIC) between time periods in curves for all broadleafed taxa (Figure 10b & c) and for al needleleafed taxa (Figures 10d and e). The PLS curves show the rapid transition in the northwest from oak to poplar dominated open forest that then transitions to a needleleafed forest composed of pine, spruce and tamarack.  
+Pine used to be a major component of the tension zone, reaching proportions of up to 80% in north central Wisconsin (Figure but has declined due to logging and subsequent regeneration of other taxa. Increases in pine in southeastern Wisconsin are likely due to the cultivation of pine plantations in the region. Significant changes in taxon composition between PLS and FIA data are also apparent in T2, particularly for tamarack, pine, birch, maple, oak, and hemlock. Oak is almost completely eliminated from the central to western portions of the transect in the FIA data, largely due to land conversion to agriculture. The eastern portion of T2 shows a shift from a landscape dominated by multiple taxa -- pine, birch, maple and hemlock -- to one dominated by maple, along with lower proportions of poplar (T2, FIA: Figure 9d and e).
 
 Contemporary forests show broader homogenization and increased heterogeneity (evidenced by the lower FIA-FIA Moran's I estimates for near-neighbor distances) at a local scale in the region.  Homogenization is evident across T1, where Bray-Curtis dissimilarity between adjacent cells declines from the PLSS to the FIA ($\delta_{beta}$ = -0.22, $t_{113}$ = -7.93, p<0.001), mirroring declines in the pine barrens between the 1950s and the present [-@li2014drivers].   The PLS shows strong differentiation in the central region of T2 where maple-pine-oak shifts to pine-poplar-birch forest (Figure 9d).  This sharp ecotone is not apparent in the FIA data, which shows gradual and blurred changes in species composition across the ecotone (Figure 9e). $\beta$-diversity along T2 is lower in the FIA than in the PLSS ($\delta_{beta}$ = -0.19, $t_{65}$=-7.34, p < 0.01), indicating higher heterogeneity in the PLS data at the 64 km^2^ meso-scale.
 
