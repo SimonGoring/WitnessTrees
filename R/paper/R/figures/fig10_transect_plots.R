@@ -76,7 +76,10 @@ trans.plot <- ggplot(transects, aes(x = cell,
                                y = value, 
                                linetype = PFT)) +
   geom_line(alpha=0.2, aes(group = variable, color = variable)) +
-  scale_x_continuous(expand = c(0,0)) +
+  scale_x_continuous(expand = c(0,0), 
+                     breaks = c(seq(0, 6e+05, by = 5e+04)),
+                     labels = c('', '', '1e+05', '', '', '', '3e+05',
+                                '', '', '', '5e+05', '', '')) +
   scale_y_sqrt(expand = c(0,0)) +
   #  stat_smooth(se = FALSE, method = 'gam', 
   #              formula = y ~ te(x), family = binomial, size = 2) + 
