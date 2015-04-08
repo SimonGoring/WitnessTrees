@@ -64,3 +64,7 @@ anders.facet <- base.map +
         axis.text.y = element_blank(),
         legend.position = 'top',
         legend.title = element_blank())
+
+writeRaster(dens, paste0('fig_rasters/dens_v', version, '.tif'), overwrite=TRUE)
+writeRaster(basal, paste0('fig_rasters/basal_v', version, '.tif'), overwrite=TRUE)
+writeRaster(biomass, paste0('fig_rasters/biomass_v', version, '.tif'), overwrite=TRUE)

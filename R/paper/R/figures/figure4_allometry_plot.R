@@ -44,4 +44,4 @@ allom.comp <- data.frame(dens = rowSums(density.table[,4:ncol(density.table)], n
                          basal = rowSums(basal.table[,4:ncol(basal.table)]), 
                          sd = basal.sd[match(basal.table$cell, basal.sd$cell),2])
 
-rm(ba.biom, dens.ba, dens.biom, all.pl, )
+rm(ba.biom, dens.ba, dens.biom, all.pl)

@@ -42,11 +42,14 @@ biom.fp <- all.pl(allometry.plot[allometry.plot$vars == "Biomass" ,],
                   expression('PLSS Biomass'~Mg~ha^-1), 
                   expression('FIA Biomass'~Mg~ha^-1))
 
-diff.biom <- (biomass-fiabiom/1000)
-writeRaster(diff.biom, '../../data/output/aggregated_midwest/rasters/diffbiom.tif', overwrite=TRUE)
-
 biomdiff <- data.frame(xyFromCell(biomass, 1:ncell(biomass)),
-                       higher = factor(getValues(biomass-fiabiom/1000)>0))
+                       higher = factor(getValues(biomass-fiabiom/1000)>0),
+                       value  = getValues(biomass-fiabiom/1000))
+
+writeRaster(setValues(dens, biomdiff$value), 
+            filename = paste0('fig_rasters/biomdiff_v', version,'.tiff'),
+            overwrite = TRUE)
+
 biomdiff <- biomdiff[!is.na(biomdiff[,3]),]
 
 biomass.comp <- base.map +
