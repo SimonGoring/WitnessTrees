@@ -4,6 +4,8 @@ library(raster)
 
 indiana <- read.csv('data/raw_data/indiana/ndinpls_v1.3.csv')
 
+#  We need to check to make sure the closest two trees are the first two.
+
 #  Clear leading and trailing spaces.
 indiana$L1.tree1 <- gsub('^[ \t]+|[ \t]+$', '', indiana$L1.tree1)
 indiana$L1.tree1 <- gsub('[ ]{2}', ' ', indiana$L1.tree1)

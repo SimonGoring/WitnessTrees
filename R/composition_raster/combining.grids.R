@@ -30,13 +30,14 @@ strip.index <- function(x){
 indiana <- strip.index(read.csv('data/output/gridded//IllinoisData_v0.2-2.csv'))
 michigan <- strip.index(read.csv('data/output/gridded/so_Michigan_v0.3.csv'))
 illinois <- strip.index(read.csv('data/output/gridded/IndianaData_v0.2.csv'))
-paleon <- strip.index(read.csv('data/output/wiki_outputs//plss_trees_alb_v0.9-3.csv'))
+paleon <- strip.index(read.csv('data/output/wiki_outputs//plss_trees_alb_v0.9-4.csv'))
 
 #  Michigan and PalEON have overlapping cells, we want to excize them from the
 #  Michigan dataset:
 michigan <- michigan[!michigan$cell %in% paleon$cell[rowSums(paleon[,4:ncol(paleon)])>0], ]
 
 length(unique(c(nrow(indiana), nrow(michigan), nrow(illinois))))==1
+
 final.taxa <- unique(c(colnames(paleon), colnames(indiana), colnames(michigan), colnames(illinois)))
 
 output <- matrix(nrow = nrow(paleon), ncol = length(final.taxa))
