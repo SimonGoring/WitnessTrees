@@ -76,8 +76,7 @@ base.map <- ggplot() + #data = rast.table, aes(x = x, y = y)) +
   geom_polygon(data=lakes.subset, aes(x = long, y = lat, group = group), fill = '#ADD8E6') +
   #geom_tile(fill = rast.table$rgb) +
   coord_equal() +
-  scale_x_continuous(limits = ext[1:2], expand=c(0, 0)) +
-  scale_y_continuous(limits = ext[3:4], expand=c(0, 0)) +
+  coord_cartesian(xlim = ext[1:2], ylim=ext[3:4]) +
   theme(axis.text.x = element_blank(),
         axis.text.y = element_blank()) +
   xlab('') + ylab('')

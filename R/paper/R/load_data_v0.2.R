@@ -43,6 +43,8 @@ reproject <- function(x) projectRaster(x, crs=model.proj, method = 'ngb')
 pot.veg <- reproject(pot.veg)
 bbox.new <- bbox(pot.veg)
 
+num.rast <- setValues(pot.veg, 1:ncell(pot.veg))
+
 #  Clean the tree data:
 
 diams <- used.data@data[,4:7]

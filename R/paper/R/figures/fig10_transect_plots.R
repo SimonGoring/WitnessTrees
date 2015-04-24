@@ -126,11 +126,11 @@ for(i in 1:nrow(taxon.spec)){
 }
 
 #  Beta diversity along the gradient:
-comp.min <- comp.grid[plss.cells %in% fia.rows,]
-rownames(comp.min) <- plss.cells[plss.cells %in% fia.rows]
+comp.min <- comp.grid[comp.grid$cell %in% agg.dens$cell,]
+rownames(comp.min) <- comp.grid$cell[comp.grid$cell %in% agg.dens$cell]
 
-fia.min <- fia.aligned[fia.rows%in% plss.cells,]
-rownames(fia.min) <- fia.rows[fia.rows %in% plss.cells]
+fia.min <- fia.aligned[agg.dens$cell %in% comp.grid$cell,]
+rownames(fia.min) <- agg.dens$cell[agg.dens$cell %in% comp.grid$cell]
 
 pls.beta <- betadiver(comp.min, 'sor')
 fia.beta <- betadiver(fia.min, 'sor')
