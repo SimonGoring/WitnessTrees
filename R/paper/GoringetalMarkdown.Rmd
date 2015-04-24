@@ -513,7 +513,7 @@ We define no-analog communities as those whose nearest neighbour is beyond the 9
 
 library(cluster)
 
-pls.types <- comp.grid[distances$dist[distances$class == 'PLSS-FIA'] > intern.quant[95],]
+pls.types <- comp.grid[distances$dist[distances$class == 'PLSS-FIA'] > intern.quant[95],-1]
 
 lost.distances <- distances[distances$dist > intern.quant[95] & distances$class == 'PLSS-FIA',]
 
@@ -522,7 +522,7 @@ pls.points <- distances[distances$dist > intern.quant[95] & distances$class == '
 #  Matching the FIA points seems to be a bit more difficult than I anticipated:
 novel.distances <- distances[distances$class == 'FIA-PLSS' & distances$dist > intern.quant[95]  & distances$cell %in% count.table$cell, ]
 
-fia.types <- fia.aligned[match(novel.distances$cell, agg.basa$cell),]
+fia.types <- fia.aligned[match(novel.distances$cell, agg.basa$cell),-1]
 fia.points <- novel.distances[,1:2]
 
 fia.points <- fia.points[fia.types$Willow < 1,]
