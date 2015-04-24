@@ -9,6 +9,7 @@ library(rgeos)
 library(sp)
 library(spdep)
 library(vegan)
+library(cluster)
 
 #  This code requires you to set the directory to the directory in which you've unpacked the supplement.
 
