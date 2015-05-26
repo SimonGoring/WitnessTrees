@@ -3,14 +3,14 @@
 
 library(rgeos)
 
-umw.domain <- subset(usa, usa$long > xylimits[1] & usa$long < xylimits[2] &
-                       usa$lat > xylimits[3] & usa$lat < xylimits[4])
+umw.domain <- usa#subset(usa, usa$long > xylimits[1] & usa$long < xylimits[2] &
+                  #     usa$lat > xylimits[3] & usa$lat < xylimits[4])
 
 umw.domain$paleon <- factor(umw.domain$id %in% c('Michigan', 'Minnesota', 'Wisconsin'))
 
-can.domain <- subset(canada, canada$long > xylimits[1] & canada$long < xylimits[2] &
-                       canada$lat > xylimits[3] & canada$lat < xylimits[4] &
-                       canada$id == 'Ontario')
+can.domain <- canada#subset(canada, canada$long > xylimits[1] & canada$long < xylimits[2] &
+                    #   canada$lat > xylimits[3] & canada$lat < xylimits[4] &
+                    #   canada$id == 'Ontario')
 
 
 #  Load & clip the base raster.  This is broader than the clipping extent for the 
@@ -75,8 +75,7 @@ base.map <- ggplot() + #data = rast.table, aes(x = x, y = y)) +
   geom_path(data=river.subset, aes(x = long, y = lat, group = group), color = 'blue', alpha = 0.1) +
   geom_polygon(data=lakes.subset, aes(x = long, y = lat, group = group), fill = '#ADD8E6') +
   #geom_tile(fill = rast.table$rgb) +
-  coord_equal() +
-  coord_cartesian(xlim = ext[1:2], ylim=ext[3:4]) +
+  coord_equal(xlim = ext[1:2], ylim=ext[3:4]) +
   theme(axis.text.x = element_blank(),
         axis.text.y = element_blank()) +
   xlab('') + ylab('')

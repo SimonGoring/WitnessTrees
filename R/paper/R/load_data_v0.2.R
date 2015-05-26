@@ -132,6 +132,17 @@ ninefive <- function(x, to.rast = TRUE){
   return(out)
 }
 
-p <- function(x){
-  as.numeric(formatC(x, format = 'g', digits = 3))
+p <- function(x, fixed=FALSE){
+  if(x > 100 & !fixed){
+    #  Round to three significant figures and add a comma:
+    x <- round(x, -(floor(log(x, 10)) - 3))
+    y <- formatC(x, format = 'd', digits = 2, big.mark = ',')
+  }
+  if(x > 100 & fixed){
+    y <- formatC(x, format = 'd', big.mark = ',')
+  }
+  if(x < 100){
+    y <- as.numeric(formatC(x, format = 'g', digits = 3))
+  }
+  return(y)
 }
