@@ -1,28 +1,23 @@
 library(RColorBrewer)
 
 #  Transect axes:
-transects <- list(one = data.frame(x = c(-18093, 631094),
-                                   y = c(1470422, 668889)),
-                  two = data.frame(x = c(-48780, 675121),
-                                   y = c(832084, 1151701)))
+transect.lims <- list(one = data.frame(x = c(-18093, 631094),
+                                       y = c(1470422, 668889)),
+                      two = data.frame(x = c(-48780, 675121),
+                                       y = c(832084, 1151701)))
 
-get_cells <- function(x){
-  cells <- extract(num.rast, 
-                   data.frame(x = seq(x$x[1], x$x[2], length.out = 500),
-                              y = seq(x$y[1], x$y[2], length.out = 500)))
-  
-  cells <- cells[!duplicated(cells)]
-  cells
-}
-
-trans.cells <- lapply(transects, get_cells)
+#  We want to get the x & y coordinates of all points along the transects and then
+#  pull the data.
 
 get_points <- function(x){
+  
+  #  Input comes from the x & y limits of the transect (`transect`)
+  
   cells <- extract(num.rast, 
                    data.frame(x = seq(x$x[1], x$x[2], length.out = 500),
                               y = seq(x$y[1], x$y[2], length.out = 500)))
   
-  cells <- cells[!duplicated(cells)]
+  cells <- unique(cells)
   
   transect.plss <- count.table[match(cells, count.table$cell),3:ncol(count.table)]
   
@@ -35,10 +30,12 @@ get_points <- function(x){
   transect.plss <- transect.out[!is.na(rowSums(transect.out[,!colnames(transect.out) == 'cell'])),]
   
   transect.fia <- agg.dens[match(cells, agg.dens$cell),]
+  transect.fia <- transect.fia[!is.na(transect.fia$cell),]
+  transect.fia[is.na(transect.fia)] <- 0
   
   transect.plss$cell <- xyFromCell(num.rast, transect.plss$cell)[,1]
   transect.fia$cell <- xyFromCell(num.rast, transect.fia$cell)[,1]
-
+  
   transect.plss$class <- 'PLSS'
   transect.fia$class <- 'FIA'
   
@@ -46,7 +43,7 @@ get_points <- function(x){
   
   good.taxa <- c('cell', 'class', 'Tamarack', 'Pine', 'Birch', 'Elm', 
                  'Maple', 'Oak', 'Poplar', 'Spruce', 'Hemlock')
-    
+  
   sample.out <- rbind(melt(transect.plss[,good.taxa],
                            id.vars = c('cell', 'class')),
                       melt(transect.fia[,good.taxa],
@@ -61,7 +58,7 @@ get_points <- function(x){
   sample.out          
 }
 
-transect.taxa <- lapply(transects, get_points)
+transect.taxa <- lapply(transect.lims, get_points)
 transect.taxa[[1]]$transect <- 'One'
 transect.taxa[[2]]$transect <- 'Two'
 
@@ -73,18 +70,19 @@ transects$PFT2  <- gsub('Evergreen|Deciduous', '', transects$PFT)
 getPalette <- colorRampPalette(brewer.pal(9, "Paired"))
 
 trans.plot <- ggplot(transects, aes(x = cell, 
-                               y = value, 
-                               linetype = PFT)) +
-  geom_line(alpha=0.2, aes(group = variable, color = variable)) +
+                                    y = value, 
+                                    linetype = PFT)) +
+  geom_line(alpha = 0.2, aes(group = variable, color = variable)) +
   scale_x_continuous(expand = c(0,0), 
                      breaks = c(seq(0, 6e+05, by = 5e+04)),
                      labels = c('', '', '1e+05', '', '', '', '3e+05',
                                 '', '', '', '5e+05', '', '')) +
-  scale_y_sqrt(expand = c(0,0)) +
-  #  stat_smooth(se = FALSE, method = 'gam', 
-  #              formula = y ~ te(x), family = binomial, size = 2) + 
+  coord_cartesian(ylim=c(0,1)) +
+  #geom_smooth(se=FALSE, aes(color = variable)) +
+  #stat_smooth(se = FALSE, method = 'gam', 
+  #            formula = y ~ s(x, k=20), size = 2, aes(color = variable)) + 
   geom_smooth(method = 'gam', family = betar, se = FALSE,
-              formula = y ~ s(x, k = 10), size = 1.2, aes(color = variable)) + 
+              formula = y ~ te(x, k = 30), size = 1.2, aes(color = variable)) + 
   scale_color_manual(values = getPalette(9)) +
   facet_wrap(~transect+PFT2+class, ncol = 2) +
   theme_bw() +
@@ -126,19 +124,33 @@ for(i in 1:nrow(taxon.spec)){
 }
 
 #  Beta diversity along the gradient:
-comp.min <- comp.grid[plss.cells %in% fia.rows,]
-rownames(comp.min) <- plss.cells[plss.cells %in% fia.rows]
+comp.min <- comp.grid[comp.grid$cell %in% agg.dens$cell,]
+rownames(comp.min) <- comp.grid$cell[comp.grid$cell %in% agg.dens$cell]
 
-fia.min <- fia.aligned[fia.rows%in% plss.cells,]
-rownames(fia.min) <- fia.rows[fia.rows %in% plss.cells]
+fia.min <- fia.aligned[agg.dens$cell %in% comp.grid$cell,]
+rownames(fia.min) <- agg.dens$cell[agg.dens$cell %in% comp.grid$cell]
 
 pls.beta <- betadiver(comp.min, 'sor')
 fia.beta <- betadiver(fia.min, 'sor')
+
+
+get_cells <- function(x){
+  cells <- extract(num.rast, 
+                   data.frame(x = seq(x$x[1], x$x[2], length.out = 500),
+                              y = seq(x$y[1], x$y[2], length.out = 500)))
+  
+  cells <- cells[!duplicated(cells)]
+  cells
+}
+
+trans.cells <- lapply(transect.lims, get_cells)
+
 
 get_match <- function(cells, x, table){
   matches   <- match(cells[[x]], rownames(table))
   t(rbind(matches[-length(matches)], matches[-1]))
 }
+
 
 get_trans_t <- function(x){
   pls.matches <- get_match(trans.cells, x, comp.min)

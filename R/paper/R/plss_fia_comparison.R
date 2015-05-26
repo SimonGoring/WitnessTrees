@@ -104,9 +104,10 @@ fiadiam <- sqrt((fiabasa / fiadens)/pi) * 2 * 100
 
 #  Get the taxa that are in common between the two datasets (e.g., exclude NonTrees):
 name.set <- colnames(agg.dens)[colnames(agg.dens) %in% colnames(count.table)]
+#name.set <- name.set[!name.set %in% 'Ironwood']
 
 #  comp.grid is the PLSS data limited to cells with data.
-comp.grid <- as.matrix(composition.table[ , name.set])
+comp.grid <- as.data.frame(composition.table[ , name.set])
 
 good.points <- rowSums(is.na(composition.table)) < (ncol(composition.table)-3)
 
@@ -116,15 +117,11 @@ comp.grid <- comp.grid[good.points, ]
 
 comp.grid[is.na(comp.grid)] <- 0
 
-comp.grid <- comp.grid[,-1] / rowSums(comp.grid[,-1], na.rm=TRUE)
-
-num.rast <- setValues(base.rast, 1:ncell(base.rast))
-
-plss.cells <- extract(num.rast, comp.pts)
+comp.grid[,2:ncol(comp.grid)] <- comp.grid[,-1] / rowSums(comp.grid[,-1], na.rm=TRUE)
 
 #  This is the FIA data.
 fia.agg <- agg.basa[!rowSums(is.na(agg.basa)) == ncol(agg.basa), name.set]
-fia.agg <- fia.agg[,-1] / rowSums(fia.agg[,-1], na.rm=TRUE)
+fia.agg[,2:ncol(fia.agg)] <- fia.agg[,-1] / rowSums(fia.agg[,-1], na.rm=TRUE)
 fia.agg[is.na(fia.agg)] <- 0
 
 sample.test <- data.frame(stat = rep(NA, 15),
@@ -132,10 +129,10 @@ sample.test <- data.frame(stat = rep(NA, 15),
                           df = rep(NA, 15),
                           p.val = rep(NA,15))
 
-for(i in 1:ncol(fia.agg)){
+for(i in 2:ncol(fia.agg)){
+
   #  need to match up the FIA and PLSS rows:
-  
-  plss.vec <- match(plss.cells, agg.dens$cell)
+  plss.vec <- match(comp.grid$cell, fia.agg$cell)
   
   diss.vec <- (fia.agg[na.omit(plss.vec),i] - comp.grid[!is.na(plss.vec),i])
   test.vec <- (fia.agg[na.omit(plss.vec),i] + comp.grid[!is.na(plss.vec),i]) > 0
@@ -151,7 +148,8 @@ for(i in 1:ncol(fia.agg)){
   }
 }
 
-rownames(sample.test) <- colnames(comp.grid)
+sample.test <- sample.test[-1,]
+rownames(sample.test) <- colnames(comp.grid)[-1]
 
 biom.table <- read.csv('../../data/input/relation_tables/plss.pft.conversion_v0.1-1.csv')
 
@@ -163,11 +161,8 @@ biomass_fia <- exp(biom.table[match(rownames(sample.test), biom.table[,1]),2] +
 #  We need to get a common table with FIA and PLSS data and then assign values
 #  for them.
 
-fia.rows <- agg.basa$cell[!rowSums(fia.agg) == 0]
-
-fia.aligned <- fia.agg[!rowSums(fia.agg) == 0,]
-
-colnames(fia.aligned) <- name.set[-1]
+fia.aligned <- fia.agg[!rowSums(fia.agg[,-1]) == 0 & rowSums(is.na(fia.agg)) == 0,]
+comp.grid  <- comp.grid[!rowSums(comp.grid[,-1]) == 0 & rowSums(is.na(comp.grid)) == 0,]
 
 #rm(agg.basa, agg.biom)
 if(paste0('distances_v', version, '.Rds') %in% list.files('../../data/output/aggregated_midwest/')){
@@ -176,7 +171,7 @@ if(paste0('distances_v', version, '.Rds') %in% list.files('../../data/output/agg
   #  Check to see what the distances are like within each of the FIA and PLSS datasets
   #  and then between datasets.
 
-  big.mat <- rbind(comp.grid, fia.aligned)
+  big.mat <- rbind(comp.grid[,-1], fia.aligned[,-1])
   
   big.dist <- vegdist(big.mat, 'bray')
   
@@ -199,7 +194,8 @@ if(paste0('distances_v', version, '.Rds') %in% list.files('../../data/output/agg
     apply(x, 1, min)
   }
   
-  fia.pts <- xyFromCell(fiabasa, 1:ncell(fiabasa))[fia.rows,]
+  fia.pts <- xyFromCell(fiabasa, fia.aligned$cell)
+  comp.pts <- xyFromCell(fiabasa, comp.grid$cell)
   
   fia.dist <- data.frame(fia.pts, 
                          dist = check.min(fia.set),

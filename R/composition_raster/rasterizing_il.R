@@ -4,27 +4,27 @@ library(raster)
 
 brugam <- read.csv('data/raw_data/illinois/brugam_il_pls_11-19-13_v1.csv', stringsAsFactor=FALSE)
 arboretum <- read.csv('data/raw_data/illinois/arboretum_il_pls_11-19-13_v1.csv', stringsAsFactor=FALSE)
-nd_il <- read.csv('data/raw_data/illinois/ndilpls_v1.2.csv', stringsAsFactor=FALSE)
+nd_il <- read.csv('data/raw_data/illinois/ndilpls_v1.3.csv', stringsAsFactor=FALSE)
 
 #  Converting the ND data bit:
 #  Clear leading and trailing spaces.
-nd_il$L1.tree1 <- gsub('^[ \t]+|[ \t]+$', '', nd_il$L1.tree1)
-nd_il$L1.tree1 <- gsub('[ ]{2}', ' ', nd_il$L1.tree1)
-nd_il$L1.tree2 <- gsub('^[ \t]+|[ \t]+$', '', nd_il$L1.tree2)
-nd_il$L1.tree2 <- gsub('[ ]{2}', ' ', nd_il$L1.tree2)
+nd_il$L1_tree1 <- gsub('^[ \t]+|[ \t]+$', '', nd_il$L1_tree1)
+nd_il$L1_tree1 <- gsub('[ ]{2}', ' ', nd_il$L1_tree1)
+nd_il$L1_tree2 <- gsub('^[ \t]+|[ \t]+$', '', nd_il$L1_tree2)
+nd_il$L1_tree2 <- gsub('[ ]{2}', ' ', nd_il$L1_tree2)
 
 #  Conversion table load and convert.
-taxon.conv <- read.csv('data/input/relation_tables/fullpaleon_conversion_v0.3-2.csv', header=TRUE, stringsAsFactors = FALSE)
+taxon.conv <- read.csv('data/input/relation_tables/fullpaleon_conversion_v0.3-3.csv', header=TRUE, stringsAsFactors = FALSE)
 
 #  Get rid of the wonky taxon conversions we know about:
 taxon.conv$Level.3a[taxon.conv$Level.3a == '']       <- NA
 taxon.conv$Level.3a[taxon.conv$Level.3a %in% '#N/A'] <- 'Other hardwood'
 
 #  Create a long data frame by lat& long:
-long.data <- data.frame(long = nd_il$PointX, #c(brugam$long, ),# arboretum$POINT_X),
-                        lat  = nd_il$PointY, #c(brugam$Lat, ),# arboretum$POINT_Y),
-                        SP1  = as.character(nd_il$L1.tree1),#c(brugam$Tree, )),# arboretum$Tree)),
-                        SP2  = as.character(nd_il$L1.tree2),#c(rep(NA, nrow(brugam)), ),# rep(NA, nrow(arboretum)))),
+long.data <- data.frame(long = nd_il$x, #c(brugam$long, ),# arboretum$POINT_X),
+                        lat  = nd_il$y, #c(brugam$Lat, ),# arboretum$POINT_Y),
+                        SP1  = as.character(nd_il$L1_tree1),#c(brugam$Tree, )),# arboretum$Tree)),
+                        SP2  = as.character(nd_il$L1_tree2),#c(rep(NA, nrow(brugam)), ),# rep(NA, nrow(arboretum)))),
                         stringsAsFactors=FALSE)
 
 long.data$SP1[long.data$SP1 %in% c('No tree', 'No Tree', 'No Trees')] <- 'No tree'
@@ -40,7 +40,8 @@ long.data$l3a.tree2 <-  taxon.conv$Level.3a[match(tolower(gsub('.', '',long.data
 #  We then have to assign the points to appropriate raster cells:
 coordinates(long.data) <- ~ long + lat
 
-proj4string(long.data) <- CRS('+init=epsg:4326')
+#proj4string(long.data) <- CRS('+init=epsg:4326')
+proj4string(long.data) <- CRS('+init=epsg:3175')
 
 base.rast <- raster(xmn = -71000, xmx = 2297000, ncols=296,
                     ymn = 58000,  ymx = 1498000, nrows = 180,
@@ -65,4 +66,4 @@ colnames(rast.set) <- taxa
 rast.coord <- xyFromCell(base.rast, 1:ncell(base.rast))
 rast.out <- cbind(rast.coord, rast.set)
 
-write.csv(rast.out, 'data/output/gridded/IllinoisData_v0.2-2.csv')
+write.csv(rast.out, 'data/output/gridded/IllinoisData_v0.3.csv')
