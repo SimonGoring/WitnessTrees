@@ -84,7 +84,7 @@ John W. Williams^1,10^
 
 ```{r dataLoad, echo = FALSE, message=FALSE, results = 'hide', warning=FALSE}
 
-version <- '0.9-5'
+version <- '0.9-6'
 
 #  Choose one of the two below (3175 is the Albers, 4326 is lat/long):
 model.proj <- '+init=epsg:3175'
@@ -502,7 +502,19 @@ diffs <- (1 - (c(findInterval(intern.quant[96], PLS.fia.quant) - 1, findInterval
 
 PLS.na <- cor(comp.grid, distances$dist[distances$class == 'PLSS-FIA'] > intern.quant[95])
 
-fia.na <- cor(fia.aligned[agg.basa$cell %in% distances$cell[distances$class == 'FIA-PLSS'],], distances$dist[distances$class == 'FIA-PLSS'] > intern.quant[95])
+#  We need to align the FIA and PLS data with the distance table.  This seems more problematic than it ought to be.
+
+good.cells <- data.frame(cell = unique(c(fia.agg$cell, 
+                                         subset(distances, class == 'FIA-PLSS')$cell)))
+good.cells$fia <- match(good.cells$cell, fia.agg$cell)
+good.cells$dist <- match(good.cells$cell, subset(distances, class == 'FIA-PLSS')$cell)
+
+good.cells <- na.omit(good.cells)
+ 
+fia.data <- fia.agg[good.cells$fia,-1]
+fia.na <-  subset(distances, class == 'FIA-PLSS')$dist[good.cells$dist] > intern.quant[95]
+
+fia.na <- cor(fia.data, fia.na)
 
 ```
 
