@@ -330,6 +330,8 @@ coordinates(final.data) <- coordinates(nwmw)
 final.data <- final.data[!final.data$species1 %in% c('Water', 'Missing'),]
 final.data <- final.data[!final.data$species2 %in% c('Water', 'Missing'),]
 
+
+
 #  Write the data out as a shapefile.
 writeOGR(final.data, 
          'data/output/aggregated_midwest/minn.wisc.mich.clean_v1_8.shp', 
