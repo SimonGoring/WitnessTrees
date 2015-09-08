@@ -3,12 +3,10 @@ author: 'Simon Goring *et al*.'
 biblio-files: 'goringetal_references'
 bibliography: 'goringetal_references.bib'
 csl: 'ecology.csl'
-date: '24 June, 2015'
+date: '08 September, 2015'
 output:
   md_document:
     variant: markdown
-  pdf_document:
-    pandoc_args: '-V geometry:vmargin=1in -V geometry:hmargin=1in'
 title: Witness Tree paper
 ...
 
@@ -18,6 +16,13 @@ Changes in Forest Composition, Stem Density, and Biomass from the Settlement Era
 <!--
 
 
+```
+## Warning: package 'pander' was built under R version 3.1.3
+```
+
+```
+## Warning: package 'plyr' was built under R version 3.1.3
+```
 -->
 Simon J. Goring^1^
 
@@ -139,10 +144,7 @@ nearly all North American forests have been affected by the
 intensification of land use in the past three centuries. Hence,
 contemporary ecological processes in North American forests integrate
 the anthropogenic impacts of the post-EuroAmerican period and natural
-influences at decadal to centennial scales. For example, the natural
-processes of secession, senescense and replacement of tree species in
-forests may be masked, or heavily modified by historically recent land
-use change.
+influences at decadal to centennial scales.
 
 At a regional scale many forests in the upper Midwest (*i.e.*,
 Minnesota, Wisconsin and Michigan) now have decreased species richness
@@ -152,16 +154,64 @@ settlement (hereafter pre-settlement) period
 due to near complete logging. For example, forests in Wisconsin are in a
 state of regrowth, with an unfilled carbon sequestration potential of 69
 TgC [@rhemtulla2009historical] as a consequence of these extensive land
-cover conversions and subsequent partial recovery. The upper Midwestern
-United States represents a unique ecological setting, with multiple
-major ecotones, including the prairie-forest boundary, historic savanna,
-and the Tension Zone between southern deciduous forests and northern
-evergreen forests. The extent to which these ecotones have shifted, and
-their extent both prior to and following EuroAmerican settlement is of
-critical importance to biogeochemical and biogeophysical
-vegetation-atmosphere feedbacks [@matthes_inprep], carbon sequestration
-[@rhemtulla2009historical], and regional management and conservation
-policy
+cover conversions and subsequent partial recovery following abandonment
+of farm lands in the 1930s.
+
+Legacies of land use are unavoidable at regional scales
+[@foster2003importance]. Under intensive land use change the natural
+processes of secession, senescense and the replacement of tree species
+in forests may be masked, or heavily modified by historically recent
+land use change. These changes can result in non-stationarity within
+ecosystems that may not be apparent on the relatively narrow time scales
+at which ecology traditionally operates [@wolkovich2014temporal]. There
+is a history of recolonization of forested landscapes following
+agricultural clearance in the upper Midwest [@rhemtulla2009legacies],
+pointing to the importance of understanding ecological trajectories and
+land use legacies in understanding modern forest dynamics
+[@foster2003importance]. Cramer et al. [-@cramer2008s] point to the
+literature of succession theory to indicate the likelihood that many old
+fields will return to a 'natural' state, but point out that recovery is
+not universal. In particular, intense fragmentation of the landscape can
+deplete the regional species pool, leading to failures of recruitment
+that would favor species with longer distance seed dispersersal
+[@bellemare2002legacies]. In the upper Midwest long seed dispersal would
+favor species such as poplar (*Populus* sp.), white birch (*Betula
+papyrifera*) and some maple species (*Acer* sp.), at the expense of
+large-seeded species such as walnut (*Juglans* sp.), oak (*Quercus* sp.)
+and others.
+
+While there remains debate over the utility of the concept of novel
+ecosystems [@murcia2014critique,@hobbs2014novel], the fact remains that
+there are now forest and vegetation communities on the landscape without
+past analogues. The long term management of the systems and their
+associated services requires a broad understanding of the extent to
+which landscapes have been modified, and the extent to which land use
+change has potenitally masked underlying processes. It also requires a
+better understanding of the spatial (and temporal) scales at which novel
+ecosystems operate. While much restoration effort has focused on
+ecosystems at local scales there is an increasing need to focus on
+management and restoration at landscape scales [@menz2013hurdles]. Thus
+a better understanding of the landscape-scale processes driving novelty,
+the spatial structure of novel ecosystems and their ecological
+correlates, is increasingly important. It can help prioritize
+intervention strategies at local scales [@hobbs2014managing], and give
+us a better understanding of the role of patches in restoring hybrid or
+novel landscapes. In particular, how important is the species pool to
+the development of novel landscapes? Are novel forests further from
+remnant forests than might otherwise be expected? Is novelty operating
+at landscape scales in the upper Midwest, and is the spatial
+distribution of new forests tied to historical patterns vegetation or
+losses of forest types from the historical landscape?
+
+The upper Midwestern United States represents a unique ecological
+setting, with multiple major ecotones, including the prairie-forest
+boundary, historic savanna, and the Tension Zone between southern
+deciduous forests and northern evergreen forests. The extent to which
+these ecotones have shifted, and their extent both prior to and
+following EuroAmerican settlement is of critical importance to
+biogeochemical and biogeophysical vegetation-atmosphere feedbacks
+[@matthes_inprep], carbon sequestration [@rhemtulla2009historical], and
+regional management and conservation policy
 [@radeloff2000historical; @fritschle2008reconstructing; @knoot2010state; @gimmi2013assessing].
 
 Land use change at the local and state-level has affected both the
@@ -343,16 +393,27 @@ surveyors' identification, and from the statistical disambiguation.
 Given the regional scale of the analysis, and the inherent uncertainty
 in the survey data itself, we chose to avoid this layer of taxonomic
 uncertainty, and retained only genus-level identification (Supplement 2,
-*Standardized Taxonomy*). In areas of open prairie or other treeless
-areas, *e.g.* southwestern Minnesota, surveyors recorded distances and
-bearings to 'Non Tree' objects. When points were to be located in water
-bodies the point data indicates 'Water'. Points recorded "No Tree" are
-considered to have been from extremely open vegetation, with an
-estimated point-level stem density of 0 stems ha^-1^. We based our
-estimates on terrestrial coverage, so water cells are excluded
-completely. Hence, absence of trees at âNo Treeâ locations does
-reduce the gridded estimates of terrestrial stem density, but absence of
-trees at 'Water' locations does not.
+*Standardized Taxonomy*). The ecological implications for the use of
+genera-level taxonomies are important for this region. While fire
+tolerance is fairly well conserved within genera, shade tolerance can
+vary. *Betula* contains shade intolerant *B. paperyfera* and the
+intermediate *B. alleghaniensis*, while *Pinus* contains the very shade
+intolerant *P. banksana*, the intolerant *P. resinosa* and the shade
+tolerant *P. strobus*. For cases where shade tolerance (of fire
+tolerance) varies strongly within a genera we examine the data to
+determine the suitability of the assignment, or extent of confusion
+within the assigned genera.
+
+In areas of open prairie or other treeless areas, *e.g.* southwestern
+Minnesota, surveyors recorded distances and bearings to 'Non Tree'
+objects. When points were to be located in water bodies the point data
+indicates 'Water'. Points recorded "No Tree" are considered to have been
+from extremely open vegetation, with an estimated point-level stem
+density of 0 stems ha^-1^. We based our estimates on terrestrial
+coverage, so water cells are excluded completely. Hence, absence of
+trees at "No Tr"eâ locations does reduce the gridded estimates of
+terrestrial stem density, but absence of trees at 'Water' locations does
+not.
 
 Digitization of the original surveyor notebooks introduces the
 possibility of transcription errors. The Wisconsin dataset was compiled
@@ -523,7 +584,10 @@ regions, years, internal versus external lines, section versus
 quarter-section points, and surveyor sampling designs (Table 1). All
 code to perform the analyses is included in Supplement 1 and the full
 rationale for and calculation of these measures is described further in
-Cogbill et al. [-@cogbill2015corrections].
+Cogbill et al. [-@cogbill2015corrections]. Further, simulation used stem
+mapped stands from the region presented in Cogbill et al.
+[-@cogbill2015corrections] supports the robustness of this method, as
+opposed to other methods presented in the literature.
 
 ### Basal Area and Biomass Estimates
 
@@ -644,6 +708,33 @@ small effect, suggesting that our analyses are mainly sensitive to the
 compositional and structural processes operating on large spatial
 scales.
 
+To understand the extent to which novelty operates at landscape scales
+we relate novelty to the distance to the nearest 'remnant' forest cell.
+Here we use a threshold of the 25%ile of compositional dissimilarity
+within the PLSS data, meaning the dissimilarity of any one 'remnant'
+cell is well within the historical bounds of dissimilarity. We use a
+binomial-logit regression to relate the degree of novelty to the spatial
+distance to the nearest 'remnant' cell, and examine this relationship
+for four major forest types within the PLSS data (Oak savanna,
+Oak/Poplar savanna, Pine/Spruce forest and Maple/Cedar/Hemlock/Birch
+mixedwood forests). We expect that a weak relationship will indicate
+that forest recovery following landscape-scale land use change is
+moderated by a species pool culled from from small remnant patches,
+individual specimens, or local scale restoration efforts (for example
+during the 1930s). A significant relationship between distance to remant
+forest and novelty indicates that small patches have been insufficient
+to restore natural forest cover within the region, and would indicate
+that greater efforts are needed to restore landscapes at regional
+scales.
+
+All datasets and analytic codes presented here are publicly available
+and open source [<http://github.som/SimonGoring/WitnessTrees>](), with
+the goal of enabling further analyses of ecological patterns across the
+region and the effects of post-settlement land use on forest composition
+and structure. Data are also archived at the Long Term Ecological
+Research Network Data Portal
+[<https://portal.lternet.edu/nis/home.jsp>]().
+
 Results:
 --------
 
@@ -670,6 +761,35 @@ of all points. These unknown trees largely consisted of corner trees for
 which taxon could not be interpreted, but for which diameter and azimuth
 data was recorded. A further 0.011% of trees were assigned to the "Other
 hardwood" taxon (*e.g.*, hawthorn, "may cherry", and "white thorn").
+
+``` {.r}
+taxon_table <- read.csv('../../data//output//tests//clean.bind.test.csv')
+```
+
+For maple the class has very high within-genera specificity for a number
+of assignments. A total of 7.85\times 10\^{4} trees are assigned to
+"Maple". Of these, surveyors do use common names that can be ascribed to
+the species level (e.g., *A. saccharum*, n = 56331), but a large number
+of the remaining assignments are above the species level (n = 21356).
+This lack of specificity for a large number of records causes challenges
+in using the species level data. A similar pattern is found for pine,
+where many individual trees (125639) can be identified to the level of
+species (*P. strobus*, n = 41673; *P. bansiana*, n = 28784; *P.
+resinosa*, n = 28766), but there remains a large class of pine
+identified only at the genus level, or with unclear assignment (n =
+17606).
+
+For ash the data includes both attributions to black or brown ash
+(n=`taxon_table$Ash[taxon_table$X %in% 'BA']`) and white ash (n =
+`taxon_table$Ash[taxon_table$X %in% 'WA']`), but again, also includes a
+large class of ash for which no distinction is made within the genera (n
+= `taxon_table$Ash[taxon_table$X %in% c('AA', 'AH', 'GY', 'SA')]`).
+
+These patterns are repeated throughout the data. For spruce this
+within-genera confusion is even greater, with
+`taxon_table$Spruce[taxon_table$X %in% c('SP', 'sp', 'spr', 'SPR')]`
+assignments to genera-level classes and only 20 to either black or white
+spruce.
 
 ### Spatial Patterns of Settlement-Era Forest Composition: Taxa and PFTs
 
@@ -698,11 +818,7 @@ is roughly equivalent to prior reconstructions
 [@curtis1959vegetation; @rhemtulla2009legacies; @bolliger2004assessing]
 (Figure 3b). The highest stem densities occur in north-central Minnesota
 and in north-eastern Wisconsin (Figure 3a), indicating younger forests
-and/or regions of lower forest productivity. The joint controls of
-broad-scale climatic structuring and local hydrology controls on forest
-composition and density can be seen, particularly along the Minnesota
-River in south-western Minnesota, where a corridor of savanna is
-sustained in a region mostly occupied by prairie (Figure 3b).
+and/or regions of lower forest productivity.
 
 Forest structure during the settlement era can be understood in part by
 examining the ratio of stem density to biomass, a measure that
@@ -717,10 +833,7 @@ low-biomass regions also have shallower soils, colder climate, and
 resulting lower productivity. High-biomass values relative to stem
 density (Figure 4, green) are found in Michigan and southern Wisconsin.
 These regions have higher proportions of deciduous species, with higher
-tree diameters than in northern Minnesota. This is likely due to higher
-soil productivity, and more temperate climates, with lower incidences of
-stand-replacing disturbance in the southern and eastern portions of the
-region.
+tree diameters than in northern Minnesota.
 
 Taxon composition within settlement-era forests is spatially structured
 along dominant gradients from south to north (deciduous dominated to
@@ -968,23 +1081,51 @@ distribution across the region, associated with cedar/juniper
 percentages near 40%, with smaller components of poplar (14%) and maple
 (13%).
 
+![](figure/figure10a-1.png)
+
+Modern compositional dissimilarity from the PLSS data is related to
+distance from 'remnant' forest. The dissimilarity quantile of FIA-PLSS
+distances increases with increasing distance to remnant cells. While it
+is difficult to quantify exactly what is meant by remnant, given the
+strong compositional variability within the PLS dataset, we use the
+25%ile quantile of within dataset nearest-neighbor disimilarities for
+the PLS as a useful indicator. Results are robust to higher levels of
+dissimilarity, up to the 90%ile. Using the 25%ile for within PLS
+dissimilarity, approximately 17% of FIA cells can be classed as
+'remnant' forest. The mean distance to remnant forests for cells with
+dissimilarities above the 25%ile is 17.4817282km, higher than the mean
+of \~9.6km expected if each 8x8km cell had at least one adjacent
+'remnant' cell.
+
+The GLM shows that distance from remnant forests in the FIA is
+significantly related to the dissimilarity quantile for FIA data
+($\Chi^{1,3}$=973, p \< 0.001), with novelty predicted to occur at a
+distance determined by PLS forest type, but between approximately 20 and
+40km (Figure 10b). This pattern is seen for cells historically occupied
+by each of the four PLS forest types defined in the methods. For the oak
+savanna forest the model predicts novelty when cells lie only 23km from
+remnant forest, forests in the historical northern forest-margin
+(Oak/Poplar/Maple forests) become novel when separated by 26km. In the
+forested north, the Pine/Spruce forests are defined as novel at 34km,
+while mixedwood forests to the east become novel at 42km.
+
 ### Compositional Changes Between PLS and FIA Forests: Ecotone Structure
 
 To understand how the ecotonal structure has been transformed by
 post-settlement land use, we constructed two transects of the FIA and
-PLS data (Figure 10a), and fitted GAM models to genus abundances along
+PLS data (Figure 11a), and fitted GAM models to genus abundances along
 these transects. Transect One (T1) runs from northern prairie (in
 northern Minnesota) to southern deciduous savanna in southeastern
-Wisconsin (left to right in Figures 10c-f), while Transect Two (T2) runs
+Wisconsin (left to right in Figures 11c-f), while Transect Two (T2) runs
 from southern prairie in southwestern Minnesota to northern mixedwood
 forest in the Upper Peninsula of Michigan (left to right in Figures
-10g-j). In general, these transect analyses show: 1) significant
+11g-j). In general, these transect analyses show: 1) significant
 differences in ecotonal structure between the present and
 pre-settlement, and 2) steeper ecotones in the past and more diffuse
 ecotones today.
 
 For T1, GAM models show significant differences (using AIC) between time
-periods in curves for all broadleafed taxa (Figure 10b & c) and for al
+periods in curves for all broadleafed taxa (Figure 11b & c) and for al
 needleleafed taxa (Figures 10d and e). The PLS curves show a rapid
 transition in the northwest from oak to poplar dominated open forest
 that then transitions to a needleleafed forest composed of pine, spruce
@@ -1001,8 +1142,8 @@ pine, spruce, poplar and maple before pine, oak and elm increase in the
 southeastern portions of the transect.
 
 The second transect shows a similar pattern, with well defined ecotones
-in the pre-settlement period(Figure 10f and h), that are largely absent
-from the FIA data (Figure 10g and i). Oak forest, with a component of
+in the pre-settlement period(Figure 11f and h), that are largely absent
+from the FIA data (Figure 11g and i). Oak forest, with a component of
 elm and poplar in the southwest grades slowly to a rapid transition zone
 where pine, elm, maple (first), then rapidly birch, hemlock and
 tamarack, and later, spruce, increase. This region, the Tension Zone,
@@ -1023,7 +1164,7 @@ between the 1950s and the present [@li2014drivers]. The PLS shows strong
 differentiation in the central region of T2 where maple-pine-oak shifts
 to pine-poplar-birch forest (Figure 9d). This sharp ecotone is not
 apparent in the FIA data, which shows gradual and blurred changes in
-species composition across the ecotone (Figure 10i). $\beta$-diversity
+species composition across the ecotone (Figure 11i). $\beta$-diversity
 along T2 is lower in the FIA than in the PLSS ($\delta_{beta}$ = -0.19,
 $t_{65}$=-7.34, p \< 0.01), indicating higher heterogeneity in the PLS
 data at the 64 km^2^ meso-scale.
@@ -1041,22 +1182,46 @@ Discussion
 Many forests of the PLS, are no longer a part of the modern landscape.
 Forest types have been lost at the 64 km^2^ mesoscale, the grain of our
 analysis, reflected in the loss of some forest types and the gain of
-novel forest types. Ecotones in forest composition are weaker now than
-in the past (Fig. 10), with clear signs of increased homogenization at
-local and regional scales and decreased spatial structure in vegetation
-assemblages. Decreased $\beta$ diversity along regional transects
-indicates homogenization at meso-scales of 100s of km^2^, while the
-overall reduction in Moran's I for dissimilarity in the FIA indicates a
-regional reduction in heterogeneity on the scale of 1000s of km^2^. The
-selective loss or weakening of major vegetation ecotones, particularly
-in central Wisconsin, and the development of novel species assemblages
-across the region. These changes are the result of land use change, both
-agricultural and logging, but affect forests in contrasting ways across
-the domain. Maple has become one of the most dominant taxa across the
-region, while in northern Minnesota, forest biomass has increased and
-species shifts have reflected increases in poplar and pine, while in
-southern Wisconsin, biomass has declined, and hemlock has been lost
-almost completely.
+novel forest types. Historically the joint controls of broad-scale
+climatic structuring and local hydrology on forest composition and
+density can be seen, particularly along the Minnesota River in
+south-western Minnesota, where a corridor of savanna was sustained in a
+region mostly occupied by prairie (Figure 3b), but ecotones in the
+modern forest composition data are weaker now than in the past (Fig.
+10), with clear signs of increased homogenization at local and regional
+scales and decreased spatial structure in vegetation assemblages (Figure
+8).
+
+The loss of ecotones in the upper Midwestern United States suggests that
+our ability to predict the abiotic controls on species distributions at
+the landscape scale may be weaker than in the past, reducing the
+influence of variables such as climate or edaphic factors, and
+increasing the relative influence of recent land use history. Work in
+eastern North America suggests the utility of including spatial
+structure in species distribution models to improve predictive ability
+[@record2013should]. The spatial random effects may improve models by
+capturing missing covariates within SDMs [@record2013should], but if
+recent land use history has strongly shaped species distributions, or
+co-occurence, then the spatial effect is likely to be non-stationary at
+longer temporal scales. Given the implicit assumption of stationarity in
+many ecological models [@wolkovich2014temporal], the need for longer
+time-scale observations, or multiple baselines from which to build our
+distributional models becomes critical if we are to avoid conflating
+recent land use effects with the long term ecological processes
+structuring the landscape.
+
+Decreased $\beta$ diversity along regional transects indicates
+homogenization at meso-scales of 100s of km^2^, while the overall
+reduction in Moran's I for dissimilarity in the FIA indicates a regional
+reduction in heterogeneity on the scale of 1000s of km^2^. The selective
+loss or weakening of major vegetation ecotones, particularly in central
+Wisconsin, and the development of novel species assemblages across the
+region. These changes are the result of land use, both agricultural and
+logging, but affect forests in contrasting ways across the domain. Maple
+has become one of the most dominant taxa across the region, while in
+northern Minnesota, forest biomass has increased and species shifts have
+reflected increases in poplar and pine, while in southern Wisconsin,
+biomass has declined, and hemlock has been lost almost completely.
 
 Anthropogenic shifts in forest composition over decades and centuries
 seen here and elsewhere [@thompson2013four; @cogbill2002forests] are
@@ -1075,12 +1240,11 @@ assimilation framework [*e.g.*, @hartig2012connecting]. For these
 reason, the widespread loss of regional forest associations common in
 the PLS (Figure 8d), and the rapid rise of novel forest assemblages
 (Figure 8e) have important implications for our ability to understand
-ecological responses to changing climate. The loss of these forests
-implies that the modern understanding of forest cover, climate
+ecological responses to changing climate. The loss of historical forest
+types implies that the modern understanding of forest cover, climate
 relationships, realized and potential niches and species associations
-may be strongly biased toward a single state, even though 38% of the
-total regional cover is novel relative to forests only two centuries
-ago.
+may be strongly biased in this region, even though 29% of the total
+regional cover is novel relative to forests only two centuries ago.
 
 Beyond shifts in composition at a meso-scale, the broader shifts in
 ecotones can strongly impact models of species responses and
@@ -1092,14 +1256,37 @@ savanna ecosystems [@ratajczak2012woody]. Declines in landscape
 heterogeneity may also strongly affect ecosystem models, and predictions
 of future change. Recent work using the FLUXNET tower network has shown
 that energy budgets are strongly related to landscape measures of
-heterogeneity [@stoy2013data]. Our data show higher levels of
-heterogeneity at mesoscales during the pre-settlement era, and greater
-fine scaled turnover along transects. Lower $\beta$ diversity shown here
-and elsewhere [@li2014drivers] indicate increasing heterogeneity at a
-very large spatial scale, and the loss of resolution along major
-historical ecotones. Thus analysis of the processes governing vegetation
-heterogeneity and ecotones may inadvertently and substantially
-incorporate anthropogenic processes.
+heterogeneity in both vegetation and topography [@stoy2013data]. Our
+data show higher levels of vegetation heterogeneity at mesoscales during
+the pre-settlement era, and greater fine scaled turnover along
+transects. Lower $\beta$ diversity shown here and elsewhere
+[@li2014drivers] indicate increasing homogeneity at a very large spatial
+scale, and the loss of resolution along major historical ecotones.
+Increasing heterogeneity in the pre-settlement time would introduce
+non-stationarity into energy budgets, and would likely increase the
+uncertainty in vegetation-atmosphere processes, a key uncertainty in
+CMIP5 models [@friedlingstein2014uncertainties].
+
+This study also points to a deeper understanding of some of the
+landscape- and regional-scale drivers of novelty. In particular the role
+of regional species pools and remnant patches of forest in driving or
+mitigating compositional novelty. This work shows that the baseline
+forest type moderates the degree to which landscape scale patterns can
+drive compositional novelty. To some degree this may be dependent on the
+simplicity or complexity of the species pool and the sensitivity of
+dissimilarity metrics to $\beta$ diversity [@faith1987compositional],
+but it points the way forward to improving our understanding of the way
+plant species traits can moderate the appearance of compositional
+novelty at landscape scales. For example, how important is species
+dispersal in relation to the distance effect we see in Figure 10? The
+analysis relating distance to novel forest from remnants (Figure 10)
+also points to the possibility that should the public push for
+landscape-scale restoration, or management using historical baselines,
+the possibility of restoration is not entirely gone. If some of the
+novelty is driven by depauparate species pools beyond certain threshold
+distances from remnant forests then it should be possible to restore
+these forest through translocation of key species
+[@seddon2010reintroduction].
 
 Methodological advances of the current work include 1) the systematic
 standardization of PLS data to enable mapping at broad spatial extent
@@ -1112,13 +1299,9 @@ datasets across the north-central and northeastern US, with the goal of
 providing consistent reconstructions of forest composition and structure
 for northeastern US forests at the time of EuroAmerican forests.
 
-All datasets and analytic codes presented here are publicly available
-and open source ([<http://github.som/SimonGoring/WitnessTrees>]()), with
-the goal of enabling further analyses of ecological patterns across the
-region and the effects of post-settlement land use on forest composition
-and structure. Our results support the consensus that robust estimates
-of pre-settlement forest composition and structure can be obtained from
-PLS data [*e.g.*, Wisconsin: @schulte2002quantitative; California:
+Our results support the consensus that robust estimates of
+pre-settlement forest composition and structure can be obtained from PLS
+data [*e.g.*, Wisconsin: @schulte2002quantitative; California:
 @williams2011testing; Iowa: @rayburn2009integrating; Oregon:
 @duren2012vegetation]. Patterns of density, basal area and biomass are
 roughly equivalent to previous estimates
@@ -1316,8 +1499,20 @@ coherence for the PLS. Lost forests (c) show strong compositional and
 spatial coherence, and have more taxa with percent composition \> 10%
 than within Novel forests during the FIA era (d).*
 
-**Figure 9**. *Transects (a) across the region show clear changes in the
-ecotonal strength. Transect One shows shifts in broad-leafed taxon
+**Figure 9**. *(a) Distribution of dissimilarity quantiles for the FIA
+forests from historical PLS forests. The quantile scale is defined using
+nearest neighbor distances within the PLS data, provding a measure of
+internal variability. (b) The model relating novelty to spatial distance
+from remnant forest. Here the 25%ile is used to indicate remnant forest,
+The red dashed line indicates forested cells above the 95%ile of
+dissimilarity, or novel forests. The curves represent the relationship
+between spatial distance and compositional dissimilarity for each of the
+four major historic forest types defined here as Oak savanna (Green),
+Oak/Poplar/Maple (Blue), northern pine/spruce forest (Purple) and
+mixedwood (Red).*
+
+**Figure 10**. *Transects (a) across the region show clear changes in
+the ecotonal strength. Transect One shows shifts in broad-leafed taxon
 distributions from the PLS to FIA (b and c) and in needle-leafed
 distributions (d and e). Transect Two broadleaf (f and g) and needleleaf
 (h and i) taxa show shifts that again appear to represent regional scale
@@ -1333,12 +1528,6 @@ beta family.*
 ------------------------------------------------------------------------
 
 ![](figure/fig2_output-1.png)
-
-------------------------------------------------------------------------
-
-![](figure/figX_output-1.png)
-
-**Currently Unscripted Plot** Angle pairs for theta.
 
 ------------------------------------------------------------------------
 
@@ -1358,12 +1547,30 @@ beta family.*
 
 ------------------------------------------------------------------------
 
+      TableGrob (2 x 2) "arrange": 4 grobs
+        z     cells    name           grob
+      1 1 (1-1,1-1) arrange gtable[layout]
+      2 2 (1-1,2-2) arrange gtable[layout]
+      3 3 (2-2,1-1) arrange gtable[layout]
+      4 4 (2-2,2-2) arrange gtable[layout]
+
+------------------------------------------------------------------------
+
+![](figure/fig8_output-1.png)
+
 ------------------------------------------------------------------------
 
 ![](figure/fig9_output-1.png)
 
 ------------------------------------------------------------------------
 
-![](figure/fig10_output-1.png)
+      TableGrob (1 x 2) "arrange": 2 grobs
+        z     cells    name           grob
+      1 1 (1-1,1-1) arrange gtable[layout]
+      2 2 (1-1,2-2) arrange gtable[layout]
+
+------------------------------------------------------------------------
+
+![](figure/fig11_output-1.png)
 
 ------------------------------------------------------------------------

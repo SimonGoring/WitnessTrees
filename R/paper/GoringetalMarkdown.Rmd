@@ -7,8 +7,9 @@ output:
     variant: markdown
   pdf_document:
     pandoc_args: "-V geometry:vmargin=1in -V geometry:hmargin=1in"
+
 bibliography: goringetal_references.bib
-csl: plos.csl
+csl: ecology.csl
 ---
 
 Changes in Forest Composition, Stem Density, and Biomass from the Settlement Era (1800s) to Present in the Upper Midwestern United States
@@ -711,7 +712,7 @@ PLS Data |   `r cl.tab$basa[5]` | `r cl.tab$basa[4]` | `r cl.tab$basa[2]` | `r c
 **Figure 10**. *Transects (a) across the region show clear changes in the ecotonal strength. Transect One shows shifts in broad-leafed taxon distributions from the PLS to FIA (b and c) and in needle-leafed distributions (d and e). Transect Two broadleaf (f and g) and needleleaf (h and i) taxa show shifts that again appear to represent regional scale homogenization. Ecotones in the pre-settlement era were stronger in the past than they are in the present. Fitted curves represent smoothed estimates across the transects using Generalized Additive Models using a beta family.*
 
 ***
-```{r fig1_output,echo=FALSE,warning=FALSE,message=FALSE,fig.width=4,fig.height = 3,dpi=300, dev=c('png','postscript','tiff')}
+```{r fig1_output,echo=FALSE,warning=FALSE,message=FALSE,fig.width=4,fig.height = 3,dpi=300, dev=c('png','tiff')}
 
 val.plot <- data.frame(xyFromCell(dens, 1:ncell(dens)),
                        dens = !is.na(getValues(dens)))
@@ -733,21 +734,21 @@ fig1plot
 ```
 
 ***
-```{r fig2_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=4, fig.height = 4, dpi=300, dev=c('png','postscript','tiff')}
+```{r fig2_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=4, fig.height = 4, dpi=300, dev=c('png','tiff')}
 
 angle.plot
 
 ```
 
 ***
-```{r fig3_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=5, fig.height = 5, dpi=300, dev=c('png','postscript','tiff')}
+```{r fig3_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=5, fig.height = 5, dpi=300, dev=c('png','tiff')}
 
 grid.arrange(dens.facet, anders.facet, basa.facet, biom.facet, nrow = 2)
 
 ```
 
 ***
-```{r fig4_output, echo=FALSE, message=FALSE, warning=FALSE, width=5, fig.height = 5, dpi=300, dev=c('png','postscript','tiff')}
+```{r fig4_output, echo=FALSE, message=FALSE, warning=FALSE, width=5, fig.height = 5, dpi=300, dev=c('png','tiff')}
 
 biom_sd
 
@@ -755,28 +756,30 @@ biom_sd
 
 ***
 
-```{r fig5_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=7, fig.height = 5, dpi=300, dev=c('png','postscript','tiff')}
+```{r fig5_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=7, fig.height = 5, dpi=300, dev=c('png','tiff')}
 composition.plots
 ```
 
 ***
-```{r fig6_output, echo = FALSE, message = FALSE, warning=FALSE, results='hide', fig.width=6, fig.height=6, dpi=300, dev=c('png','postscript','tiff')}
+```{r fig6_output, echo = FALSE, message = FALSE, warning=FALSE, results='hide', fig.width=6, fig.height=6, dpi=300, dev=c('png','tiff')}
 
 out.map
 
 ```
 
 ***
-```{r fig7_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 7, dpi=300, dev=c('png','postscript','tiff')}
+```{r fig7_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 7, dpi=300, dev=c('png','tiff')}
 
-ggsave(arrangeGrob(dens.fp, basa.fp, biom.fp, biomass.comp, nrow = 2), 
-       filename = paste0('figures/fig8_fourpanelbiomass', version, '.tiff'), 
-       width=8, height = 8, dpi=300)
+# ggsave(arrangeGrob(dens.fp, basa.fp, biom.fp, biomass.comp, nrow = 2), 
+#        filename = paste0('figures/fig8_fourpanelbiomass', version, '.tiff'), 
+#        width=8, height = 8, dpi=300)
+
+plot(arrangeGrob(dens.fp, basa.fp, biom.fp, biomass.comp, nrow = 2))
        
 ```
 
 ***
-```{r fig8_output, echo = FALSE, warning=FALSE, message=FALSE, results='hide', fig.width=7, fig.height = 5, dpi=300, dev=c('png','postscript','tiff')}
+```{r fig8_output, echo = FALSE, warning=FALSE, message=FALSE, results='hide', fig.width=7, fig.height = 5, dpi=300, dev=c('png','tiff')}
 
 grid.arrange(histogram, spatial.internal, spatial.external, ncol = 1)
 
@@ -784,7 +787,7 @@ grid.arrange(histogram, spatial.internal, spatial.external, ncol = 1)
 
 ***
 
-```{r fig9_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 6, dpi=300, dev=c('png','postscript','tiff')}
+```{r fig9_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 6, dpi=300, dev=c('png','tiff')}
 
 trans.plot
 
@@ -792,14 +795,14 @@ trans.plot
 
 
 ***
-```{r fig10_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 6, dpi=300, dev=c('png','postscript','tiff')}
+```{r fig10_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 6, dpi=300, dev=c('png','tiff')}
 
-fig10a_output$plot
+plot(fig10a_output$plot)
 
 ```
 
 ***
-```{r fig11_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 6, dpi=300, dev=c('png','postscript','tiff')}
+```{r fig11_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 6, dpi=300, dev=c('png','tiff')}
 trans.plot
 ```
 
