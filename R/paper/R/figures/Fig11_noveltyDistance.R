@@ -6,56 +6,122 @@ figure_10a <- function(){
   breaks <- quantile(plss.dissim$dist[plss.dissim$class %in% c('PLSS')], c(seq(0, 1, by = 0.01)))
   breaks2 <- quantile(plss.dissim$dist[plss.dissim$class %in% c('PLSS')], c(seq(0, 1, by = 0.1)))
   
+  #  Ecological distances in fia.distances$dist
   fia.distances <- distances[distances$class == 'FIA-PLSS',]
   
+  #  Spatial distances in the first two columns
   point.distances <- as.matrix(dist(fia.distances[,1:2]))
   
-  #diag(point.distances) <- max(point.distances)
+  old_classes <- pam(comp.grid[,-1], k = 5)
   
-  bb <- apply(point.distances[fia.distances$dist < breaks[25],], 2, min)
-  
-  fia_by_dist <- data.frame(x = fia.distances$x,
-                            y = fia.distances$y,
-                            sp_dist = bb/1000,
-                            eco_dist = fia.distances$dist,
-                            eco_quant = findInterval(fia.distances$dist,breaks,all.inside=TRUE)/100)
-  
-  #fia_by_dist <- fia_by_dist[fia_by_dist$sp_dist>0,]
-  
-  old_classes <- pam(comp.grid[,-1], k = 4)
   rem_class <- factor(old_classes$clustering[match(fia.aligned[,1],comp.grid[,1])],
-                      labels=c('Maple/Cedar/Hemlock/Birch',
-                               'Oak/Poplar/Maple',
-                               'Pine/Spruce',
+                      labels=c('Tamarack/Pine/Spruce/Poplar',
+                               'Oak/Poplar/Basswood/Maple',
+                               'Pine',
+                               'Hemlock/Cedar/Birch/Maple',
                                'Oak Savanna'))
+  
+  get_glmmodel <- function(selection){
+    #  What is the closest 'remnant' point?
     
-  log_mod <- glm(eco_quant ~ sp_dist*rem_class, family=binomial(logit), data = fia_by_dist)
+    fia.dist <- fia.distances
+    
+    if(!selection == 'breaks'){
+      # This randomizes the distances if we're doing the null model:
+      fia.dist$dist <- sample(fia.distances$dist)
+    } 
+
+    sp_wmin <- apply(point.distances[fia.dist$dist < breaks[25],], 2, which.min)
+    sp_dist <- apply(point.distances[fia.dist$dist < breaks[25],], 2, min)
+    
+    fia_by_dist <- data.frame(x = fia.dist$x,
+                              y = fia.dist$y,
+                              sp_dist = sp_dist/1000,
+                              eco_dist = fia.dist$dist,
+                              eco_quant = findInterval(fia.dist$dist,breaks,all.inside=TRUE)/100)
+    
+    #fia_by_dist <- fia_by_dist[fia_by_dist$sp_dist>0,]
+    
+    list(glm(eco_quant ~ sp_dist*rem_class, family=binomial(logit), data = na.omit(fia_by_dist)),
+         fia_by_dist)
+  }
   
-  log_pred <- predict(log_mod, newdata=data.frame(sp_dist = rep(seq(0, 100),4), 
-                                                  rem_class = factor(rep(levels(rem_class), each=101))), 
-                      se.fit=TRUE, type= 'response')
+  log_mod <- get_glmmodel('breaks')
+    
+  #  Here we want to test whether these coefficients are different than random:
+  mods <- lapply(1:50, function(x)get_glmmodel('random'))
   
-  log_output <- data.frame(dist = rep(seq(0, 100),4),
-                           rem_class =  factor(rep(levels(rem_class), each=101)),
-                           values = log_pred[[1]],
-                           val_min = log_pred[[1]] - log_pred[[2]],
-                           val_max = log_pred[[1]] + log_pred[[2]])
+  get_thresh <- function(x){
+    model <- x[[1]]
+    
+    data_in <- data.frame(sp_dist = rep(seq(0, 100),5), 
+                          rem_class = factor(rep(levels(rem_class), each=101)))
+    
+    data_model <- predict(model, newdata= data_in,
+                          se.fit=TRUE, type= 'response')
+    
+    data_in$log_pred <- data_model$fit
+    data_in$err      <- data_model$se.fit
+    
+    do.call(rbind.data.frame, lapply(levels(rem_class),
+                                     function(x){
+                                       data.frame(low = which.min(abs(0.95-subset(data_in, rem_class == x)$log_pred - 
+                                                                       subset(data_in, rem_class == x)$err)),
+                                                  high = which.min(abs(0.95- 
+                                                                      subset(data_in, rem_class == x)$log_pred + 
+                                                                        subset(data_in, rem_class == x)$err)),
+                                                  zone = x)
+                                                  
+    }))
+    
+  }
   
-  dist_plot <- ggplot(data = fia_by_dist, aes(x = sp_dist, y = eco_quant)) +
-    geom_jitter(position = position_jitter(width = .5)) +
-    geom_hline(yintercept = 0.95, linetype = 2, color = 'red') +
-    geom_ribbon(data=log_output, aes(x = dist, ymin=val_min, ymax=val_max, color = rem_class), 
-                inherit.aes=FALSE, alpha = 0.5) +
-    geom_path(data=log_output, aes(x = dist, y=values,group = rem_class, color = rem_class), 
-              inherit.aes=FALSE, size = 1, name = 'Forest Type') +
-    theme_bw() +
-    coord_cartesian(xlim=c(0, 80), ylim=c(0, 1)) +
-    theme(axis.title.y = element_blank(),
-          axis.text.y  = element_blank(),
-          axis.title.x = element_text(family='serif', size = 16, face='bold'),
-          axis.text.x  = element_text(family='serif', size = 14),
-          legend.position = "none") +
-    xlab('Distance from Remnant (25%ile) Forest')
+  signif <- sapply(mods, function(x){
+      low  <- coef(log_mod[[1]]) < confint.default(x[[1]])[,1]
+      high <- coef(log_mod[[1]]) > confint.default(x[[1]])[,2]
+      
+      output <- rep(NA, length(low))
+      output[low]  <- 'low'
+      output[high] <- 'high'
+      output[is.na(output)] <- 'ns'
+      output
+    })
+  
+  plot_output <- function(input){
+    log_pred <- predict(input[[1]], newdata=data.frame(sp_dist = rep(seq(0, 100),5), 
+                                                    rem_class = factor(rep(levels(rem_class), each=101))),
+                        se.fit=TRUE, type= 'response')
+    
+    log_output <- data.frame(dist = rep(seq(0, 100), 5),
+                             rem_class =  factor(rep(levels(rem_class), each=101)),
+                             values = log_pred[[1]],
+                             val_min = log_pred[[1]] - log_pred[[2]],
+                             val_max = log_pred[[1]] + log_pred[[2]])
+    
+    levels(log_output$rem_class) <- c('Tamarack/Pine/Spruce/Poplar',
+                             'Oak/Poplar/Basswood/Maple',
+                             'Pine',
+                             'Hemlock/Cedar/Birch/Maple',
+                             'Oak Savanna')
+    
+    ggplot(data = input[[2]], aes(x = sp_dist, y = eco_quant)) +
+      geom_jitter(position = position_jitter(width = .6), alpha=0.3) +
+      geom_hline(yintercept = 0.95, linetype = 2, color = 'red') +
+      geom_ribbon(data=log_output, aes(x = dist, ymin=val_min, ymax=val_max, color = rem_class),
+                  inherit.aes=FALSE, alpha = 0.5) +
+      geom_path(data=log_output, aes(x = dist, y=values,group = rem_class, color = rem_class),
+                inherit.aes=FALSE, size = 1, name = 'Forest Type') +
+      scale_color_brewer(type='qual') +
+      theme_bw() +
+      coord_cartesian(xlim=c(0, 80), ylim=c(0, 1)) +
+      theme(axis.title.y = element_blank(),
+            axis.text.y  = element_blank(),
+            axis.title.x = element_text(family='serif', size = 12, face='bold'),
+            axis.text.x  = element_text(family='serif', size = 10),
+            legend.position = "none") +
+      xlab('Distance from Remnant (25%ile) Forest')
+  }
+  
   
   dist_dist <- ggplot(fia_by_dist) +
     geom_bar(aes(x = eco_quant, y = (..count..)/sum(..count..)), 
@@ -65,10 +131,26 @@ figure_10a <- function(){
     scale_y_reverse() +
     geom_vline(xintercept = 0.95, linetype = 2, color = 'red') +
     geom_vline(xintercept = 0.25, linetype = 2, size = 2) +
-    theme(axis.title = element_text(family='serif', size = 18, face='bold'),
-          axis.text  = element_text(family='serif', size = 14)) +
+    theme(axis.title = element_text(family='serif', size = 12, face='bold'),
+          axis.text  = element_text(family='serif', size = 10)) +
     xlab('Dissimilarity Quantile') +
     ylab('Proportion of Cells')
+  
+  clust_map <- na.omit(data.frame(fia_by_dist[,1:2], cluster = rem_class))
+
+  map_plots <- base.map + 
+    geom_tile(data = clust_map, aes(x = x, y = y, fill=cluster)) +
+    scale_fill_brewer(type='qual') +
+    geom_path(data=river.subset, aes(x = long, y = lat, group = group), color = 'blue', alpha = 0.1) +
+    geom_polygon(data=lakes.subset, aes(x = long, y = lat, group = group), fill = '#ADD8E6') +
+    geom_path(data = umw.domain, aes(x = long, y = lat, group = group, linesize = paleon)) +
+    geom_path(data = can.domain, aes(x = long, y = lat, group = group)) +
+    theme_bw() +
+    theme(axis.title.y = element_blank(),
+        axis.text.y  = element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.x  = element_blank(),
+        legend.position = "none")
   
   #Okay, so what species dominate these cells?
   
