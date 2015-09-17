@@ -193,7 +193,7 @@ Because all surveyor bias corrections are simple multipliers of the model densit
 
 $\lambda_{M corrected} = \kappa \times \theta \times \zeta \times \phi \times \lambda_{M}$   (3)
 
-Estimates for each point *i* can be averaged for all *N* points in any region. Correction factors are calculated separately for different regions, years, internal versus external lines, section versus quarter-section points, and surveyor sampling designs (Table 1). All code to perform the analyses is included in Supplement 1 and the full rationale for and calculation of these measures is described further in Cogbill et al. [-@cogbill2015corrections]. Further, simulation used stem mapped stands from the region presented in Cogbill et al. [-@cogbill2015corrections] supports the robustness of this method, as opposed to other methods presented in the literature.
+Estimates for each point *i* can be averaged for all *N* points in any region. Correction factors are calculated separately for different regions, years, internal versus external lines, section versus quarter-section points, and surveyor sampling designs (Supplement 4). All code to perform the analyses is included in Supplement 1 and the full rationale for and calculation of these measures is described further in Cogbill et al. [-@cogbill2015corrections]. Further, simulation used stem mapped stands from the region presented in Cogbill et al. [-@cogbill2015corrections] supports the robustness of this method, as opposed to other methods presented in the literature.
 
 ###Basal Area and Biomass Estimates
 
@@ -210,9 +210,9 @@ Biomass equations share the basic form:
 
 $m = Exp(\beta_{0} + \beta_{1} * \ln dbh)$
 
-where $m$ represents stem biomass for an individual tree in kg. $\beta_{0}$ and $\beta_{1}$ are the parameters described in Table 2 and $dbh$ is the stem diameter at breast height (converted to cm) recorded in the survey notes. The biomass estimates are summed across both trees at a survey point and multiplied by the stem density calculated at that point to produce an estimate of aboveground biomass reported in Mg ha^-1^ [@jenkins2004comprehensive].
+where $m$ represents stem biomass for an individual tree in kg. $\beta_{0}$ and $\beta_{1}$ are the parameters described in Table 1 and $dbh$ is the stem diameter at breast height (converted to cm) recorded in the survey notes. The biomass estimates are summed across both trees at a survey point and multiplied by the stem density calculated at that point to produce an estimate of aboveground biomass reported in Mg ha^-1^ [@jenkins2004comprehensive].
 
-Matching PLSS tree genera to the species groups defined by Jenkins *et al*. [-@jenkins2004comprehensive] is straightforward, placing the 22 genera used in this study into 9 allometric groups (Table 2). However, all maples are assigned to the generic "Hardwood" group since separate allometric relationships exist for soft and hard maple (Table 2). Biomass estimates for "Non tree" survey points are assigned 0 Mg ha^-1^.
+Matching PLSS tree genera to the species groups defined by Jenkins *et al*. [-@jenkins2004comprehensive] is straightforward, placing the 22 genera used in this study into 9 allometric groups (Table 1). However, all maples are assigned to the generic "Hardwood" group since separate allometric relationships exist for soft and hard maple (Table 1). Biomass estimates for "Non tree" survey points are assigned 0 Mg ha^-1^.
 
 We use the stem density thresholds of Anderson and Anderson [-@anderson1975presettlement] to discriminate prairie, savanna, and forest.
 	
@@ -296,7 +296,7 @@ source('R/figures/figure3_panel_means.R')
 
 The mean stem density for the region (Figure 2a) is `r p(mean(getValues(dens), na.rm=TRUE))` stems ha^-1^. Stem density exclusive of prairie is `r p(mean(getValues(dens)[getValues(dens)> 0.5], na.rm=TRUE))` stems ha^-1^ and is `r p(mean(getValues(dens)[getValues(dens)> 47], na.rm=TRUE))` stems ha^-1^ when both prairie and savanna are excluded. The 95th percentile range is 0 - `r p(ninefive(getValues(dens))[2])` stems ha^-1^, and within-cell standard deviations between 0 and `r p(ninefive(dens.sd[,2])[2])` stems ha^-1^. Basal area in the domain (Figure 2c) has a 95th percentile range between 0 and `r p(ninefive(getValues(basal))[2])` m^2^ ha^-1^, a mean of `r p(mean(getValues(basal), na.rm=TRUE))` m^2^ ha^-1^, within-cell standard deviations range from 0 to `r p(ninefive(basal.sd[,2])[2])` m^2^ ha^-1^. Biomass ranges from 0 to `r p(ninefive(getValues(biomass))[2])` Mg ha^-1^ (Figure 2d), with cell level standard deviations between 0 and `r p(ninefive(biomass.sd[,2])[2])` Mg ha^-1^. High within-cell standard deviations relative to mean values within cells for density, basal area and biomass indicate high levels of heterogeneity within cells, as expected for the PLS data, given its dispersed sampling design.
 
-In the PLS data, stem density is lowest in the western and southwestern portions of the region, regions defined as prairie and savanna (Figure 2b, Table 3). When the Anderson and Anderson [-@anderson1975presettlement] stem density thresholds (<47 stems ha^-1^ for Savanna, Table 3) are used, the extent of area classified as savanna is roughly equivalent to prior reconstructions [@curtis1959vegetation;@rhemtulla2009legacies;@bolliger2004assessing] (Figure 2b). The highest stem densities occur in north-central Minnesota and in north-eastern Wisconsin (Figure 2a), indicating younger forests and/or regions of lower forest productivity.
+In the PLS data, stem density is lowest in the western and southwestern portions of the region, regions defined as prairie and savanna (Figure 2b, Table 2). When the Anderson and Anderson [-@anderson1975presettlement] stem density thresholds (<47 stems ha^-1^ for Savanna, Table 2) are used, the extent of area classified as savanna is roughly equivalent to prior reconstructions [@curtis1959vegetation;@rhemtulla2009legacies;@bolliger2004assessing] (Figure 2b). The highest stem densities occur in north-central Minnesota and in north-eastern Wisconsin (Figure 2a), indicating younger forests and/or regions of lower forest productivity.
 
 ```{r fig4_calc, echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -640,22 +640,7 @@ Ultimately the pre-settlement vegetation data present an opportunity to develop 
 
 ***
 
-
-**Table 1**. *Correction values based on plot level survey design using state, year, and location within township as a basis for assignment. Years reported represent the upper bound for each set of survey years. Internal points are points within the township, external points are on the township boundary; no sampling occurred outside of a township boundary so plots were limited to half of the space for internal points. Townships are divided into Section and Quarter Sections, at most section points and some quarter section points, survey instructions indicated four trees were to be sampled, these were '2nQ' plots, whereas others surveyed only two points in adjacent plot halves ('P' plots).*
-```{r CorrectionTableBlock, results = 'asis', echo = FALSE}
-corr.table <- corr.vals
-colnames(corr.table)[2] <- 'Survey Year'
-corr.table$State <- substr(corr.table$State, 1, 4)
-corr.table$Internal <- substr(corr.table$Internal, 1, 3)
-levels(corr.table$Section) <- c('QSec', 'Sec')
-levels(corr.table$Internal) <- c('External', 'Internal')
-
-pandoc.table(corr.table, justify = "left", style = 'simple')
-``` 
-
-***
-
-**Table 2.** *Biomass parameters used for the calculation of biomass in the pre-settlement dataset(rounded for clarity).*
+**Table 1.** *Biomass parameters used for the calculation of biomass in the pre-settlement dataset(rounded for clarity).*
 
 Jenkins Species Group | $\beta_{0}$ | $\beta_{1}$ | PalEON Taxa Included (Supp. 2)
 --- | --- | --- | ---
@@ -670,7 +655,7 @@ Spruce | -2.08 | 2.33 | Spruce
 
 ***
 
-**Table 3**. *Forest classification scheme used in this paper for comparison between pre-settlement forests and the Haxeltine and Prentice [-@haxeltine1996biome3] potential vegetation classes represented in Ramankutty and Foley [@ramankutty1999estimating]. Plant functional types (PFTs) for grasslands (CG, grassland; Non-Tree samples in the PLS), broad leafed deciduous taxa (BDT) and needleleaded evergreen taxa (NET) are used, but leaf area index used in Haxeltine and Prentice [-@haxeltine1996biome3] is replaced by stem density classes from Anderson and Anderson [@anderson1975presettlement].*
+**Table 2**. *Forest classification scheme used in this paper for comparison between pre-settlement forests and the Haxeltine and Prentice [-@haxeltine1996biome3] potential vegetation classes represented in Ramankutty and Foley [@ramankutty1999estimating]. Plant functional types (PFTs) for grasslands (CG, grassland; Non-Tree samples in the PLS), broad leafed deciduous taxa (BDT) and needleleaded evergreen taxa (NET) are used, but leaf area index used in Haxeltine and Prentice [-@haxeltine1996biome3] is replaced by stem density classes from Anderson and Anderson [@anderson1975presettlement].*
 
 Forest Class | Haxeltine & Prentice Rules | Current Study
 ------- | ------- | -------
@@ -682,27 +667,9 @@ Mixedwood	| Both BDT (LAI > 1.5) & NET (LAI > 2.5) present | Stem dens. > 47 ste
 
 ***
 
-**Table 4**. *Classification proportions, patch size and edge cell proportion for various classification schemes used with the Public Land Survey data. All patch size estimates are in 1000s of km^2^.*
-```{r table4_code, echo = FALSE, message = FALSE, warning=FALSE}
-
-patch.mean <- round(sapply(patch.ests, mean) * 64/1000, 0)
-
-cl.tab <- data.frame(rk   = c(round(table(getValues(base))*64/1000,0), 
-                              patch.mean[1], edge.est[1]),
-                     basa = c(round(table(getValues(basal.class))*64/1000,0), 
-                              patch.mean[4], edge.est[4]))
-```
-
-Classification  Metric | Prairie | Savanna | Temperate Deciduous | Temperate Evergreen | Mixed Wood | Mean Patch Size (km^2^) | Edge Cells (%)
---------- | --------- | ----- | ------ | ------ | ------ | -------- | ------ | ------
-Ramankutty and Foley [-@ramankutty1999estimating] | `r cl.tab$rk[5]` | `r cl.tab$rk[4]` | `r cl.tab$rk[2]` | `r cl.tab$rk[1]` | `r cl.tab$rk[3]` | `r cl.tab$rk[6]` | `r cl.tab$rk[7]`
-PLS Data |   `r cl.tab$basa[5]` | `r cl.tab$basa[4]` | `r cl.tab$basa[2]` | `r cl.tab$basa[1]` | `r cl.tab$basa[3]` | `r cl.tab$basa[6]` | `r cl.tab$basa[7]`
-
-***
-
 **Figure 1**. *The domain of the Public Land Survey investigated in this study. The broad domain includes Minnesota, Wisconsin and the upper two thirds of Michigan state. A 8x8km grid is superimposed over the region to aggregate data, resulting in a total of 7940 cells containing data.*
 
-**Figure 2.** *Total stem density (a) in the Upper Midwest, along with forest type classification (b) based on PLS data and the stem density thresholds defined by Anderson and Anderson [-@anderson1975presettlement]; Table 3). Fine lines represent major rivers. To a first order, basal area (c) and biomass (d) show similar patterns to stem density (but see* Figure 3*).*
+**Figure 2.** *Total stem density (a) in the Upper Midwest, along with forest type classification (b) based on PLS data and the stem density thresholds defined by Anderson and Anderson [-@anderson1975presettlement]; Table 2). Fine lines represent major rivers. To a first order, basal area (c) and biomass (d) show similar patterns to stem density (but see* Figure 3*).*
 
 **Figure 3.** *The major forest types in the pre-settlement Upper Midwest. Five clusters are shown using k-medoid clustering.  These clusters represent  (b) the ratio between biomass and stem density as an indicator of forest structure. Regions with high stem density to biomass ratios (blue) indicate dense stands of smaller trees, while regions with low stem density to biomass ratios (red) indicate larger trees with wider spacings.*
 
