@@ -592,6 +592,14 @@ fig10a_output <- figure_10a()
 
 Modern compositional dissimilarity from the PLSS data is related to distance from 'remnant' forest. The dissimilarity quantile of FIA-PLSS distances increases with increasing distance to remnant cells.  While it is difficult to quantify exactly what is meant by remnant, given the strong compositional variability within the PLS dataset, we use the 25%ile quantile of within dataset nearest-neighbor disimilarities for the PLS as a useful indicator. Results are robust to higher levels of dissimilarity, up to the 90%ile.  Using the 25%ile for within PLS dissimilarity, approximately `r round(sum(fig10a_output$quants$eco_quant<=0.25)/nrow(fig10a_output$quants)*100,0)`% of FIA cells can be classed as 'remnant' forest. The mean distance to remnant forests for cells with dissimilarities above the 25%ile is `r round(mean(fig10a_output$quants$sp_dist[fig10a_output$quants$sp_dist>0]),1)` km, higher than the mean of ~9.6km expected if each 8x8km cell had at least one adjacent 'remnant' cell.
 
+Table:
+Zone          | Min (modeled) | Max (modeled) | Min (Null) | Max (Null)
+Tamarack      | 28 |33 | 19 | 24 | Further
+Northern Oak  | 24 | 29 | 24 | 34 | No diff.
+Pine          | 30 | 37 | 18 | 23 | Further
+Hemlock       | 50 | 74 | 19 | 23 | Further
+Oak Savanna   | 21 | 26 | 23 | 33 | No diff.
+
 The GLM shows that distance from remnant forests in the FIA is significantly related to the dissimilarity quantile for FIA data ($\chi_{1,4}$=3271, p < 0.001). The mean distance to novelty varies by PLS forest type, but is between approximately 20 and 60km for the four forest types examined here (Figure 10b). The least sensitive forest type appears to be the northern softwood forests (Figure 5, green), which reach 'novelty' only when separated from remnant forests by 60km.   Hemlock/Cedar/Birch/Maple forest type (Figure 5, yellow).  The most sensitive forest type, the hardwood Oak/Poplar/Basswood/Maple forest type (Figure 5, light purple) reaches novelty at only 23km from a focal remnant cell, while Pine dominated forests (Figure 5, orange) reach novelty at 26km. Oak savanna and Hemlock/Cedar/Birch/Maple forest are less sensitive, reaching novelty at 30 and 33km respectively.
 
 ```{r fig11_calc, echo = FALSE, message = FALSE, warning=FALSE}
