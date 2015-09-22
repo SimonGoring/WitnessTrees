@@ -3,8 +3,8 @@ knitr::opts_chunk$set(
   comment = " ",
   error = FALSE,
   eval = TRUE,
-  cache = TRUE,
-  tidy = FALSE,
+  cache = FALSE,
+  tidy = TRUE,
   fig.path = "figure/",
   cache.path = "cache/"
 )
@@ -68,7 +68,7 @@ source('R/base_calculationsv_1.3.R')
 rm(quadrant)
 
 
-## ------------------------------------------------------------------------
+## ----loadtaxon, echo = FALSE, warning=FALSE, message=FALSE---------------
 taxon_table <- read.csv('../../data//output//tests//clean.bind.test.csv')
 
 
@@ -312,26 +312,7 @@ fig10a_output <- figure_10a()
 source('R/figures/fig10_transect_plots.R')
 
 
-## ----CorrectionTableBlock, results = 'asis', echo = FALSE----------------
-corr.table <- corr.vals
-colnames(corr.table)[2] <- 'Survey Year'
-corr.table$State <- substr(corr.table$State, 1, 4)
-corr.table$Internal <- substr(corr.table$Internal, 1, 3)
-levels(corr.table$Section) <- c('QSec', 'Sec')
-levels(corr.table$Internal) <- c('External', 'Internal')
-
-pandoc.table(corr.table, justify = "left", style = 'simple')
-
-## ----table4_code, echo = FALSE, message = FALSE, warning=FALSE-----------
-
-patch.mean <- round(sapply(patch.ests, mean) * 64/1000, 0)
-
-cl.tab <- data.frame(rk   = c(round(table(getValues(base))*64/1000,0), 
-                              patch.mean[1], edge.est[1]),
-                     basa = c(round(table(getValues(basal.class))*64/1000,0), 
-                              patch.mean[4], edge.est[4]))
-
-## ----fig1_output,echo=FALSE,warning=FALSE,message=FALSE,fig.width=4,fig.height = 3,dpi=300, dev=c('png','postscript','tiff')----
+## ----fig1_output,echo=FALSE,warning=FALSE,message=FALSE,fig.width=4,fig.height = 3,dpi=300, dev=c('png','tiff')----
 
 val.plot <- data.frame(xyFromCell(dens, 1:ncell(dens)),
                        dens = !is.na(getValues(dens)))
@@ -340,62 +321,99 @@ val.plot$dens[!val.plot$dens] <- NA
 
 fig1plot <- base.map +
   geom_tile(data = na.omit(val.plot), 
-            aes(x = x, y = y, fill = dens), alpha = 0.8) +
+            aes(x = x, y = y), alpha = 0.8, fill = 'lightgray') +
+  geom_path(data=river.subset, 
+            aes(x = long, y = lat, group = group), color = 'blue', alpha = 0.1) +
+    geom_polygon(data=lakes.subset, 
+                 aes(x = long, y = lat, group = group), fill = '#ADD8E6') +
   geom_path(data = umw.domain, aes(x = long, y = lat, group = group, linesize = paleon)) +
   geom_path(data = can.domain, aes(x = long, y = lat, group = group)) +
   theme_bw() +
   theme(axis.text.x = element_blank(),
         axis.text.y = element_blank(),
-        legend.position = 'top',
+        legend.position = 'none',
         legend.title = element_blank())
 
 fig1plot
 
-## ----fig2_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=4, fig.height = 4, dpi=300, dev=c('png','postscript','tiff')----
+## ----fig2_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=4, fig.height = 4, dpi=300, dev=c('png','tiff')----
 
 angle.plot
 
 
-## ----fig3_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=5, fig.height = 5, dpi=300, dev=c('png','postscript','tiff')----
+## ----fig3_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=5, fig.height = 5, dpi=300, dev=c('png','tiff')----
 
 grid.arrange(dens.facet, anders.facet, basa.facet, biom.facet, nrow = 2)
 
 
-## ----fig4_output, echo=FALSE, message=FALSE, warning=FALSE, width=5, fig.height = 5, dpi=300, dev=c('png','postscript','tiff')----
+## ----fig4_output, echo=FALSE, message=FALSE, warning=FALSE, width=5, fig.height = 5, dpi=300, dev=c('png','tiff')----
 
-biom_sd
+  biom_sd
 
 
-## ----fig5_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=7, fig.height = 5, dpi=300, dev=c('png','postscript','tiff')----
+## ----fig5_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=7, fig.height = 5, dpi=300, dev=c('png','tiff')----
 composition.plots
 
-## ----fig6_output, echo = FALSE, message = FALSE, warning=FALSE, results='hide', fig.width=6, fig.height=6, dpi=300, dev=c('png','postscript','tiff')----
+## ----fig6_clusters, echo = FALSE, warning=FALSE, message=FALSE, fig.width=7, fig.height = 5, dpi=300, dev=c('png','tiff')----
+
+
+  old_classes <- pam(comp.grid[,-1], k = 5) # Based on a distance of 0.32
+  
+  rem_class <- factor(old_classes$clustering,
+                      labels=c('Tamarack/Pine/Spruce/Poplar',
+                               'Oak/Poplar/Basswood/Maple',
+                               'Pine',
+                               'Hemlock/Cedar/Birch/Maple',
+                               'Oak Savanna'))
+
+  clust_plot <- data.frame(comp.pts, cluster = rem_class)
+
+  map_plots <- base.map + 
+    geom_tile(data = clust_plot, aes(x = x, y = y, fill=cluster)) +
+  scale_fill_brewer(type = 'qual') +
+    geom_path(data=river.subset, aes(x = long, y = lat, group = group), color = 'blue', alpha = 0.1) +
+    geom_polygon(data=lakes.subset, aes(x = long, y = lat, group = group), fill = '#ADD8E6') +
+    geom_path(data = umw.domain, aes(x = long, y = lat, group = group, linesize = paleon)) +
+    geom_path(data = can.domain, aes(x = long, y = lat, group = group)) +
+    theme_bw() +
+    theme(axis.title.y = element_blank(),
+        axis.text.y  = element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.x  = element_blank(),
+        legend.position = "none")
+
+
+
+
+## ----fig6_output, echo = FALSE, message = FALSE, warning=FALSE, results='hide', fig.width=6, fig.height=6, dpi=300, dev=c('png','tiff')----
 
 out.map
 
 
-## ----fig7_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 7, dpi=300, dev=c('png','postscript','tiff')----
+## ----fig7_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 7, dpi=300, dev=c('png','tiff')----
 
-ggsave(arrangeGrob(dens.fp, basa.fp, biom.fp, biomass.comp, nrow = 2), 
-       filename = paste0('figures/fig8_fourpanelbiomass', version, '.tiff'), 
-       width=8, height = 8, dpi=300)
+# ggsave(arrangeGrob(dens.fp, basa.fp, biom.fp, biomass.comp, nrow = 2), 
+#        filename = paste0('figures/fig8_fourpanelbiomass', version, '.tiff'), 
+#        width=8, height = 8, dpi=300)
+
+plot(arrangeGrob(dens.fp, basa.fp, biom.fp, biomass.comp, nrow = 2))
        
 
-## ----fig8_output, echo = FALSE, warning=FALSE, message=FALSE, results='hide', fig.width=7, fig.height = 5, dpi=300, dev=c('png','postscript','tiff')----
+## ----fig8_output, echo = FALSE, warning=FALSE, message=FALSE, results='hide', fig.width=7, fig.height = 5, dpi=300, dev=c('png','tiff')----
 
 grid.arrange(histogram, spatial.internal, spatial.external, ncol = 1)
 
 
-## ----fig9_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 6, dpi=300, dev=c('png','postscript','tiff')----
+## ----fig9_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 6, dpi=300, dev=c('png','tiff')----
 
 trans.plot
 
 
-## ----fig10_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 6, dpi=300, dev=c('png','postscript','tiff')----
+## ----fig10_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 6, dpi=300, dev=c('png','tiff')----
 
-fig10a_output$plot
+plot(fig10a_output$plot)
 
 
-## ----fig11_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 6, dpi=300, dev=c('png','postscript','tiff')----
+## ----fig11_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 6, dpi=300, dev=c('png','tiff')----
 trans.plot
 
