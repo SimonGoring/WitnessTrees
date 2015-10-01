@@ -2,131 +2,144 @@
 
 # Are "novel" cells further from remnant forest than expected?
 figure_10a <- function(){
-  
-  breaks <- quantile(plss.dissim$dist[plss.dissim$class %in% c('PLSS')], c(seq(0, 1, by = 0.01)))
+
+  #  Get the values for the quantile breaks from the PLSS internal dissimilarities:
+  breaks  <- quantile(plss.dissim$dist[plss.dissim$class %in% c('PLSS')], c(seq(0, 1, by = 0.01)))
   breaks2 <- quantile(plss.dissim$dist[plss.dissim$class %in% c('PLSS')], c(seq(0, 1, by = 0.1)))
-  
-  #  Ecological distances in fia.distances$dist
+
+  #  Ecological distances in fia.distances$dist for the FIA to PLSS minimum dissimilarities
+  #  Everything above the 95%ile is considered novel.
   fia.distances <- distances[distances$class == 'FIA-PLSS',]
   
-  #  Spatial distances in the first two columns
+  #  Spatial distances are botained from dissimilarity matrix of the first two columns of
+  #  fia.distances:
   point.distances <- as.matrix(dist(fia.distances[,1:2]))
   
-  old_classes <- pam(comp.grid[,-1], k = 5)
+  #  old_classes is calculated higher in the paper using the same call.
+  #  We have to modify the call because we're using a smaller subset of the points.
+  #  Just want to make sure we're doing things right.
   
+  rem_class_fun <- factor(old_classes$clustering[match(fia.aligned[,1],comp.grid[,1])],
+                          labels=c('Tamarack/Pine/Spruce/Poplar',
+                                   'Oak/Poplar/Basswood/Maple',
+                                   'Pine',
+                                   'Hemlock/Cedar/Birch/Maple',
+                                   'Oak Savanna'))
   
-  rem_class <- factor(old_classes$clustering[match(fia.aligned[,1],comp.grid[,1])],
-                      labels=c('Tamarack/Pine/Spruce/Poplar',
-                               'Oak/Poplar/Basswood/Maple',
-                               'Pine',
-                               'Hemlock/Cedar/Birch/Maple',
-                               'Oak Savanna'))
-  
-  get_glmmodel <- function(selection){
-    #  What is the closest 'remnant' point?
+  #  What is the model that defines the link between distance from a remnant plot
+  #  and novelty?
+  get_glmmodel <- function(selection, thresh){
+    #  This function has two options, one is whether or not we're calculating a
+    #  null model.  We use "thresh" to define the threshold, currently at 0.25.
     
     fia.dist <- fia.distances
     
     if(!selection == 'breaks'){
       # This randomizes the distances if we're doing the null model:
-      fia.dist$dist <- sample(fia.distances$dist)
+      fia.dist$dist <- sample(fia.distances$dist, replace = TRUE)
     } 
 
-    #  Then find the 
-    sp_wmin <- apply(point.distances[fia.dist$dist < breaks[25],], 2, which.min)
-    sp_dist <- apply(point.distances[fia.dist$dist < breaks[25],], 2, min)
-    
+    #  Then find the spatial distance to all points below the "thresh" percentile.
+    sp_wmin <- apply(point.distances[fia.dist$dist < breaks[thresh],], 2, which.min)
+    sp_dist <- apply(point.distances[fia.dist$dist < breaks[thresh],], 2, min)
+  
     fia_by_dist <- data.frame(x = fia.dist$x,
                               y = fia.dist$y,
-                              rem_class = rem_class,
+                              rem_class = rem_class_fun,
                               sp_dist = sp_dist/1000,
                               eco_dist = fia.dist$dist,
-                              eco_quant = findInterval(fia.dist$dist,breaks,all.inside=TRUE)/100)
+                              eco_quant = findInterval(fia.dist$dist,breaks,all.inside=TRUE)/100 > 0.95)
     
-    list(glm(eco_quant ~ sp_dist*rem_class, family=quasibinomial, data = na.omit(fia_by_dist)),
+    fia_by_dist <- na.omit(fia_by_dist)
+    
+    eco_mod <- glm(eco_quant ~ sp_dist * rem_class,
+                      family=binomial, 
+                      data = fia_by_dist)
+    
+    list(eco_mod,
          fia_by_dist)
   }
   
-  log_mod <- get_glmmodel('breaks')
+  log_mod <- get_glmmodel('breaks', thresh=25)
     
   #  Here we want to test whether these coefficients are different than random:
   mods <- lapply(1:100, function(x)get_glmmodel('random'))
   
-  get_thresh <- function(x){
+  get_thresh <- function(model_in, na_cut){
     #
     #  Get the cutoff thresholds for reaching 95%ile dissimilarity:
     #
-    model <- x[[1]]
+    model <- model_in[[1]]
     
-    data_in <- data.frame(sp_dist = rep(seq(0, 100),5), 
-                          rem_class = rep(levels(rem_class), each=101))
-    
-    data_model <- predict(model, newdata= data_in, type= 'response', se.fit=TRUE)
+    data_model <- predict(model, type= 'response', se.fit=TRUE)
                   
+    data_in          <- model_in[[2]]
     data_in$log_pred <- data_model[[1]]
-    data_in$err      <- data_model[[2]] * 1.96
+    data_in$err      <- data_model[[2]] * 1.96  # convert from SE to CI.
     
-    do.call(rbind.data.frame, lapply(levels(rem_class),
+    do.call(rbind.data.frame, lapply(levels(rem_class_fun),
                                      function(x){
-                                       data.frame(low = which.min(abs(0.95-subset(data_in, rem_class == x)$log_pred - 
-                                                                       subset(data_in, rem_class == x)$err)),
-                                                  high = which.min(abs(0.95- 
-                                                                      subset(data_in, rem_class == x)$log_pred + 
-                                                                        subset(data_in, rem_class == x)$err)),
+                                       
+                                       #  Approximate the upper and lower bounds of the confidence interval:
+                                       low_range <- approx(x = data_in$sp_dist[data_in$rem_class %in% x],
+                                                           y = data_in$log_pred[data_in$rem_class %in% x] - 
+                                                                               data_in$err[data_in$rem_class %in% x], 
+                                                           xout = seq(0,100, by = 1))
+                                       
+                                       high_range <- approx(x = data_in$sp_dist[data_in$rem_class %in% x],
+                                                           y = data_in$log_pred[data_in$rem_class %in% x] + 
+                                                             data_in$err[data_in$rem_class %in% x], 
+                                                           xout = seq(0,100, by = 1))
+                                      
+                                       #  Return the lowest and highest distances for the model output:
+                                       data.frame(low  = ifelse(all(high_range$y>0.5, na.rm=TRUE),0,
+                                                                high_range$x[which.min(abs(na_cut - high_range$y))]),
+                                                  high =  ifelse(all(low_range$y>0.5, na.rm=TRUE),0,
+                                                                 low_range$x[which.min(abs(na_cut -  low_range$y))]),
                                                   zone = x)
-                                                  
     }))
     
   }
   
-  null_thresh  <- do.call(rbind.data.frame,lapply(mods,get_thresh))
-  model_thresh <- get_thresh(log_mod)
+  null_thresh  <- do.call(rbind.data.frame,lapply(mods,get_thresh, na_cut=0.5))
+  model_thresh <- get_thresh(log_mod, 0.5)
   
   thresh_bounds <- aggregate(x = null_thresh, by = list(null_thresh$zone), FUN = mean)
   
-  signif <- sapply(mods, function(x){
-      low  <- coef(log_mod[[1]]) < confint.default(x[[1]])[,1]
-      high <- coef(log_mod[[1]]) > confint.default(x[[1]])[,2]
-      
-      output <- rep(NA, length(low))
-      output[low]  <- 'low'
-      output[high] <- 'high'
-      output[is.na(output)] <- 'ns'
-      output
-    })
-  
   plot_output <- function(input){
-    log_pred <- predict(input[[1]], newdata=data.frame(sp_dist = rep(seq(0, 100),5), 
-                                                       rem_class = rep(levels(rem_class), each=101)),
-                                    type= 'response', se.fit=TRUE)
+    #  Just to get the ggplot plotted nicely:
     
-    log_output <- data.frame(dist = rep(seq(0, 100), 5),
-                             rem_class =  factor(rep(levels(rem_class), each=101)),
-                             values = log_pred,
-                             val_min = log_pred[[1]] - log_pred[[2]]*1.96,
-                             val_max = log_pred[[1]] + log_pred[[2]]*1.96)
+    log_pred <- predict(input[[1]], type= 'response', se.fit=TRUE)
     
-    log_output$rem_class <- factor(log_output$rem_class,levels(log_output$rem_class)[c(5,3,4,1,2)])
-
+    log_output <- data.frame(dist = na.omit(input[[2]])$sp_dist,
+                             rem_class =  na.omit(input[[2]])$rem_class,
+                             values = log_pred$fit,
+                             val_min = log_pred$fit - log_pred$se.fit*1.96,
+                             val_max = log_pred$fit + log_pred$se.fit*1.96)
+    
+    log_output <- log_output[order(log_output$values),]
+    
     ggplot(data = input[[2]], aes(x = sp_dist, y = eco_quant)) +
-      geom_jitter(position = position_jitter(width = 1), alpha=0.2) +
-      geom_hline(yintercept = 0.95, linetype = 2, color = 'red') +
+      geom_jitter(position = position_jitter(width = 1, height = 0.2), alpha=0.5, aes(color = rem_class)) +
       geom_ribbon(data=log_output, aes(x = dist, ymin=val_min, ymax=val_max, color = rem_class),
                   inherit.aes=FALSE, alpha = 0.5) +
-      geom_path(data=log_output, aes(x = dist, y=values.fit, group = rem_class, color = rem_class),
+      geom_path(data=log_output, aes(x = dist, y = values, 
+                                     group = rem_class, color = rem_class),
                 inherit.aes=FALSE, size = 1, name = 'Forest Type') +
       scale_color_brewer(type='qual') +
+      geom_hline(yintercept = 0.5, linetype = 2, color = 'red') +
       theme_bw() +
       coord_cartesian(xlim=c(0, 80), ylim=c(0, 1)) +
       theme(axis.title.y = element_blank(),
             axis.text.y  = element_blank(),
             axis.title.x = element_text(family='serif', size = 12, face='bold'),
-            axis.text.x  = element_text(family='serif', size = 10)) +
+            axis.text.x  = element_text(family='serif', size = 10),
+            legend.position = "none") +
       xlab('Distance from Remnant (25%ile) Forest')
   }
   
-  
-  dist_dist <- ggplot(fia_by_dist) +
+  dist_plot <- plot_output(log_mod)
+  dist_dist <- ggplot(log_mod[[2]]) +
     geom_bar(aes(x = eco_quant, y = (..count..)/sum(..count..)), 
              breaks = seq(0,1,0.05), color = 'red', fill = 'lightgray', alpha = 0.5) +
     coord_flip(xlim=c(-0.0001, 1)) +
@@ -139,26 +152,9 @@ figure_10a <- function(){
     xlab('Dissimilarity Quantile') +
     ylab('Proportion of Cells')
   
-  clust_map <- na.omit(data.frame(fia_by_dist[,1:2], cluster = rem_class))
-
-  map_plots <- base.map + 
-    geom_tile(data = clust_map, aes(x = x, y = y, fill=cluster)) +
-    scale_fill_brewer(type='qual') +
-    geom_path(data=river.subset, aes(x = long, y = lat, group = group), color = 'blue', alpha = 0.1) +
-    geom_polygon(data=lakes.subset, aes(x = long, y = lat, group = group), fill = '#ADD8E6') +
-    geom_path(data = umw.domain, aes(x = long, y = lat, group = group, linesize = paleon)) +
-    geom_path(data = can.domain, aes(x = long, y = lat, group = group)) +
-    theme_bw() +
-    theme(axis.title.y = element_blank(),
-        axis.text.y  = element_blank(),
-        axis.title.x = element_blank(),
-        axis.text.x  = element_blank(),
-        legend.position = "none")
-  
-  #Okay, so what species dominate these cells?
-  
-  return(list(plot = grid.arrange(dist_dist, dist_plot, ncol=2, widths = c(.8, 1.6)),
+  return(list(plot = dist_plot,
          fun = log_mod,
          quants = fia_by_dist,
-         paths = log_output))
+         paths = log_output,
+         distances = list(model_thresh, thresh_bounds)))
 }

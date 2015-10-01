@@ -118,17 +118,17 @@ trees.by.cell  <- rowSums(count.table[,!colnames(count.table) %in% c('x', 'y', '
 #  below to make sure that the densities &cetera sum properly.
 
 density.table <- dcast(spec.table, x + y  + cell ~ spec, sum, na.rm=TRUE, value.var = 'density')
-basal.table <- dcast(spec.table, x + y  + cell~ spec, sum, na.rm=TRUE, value.var = 'basal')
-biomass.table <- dcast(spec.table, x + y  + cell~ spec, sum, na.rm=TRUE, value.var = 'biom')
-diam.table <-  dcast(spec.table, x + y  + cell~ spec, sum, na.rm=TRUE, value.var = 'diams')
+basal.table   <- dcast(spec.table, x + y  + cell ~ spec, sum, na.rm=TRUE, value.var = 'basal')
+biomass.table <- dcast(spec.table, x + y  + cell ~ spec, sum, na.rm=TRUE, value.var = 'biom')
+diam.table    <- dcast(spec.table, x + y  + cell ~ spec, sum, na.rm=TRUE, value.var = 'diams')
 
 #  The function averages the estimates to a point level estimate from the aggregated sum.
 normalize <- function(x, mult = 2, value = points.by.cell) {x[,4:ncol(x)] <-  x[,4:ncol(x)] / value * mult; x}
 
 density.table <- normalize(density.table)
-basal.table <- normalize(basal.table)
+basal.table   <- normalize(basal.table)
 biomass.table <- normalize(biomass.table)
-diam.table <- normalize(diam.table, mult = 2.54, trees.by.cell)
+diam.table    <- normalize(diam.table, mult = 2.54, trees.by.cell)
 
 #  We want rasterized versions of these tables with sums:
 rast.fun <- function(x){
@@ -151,7 +151,7 @@ mdiam    <- rast.fun(diam.table); mdiam[mdiam==0] <- NA
 #  To get standard deviations within cells we need to do things a bit differently:
 rowset <- cbind(1:(nrow(spec.table)/2), (nrow(spec.table)/2+1):nrow(spec.table))
 
-sd.table <- data.frame(cell = spec.table$cell[rowset[,1]],
+sd.table <- data.frame(cell    = spec.table$cell[rowset[,1]],
                        density = spec.table$density[rowset[,1]] * 2,
                        basal   = spec.table$basal[rowset[,1]] + spec.table$basal[rowset[,2]],
                        biomass = spec.table$biom[rowset[,1]] + spec.table$biom[rowset[,2]])
