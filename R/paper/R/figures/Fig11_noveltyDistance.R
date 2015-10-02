@@ -153,8 +153,7 @@ figure_10a <- function(){
     ylab('Proportion of Cells')
   
   return(list(plot = dist_plot,
-         fun = log_mod,
-         quants = fia_by_dist,
-         paths = log_output,
+         fun = log_mod[[1]],
+         quants = log_mod[[2]],
          distances = list(model_thresh, thresh_bounds)))
 }
