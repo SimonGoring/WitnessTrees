@@ -80,10 +80,8 @@ trans.plot <- ggplot(transects, aes(x = cell,
                      breaks = c(seq(0, 6e+05, by = 5e+04)),
                      labels = c('', '', '1e+05', '', '', '', '3e+05',
                                 '', '', '', '5e+05', '', '')) +
+  scale_y_log10() +
   coord_cartesian(ylim=c(0,1)) +
-  #geom_smooth(se=FALSE, aes(color = variable)) +
-  #stat_smooth(se = FALSE, method = 'gam', 
-  #            formula = y ~ s(x, k=20), size = 2, aes(color = variable)) + 
   geom_smooth(method = 'gam', family = betar, se = FALSE,
               formula = y ~ te(x, k = 30), size = 1.2, aes(color = variable)) + 
   scale_color_manual(values = getPalette(9)) +
