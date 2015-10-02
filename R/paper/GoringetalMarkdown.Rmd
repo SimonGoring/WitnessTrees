@@ -215,7 +215,6 @@ $m = Exp(\beta_{0} + \beta_{1} * \ln dbh)$
 
 where $m$ represents stem biomass for an individual tree in kg. $\beta_{0}$ and $\beta_{1}$ are parameters derived from [@jenkins2004comprehensive] and described in Table 1. $dbh$ is the stem diameter at breast height (converted to cm) recorded in the survey notes. The biomass estimates are summed across both trees at a survey point and multiplied by the stem density calculated at that point to produce an estimate of aboveground biomass reported in Mg ha^-1^ [@jenkins2004comprehensive].
 
-
 **Table 1.** *Biomass parameters used for the calculation of biomass in the pre-settlement dataset(rounded for clarity).*
 
 Jenkins Species Group | $\beta_{0}$ | $\beta_{1}$ | PalEON Taxa Included (Supp. 2)
@@ -228,7 +227,6 @@ Cedar and Larch | -2.03 | 2.26 | Tamarack, Cedar
 Fir and Hemlock | -2.54 | 2.43 | Fir, Hemlock
 Pine | -2.54 | 2.43 | Pine
 Spruce | -2.08 | 2.33 | Spruce
-
 
 Matching PLSS tree genera to the species groups defined by Jenkins *et al*. [-@jenkins2004comprehensive] is straightforward, placing the 22 genera used in this study into 9 allometric groups (Table 1). However, all maples are assigned to the generic "Hardwood" group since separate allometric relationships exist for soft and hard maple (Table 1). Biomass estimates for "Non tree" survey points are assigned 0 Mg ha^-1^.
 
@@ -713,7 +711,6 @@ Ultimately the pre-settlement vegetation data present an opportunity to develop 
 Acknowledgements
 ==================
 The authors would like to thanks the large number of individuals who have worked to first, undertake the PLS survey, to bring the original survey data together, to digitize and standardize much of the survey results, and finally, to assist in interpreting and compiling the data in its present form. We would like to thank our reviewers and those who have sent comments on the preprint (http://dx.doi.org/10.1101/026575).
-
 
 ***
 ```{r fig1_output,echo=FALSE,warning=FALSE,message=FALSE,fig.width=4,fig.height = 3,dpi=300, dev=c('png','tiff')}
