@@ -104,7 +104,6 @@ fiadiam <- sqrt((fiabasa / fiadens)/pi) * 2 * 100
 
 #  Get the taxa that are in common between the two datasets (e.g., exclude NonTrees):
 name.set <- colnames(agg.dens)[colnames(agg.dens) %in% colnames(count.table)]
-#name.set <- name.set[!name.set %in% 'Ironwood']
 
 #  comp.grid is the PLSS data limited to cells with data.
 comp.grid <- as.data.frame(composition.table[ , name.set])

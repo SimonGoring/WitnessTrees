@@ -17,6 +17,8 @@ morisita <- function(processed.data, correction.factor = NULL, veil=FALSE) {
     diam[diam < 8] <- NA
   }
   
+  diam[diam == 0 & !spec == 'No tree'] <- NA
+  
   m.diam <- diam * 2.54 / 100
   
   dist <- floor(apply(dist, 2, function(x)as.numeric(as.character(x))))

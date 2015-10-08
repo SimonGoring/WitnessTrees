@@ -13,6 +13,8 @@ get_points <- function(x){
   
   #  Input comes from the x & y limits of the transect (`transect`)
   
+  num.rast <- setValues(base.rast, 1:ncell(base.rast))
+  
   cells <- extract(num.rast, 
                    data.frame(x = seq(x$x[1], x$x[2], length.out = 500),
                               y = seq(x$y[1], x$y[2], length.out = 500)))
@@ -33,8 +35,9 @@ get_points <- function(x){
   transect.fia <- transect.fia[!is.na(transect.fia$cell),]
   transect.fia[is.na(transect.fia)] <- 0
   
+  #  We are just using the "x" axis of the data as the parameter on the x axis.
   transect.plss$cell <- xyFromCell(num.rast, transect.plss$cell)[,1]
-  transect.fia$cell <- xyFromCell(num.rast, transect.fia$cell)[,1]
+  transect.fia$cell  <- xyFromCell(num.rast, transect.fia$cell)[,1]
   
   transect.plss$class <- 'PLSS'
   transect.fia$class <- 'FIA'

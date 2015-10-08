@@ -8,7 +8,7 @@ lost.distances <- distances[distances$dist > intern.quant[95] & distances$class 
 pls.points <- distances[distances$dist > intern.quant[95] & distances$class == 'PLSS-FIA', 1:2]
 
 #  Matching the FIA points seems to be a bit more difficult than I anticipated:
-novel.distances <- distances[distances$class == 'FIA-PLSS' & distances$dist > intern.quant[95]  & distances$cell %in% count.table$cell, ]
+novel.distances <- distances[distances$class == 'FIA-PLSS' & distances$dist > intern.quant[95]  & distances$cell %in% fia.aligned$cell, ]
 
 fia.types <- fia.aligned[match(novel.distances$cell, agg.basa$cell),-1]
 fia.points <- novel.distances[,1:2]
