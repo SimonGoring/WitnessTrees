@@ -1,5 +1,4 @@
-library(RColorBrewer)
-
+#  This is the code to plot the Transect data.
 #  Transect axes:
 transect.lims <- list(one = data.frame(x = c(-18093, 631094),
                                        y = c(1470422, 668889)),
@@ -72,6 +71,8 @@ transects$PFT2  <- gsub('Evergreen|Deciduous', '', transects$PFT)
 
 getPalette <- colorRampPalette(brewer.pal(9, "Paired"))
 
+transects <- na.omit(transects)
+
 trans.plot <- ggplot(transects, aes(x = cell, 
                                     y = value, 
                                     linetype = PFT)) +
@@ -80,7 +81,7 @@ trans.plot <- ggplot(transects, aes(x = cell,
                      breaks = c(seq(0, 6e+05, by = 5e+04)),
                      labels = c('', '', '1e+05', '', '', '', '3e+05',
                                 '', '', '', '5e+05', '', '')) +
-  scale_y_log10() +
+  scale_y_sqrt() +
   coord_cartesian(ylim=c(0,1)) +
   geom_smooth(method = 'gam', family = betar, se = FALSE,
               formula = y ~ te(x, k = 30), size = 1.2, aes(color = variable)) + 

@@ -25,3 +25,4 @@ map_plots <- base.map +
         axis.text.x  = element_blank(),
         legend.position = "none")
 
+ggsave(filename = "figures/fig_5_ClusterPlots.tiff", plot = map_plots, dpi=300, width=4, height=4)

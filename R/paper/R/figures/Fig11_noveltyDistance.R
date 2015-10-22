@@ -36,7 +36,7 @@ figure_10a <- function(){
     
     if(!selection == 'breaks'){
       # This randomizes the distances if we're doing the null model:
-      fia.dist$dist <- sample(fia.distances$dist, replace = TRUE)
+      fia.dist$dist <- sample(fia.distances$dist)
     } 
 
     #  Then find the spatial distance to all points below the "thresh" percentile.
