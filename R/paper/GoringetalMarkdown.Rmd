@@ -5,7 +5,7 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: word_document
 
 bibliography: goringetal_references.bib
-csl: plos-biology.csl
+csl: plos.csl
 ---
 
 Changes in Forest Composition, Stem Density, and Biomass from the Settlement Era (1800s) to Present in the Upper Midwestern United States
@@ -563,13 +563,15 @@ zone_cast$cells <- dcast(zone_melt,
                          cluster ~ estimate, 
                          value.var = 'value', sum, na.rm=TRUE)$cells
 
+zone_cast <- zone_cast[order(zone_cast$cells, decreasing = TRUE),]
+
 colnames(zone_cast) <- c('Forest Type', 'Number of Cells', 
-                         'Stem Density\nstems ha^-1^',
-                         'Basal Area\nm^2^ ha^-1^', 'Biomass\nMg ha^-1^')
+                         'Stem Density stems ha^-1^',
+                         'Basal Area m^2^ ha^-1^', 'Biomass Mg ha^-1^')
 
 zone_cast[,3:5] <- round(zone_cast[,3:5], 1)
 
-zone_cast <- zone_cast[order(zone_cast$cells, decreasing = TRUE),]
+
 
 pandoc.table(zone_cast, style = "rmarkdown")
 
