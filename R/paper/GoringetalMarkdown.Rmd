@@ -568,17 +568,19 @@ zone_cast$cells <- dcast(zone_melt,
 
 zone_cast <- zone_cast[order(zone_cast$cells, decreasing = TRUE),]
 
-colnames(zone_cast) <- c('Forest Type', 'Number of Cells', 
-                         'Stem Density stems ha^-1^',
-                         'Basal Area m^2^ ha^-1^', 'Biomass Mg ha^-1^')
-
 zone_cast[,3:8] <- round(zone_cast[,3:8], 1)
-
-
 
 zone_cast$dens <- paste0(zone_cast$dens, ' (',zone_cast$plss_dens,')')
 zone_cast$basa <- paste0(zone_cast$basa, ' (',zone_cast$plss_basa,')')
 zone_cast$biom <- paste0(zone_cast$biom, ' (',zone_cast$plss_biom,')')
+
+zone_cast <- zone_cast[,1:5]
+
+colnames(zone_cast) <- c('Forest Type', 'Number of Cells', 
+                         'Stem Density stems ha^-1^',
+                         'Basal Area m^2^ ha^-1^', 'Biomass Mg ha^-1^')
+
+zone_cast <- zone_cast[,1:5]
 ```
 
 ```{r diff_table, echo = FALSE, message = FALSE, warning=FALSE, results='asis'}
