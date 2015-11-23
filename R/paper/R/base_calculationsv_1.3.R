@@ -228,6 +228,7 @@ add.v <- function(x, name){
 }
 
 #  Write everything out:
+add.v(diam.table, 'plss_diam')
 add.v(count.table, 'plss_trees')
 add.v(biomass.points, 'plss_points')
 add.v(biomass.points.pft, 'plss_points_pft')

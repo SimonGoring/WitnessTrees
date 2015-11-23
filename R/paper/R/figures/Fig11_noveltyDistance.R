@@ -119,7 +119,7 @@ figure_10a <- function(){
     
     log_output <- log_output[order(log_output$values),]
     
-    ggplot(data = input[[2]], aes(x = sp_dist, y = eco_quant - 1)) +
+    ggplot(data = input[[2]], aes(x = sp_dist, y = eco_quant)) +
       geom_jitter(position = position_jitter(width = 1, height = 0.2), alpha=0.5, aes(color = rem_class)) +
       geom_ribbon(data=log_output, aes(x = dist, ymin=val_min, ymax=val_max, color = rem_class),
                   inherit.aes=FALSE, alpha = 0.5) +
