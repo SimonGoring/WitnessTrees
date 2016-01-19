@@ -123,6 +123,7 @@ biomass.table <- dcast(spec.table, x + y  + cell ~ spec, sum, na.rm=TRUE, value.
 diam.table    <- dcast(spec.table, x + y  + cell ~ spec, sum, na.rm=TRUE, value.var = 'diams')
 
 #  The function averages the estimates to a point level estimate from the aggregated sum.
+#  Why is the multiplier * 2? Because there are two trees per point and we would underestimate otherwise.
 normalize <- function(x, mult = 2, value = points.by.cell) {x[,4:ncol(x)] <-  x[,4:ncol(x)] / value * mult; x}
 
 density.table <- normalize(density.table)

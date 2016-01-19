@@ -97,6 +97,9 @@ fiabasa <- push.rast(agg.basa)
 fiabiom <- push.rast(agg.biom)
 fiadiam <- sqrt((fiabasa / fiadens)/pi) * 2 * 100
 
+fia.points <- as.data.frame(xyFromCell(fiabiom, 1:ncell(fiabiom))[!is.na(getValues(fiabiom)),])
+fia.points$cell <- get_cells(fia.points)
+
 #  Get the taxa that are in common between the two datasets (e.g., exclude NonTrees):
 name.set <- colnames(agg.dens)[colnames(agg.dens) %in% colnames(count.table)]
 

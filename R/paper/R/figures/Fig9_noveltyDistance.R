@@ -1,7 +1,7 @@
 #  Distance, novelty & dispersal
 
 # Are "novel" cells further from remnant forest than expected?
-figure_10a <- function(){
+figure_9 <- function(){
 
   #  Get the values for the quantile breaks from the PLSS internal dissimilarities:
   breaks  <- quantile(plss.dissim$dist[plss.dissim$class %in% c('PLSS')], c(seq(0, 1, by = 0.01)))

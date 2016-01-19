@@ -1,16 +1,3 @@
-## ----setup-knitr, echo = FALSE, message = FALSE--------------------------
-knitr::opts_chunk$set(
-  comment = " ",
-  error = FALSE,
-  eval = TRUE,
-  cache = FALSE,
-  tidy = TRUE,
-  fig.path = "figure/",
-  cache.path = "cache/"
-)
-
-
-
 library("pander")
 library("plyr")
 panderOptions('table.style', 'rmarkdown')
@@ -61,8 +48,15 @@ good.trees <- with(used.data@data, (!(diam1 > 254 | diam2 > 254)) | (species1 %i
 used.data$good <- two.quads | good.trees
 
 count.plot <- rasterize(spTransform(used.data, CRSobj = CRS(model.proj)), 
-                        pot.veg, 'good', sum)
+                        base.rast, 'good', sum)
   
+count.df <- data.frame(xyFromCell(count.plot, 1:ncell(count.plot)),
+                       cell = get_cells(xyFromCell(count.plot, 1:ncell(count.plot))),
+                       points = getValues(count.plot))
+
+write.csv(na.omit(count.df),
+          paste0('../../data/output/wiki_outputs/plss_counts_alb_',version,'.csv'))
+
 source('R/base_calculationsv_1.3.R')
 
 rm(quadrant)
@@ -352,14 +346,14 @@ fia.na <- cor(fia.data, fia.na)
 source('R/lost_and_novel_cluster.R')
 
 
-## ----figure10a, echo = FALSE, message = FALSE, warning=FALSE-------------
+## ----figure9_calc, echo = FALSE, message = FALSE, warning=FALSE-------------
 
-source('R/figures/Fig11_noveltyDistance.R')
+source('R/figures/Fig9_noveltyDistance.R')
 
-fig10a_output <- figure_10a()
+fig9_output <- figure_9()
 
 
-## ----fig11_calc, echo = FALSE, message = FALSE, warning=FALSE------------
+## ----fig10_calc, echo = FALSE, message = FALSE, warning=FALSE------------
 
 source('R/figures/fig10_transect_plots.R')
 
@@ -427,7 +421,7 @@ grid.arrange(histogram, spatial.internal, spatial.external, ncol = 1)
 
 ## ----fig9_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 6, dpi=300, dev=c('png','tiff')----
 
-plot(fig10a_output$plot)
+plot(fig9_output$plot)
 
 
 ## ----fig10_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 6, dpi=300, dev=c('png','tiff')----

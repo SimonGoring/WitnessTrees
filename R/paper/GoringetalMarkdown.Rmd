@@ -278,9 +278,20 @@ good.trees <- with(used.data@data, (!(diam1 > 254 | diam2 > 254)) | (species1 %i
 
 used.data$good <- two.quads | good.trees
 
+base.rast <- raster(xmn = -71000, xmx = 2297000, ncols=296,
+                        ymn = 58000,  ymx = 1498000, nrows = 180,
+                        crs = '+init=epsg:3175')
+
 count.plot <- rasterize(spTransform(used.data, CRSobj = CRS(model.proj)), 
-                        pot.veg, 'good', sum)
+                        base.rast, 'good', sum)
   
+count.df <- data.frame(xyFromCell(count.plot, 1:ncell(count.plot)),
+                       cell = get_cells(xyFromCell(count.plot, 1:ncell(count.plot))),
+                       points = getValues(count.plot))
+
+write.csv(na.omit(count.df),
+          paste0('../../data/output/wiki_outputs/plss_counts_alb_',version,'.csv'))
+
 source('R/base_calculationsv_1.3.R')
 
 rm(quadrant)
@@ -555,8 +566,8 @@ test_clusts$dens <- (getValues((fiadens)) - getValues((dens)))[test_clusts$cell]
 test_clusts$basa <- (getValues((fiabasa)) - getValues((basal)))[test_clusts$cell]
 test_clusts$biom <- (getValues((fiabiom))/1000 - getValues((biomass)))[test_clusts$cell]
 test_clusts$plss_dens <- getValues((dens))[test_clusts$cell]
-test_clusts$plss_basa <- getValues((dens))[test_clusts$cell]
-test_clusts$plss_biom <- getValues((dens))[test_clusts$cell]
+test_clusts$plss_basa <- getValues((basa))[test_clusts$cell]
+test_clusts$plss_biom <- getValues((biom))[test_clusts$cell]
 
 zone_melt <- melt(test_clusts, id.vars = c('x', 'y', 'cluster', 'cell'), variable.name = 'estimate')
 
@@ -653,7 +664,8 @@ fia.na <- cor(fia.data, fia.na)
 
 Both the PLS- and FIA-era compositional data show similar patterns of within-dataset dissimilarity, with the highest dissimilarities found in central Minnesota and northwestern Wisconsin. High within-PLSS dissimilarities are associated with high proportions of maple, birch and fir while high within-FIA dissimilarities are associated with high proportions of hemlock, cedar and fir. Dissimilarity values in the FIA dataset are less spatially structured than in the PLSS. Moran's I for dissimilarities within the FIA ($I_{FIA}$ = `r p(moran.stats[1])`, p < 0.001) are lower than the dissimilarities within the PLSS ($I_{PLSS}$ = `r p(moran.stats[2])`, p < 0.001), suggesting lower spatial autocorrelation in the FIA dataset. Cells with identical pairs represent `r p(sum(distances$dist[distances$class=='PLSS'] == 0) / sum(distances$class=='PLSS')*100)`% of the PLSS cells and `r p(sum(distances$dist[distances$class=='FIA'] == 0) / sum(distances$class=='FIA')*100)`% of FIA cells. Identical cells in the PLSS are largely located along the southern margin and most (`r p(sum(distances$dist[distances$class=='PLSS'] == 0 & comp.grid[,'Oak'] == 1)/sum(distances$dist[distances$class=='PLSS'] == 0)*100)`%) are composed entirely of oak. Cells in the FIA with identical neighbors are composed of either pure oak (`r p(sum(distances$dist[distances$class=='FIA'] == 0 & fia.aligned[,'Oak'] == 1)/sum(distances$dist[distances$class=='FIA'] == 0)*100)`%), pure poplar (`r round(sum(distances$dist[distances$class=='FIA'] == 0 & fia.aligned[,'Poplar'] == 1)/sum(distances$dist[distances$class=='FIA'] == 0)*100, 0)`%) or pure ash (`r round(sum(distances$dist[distances$class=='FIA'] == 0 & fia.aligned[,'Ash'] == 1)/sum(distances$dist[distances$class=='FIA'] == 0)*100, 0)`%).
 
-There is a small but significant positive relationship ($F_{1,5964}$= `r p(anova(fia.num.model)$'F value'[1])`, p < 0.001) between the number of FIA plots and within-FIA dissimilarity. The relationship accounts for 13% of total variance and estimates an increase of $\delta_{d}$ = `r p(coef(fia.num.model)[2])` for every FIA plot within a cell. This increase represents only `r p(coef(fia.num.model)[2]/range(fia.plot.num$dists)[2]*100)`% of the total range of dissimilarity values for the FIA data. There is a gradient of species richness that is co-linear with the number of FIA plots within a cell, where plot number increases from open forest in the south-west to closed canopy, mixed forest in the Upper Peninsula of Michigan. Hence, differences in within- and between-cell variability between the PLSS and FIA datasets seem to have only a minor effect on these regional-scale dissimilarity analyses.
+There is a small but significant positive relationship ($F_{1,5964}$= `r p(anova(fia.num.model)$'F value'[1])`, p < 0.001) betwee
+n the number of FIA plots and within-FIA dissimilarity. The relationship accounts for 13% of total variance and estimates an increase of $\delta_{d}$ = `r p(coef(fia.num.model)[2])` for every FIA plot within a cell. This increase represents only `r p(coef(fia.num.model)[2]/range(fia.plot.num$dists)[2]*100)`% of the total range of dissimilarity values for the FIA data. There is a gradient of species richness that is co-linear with the number of FIA plots within a cell, where plot number increases from open forest in the south-west to closed canopy, mixed forest in the Upper Peninsula of Michigan. Hence, differences in within- and between-cell variability between the PLSS and FIA datasets seem to have only a minor effect on these regional-scale dissimilarity analyses.
 
 We define no-analog communities as those whose nearest neighbour is beyond the 95%ile for dissimilarities within a particular dataset. In the PLSS dataset, forests that have no modern analogs are defined as "lost forests", while forest types in the FIA with no past analogs are defined as "novel forests". More than `r diffs[1]`% of PLSS sites have no  analog in the FIA dataset ('lost forests'; PLS-FIA dissimilarity, Fig 8c), while `r diffs[2]`% of FIA sites have no analog in the PLSS data ('novel forests'; FIA-PLSS dissimilarity, Fig 8d). Lost forests show strong spatial coherence, centered on the "Tension Zone" [@curtis1959vegetation], the ecotone between deciduous forests and hemlock-dominated mixed forest (Fig 4).
 
