@@ -86,7 +86,7 @@ John W. Williams^1,10^
 
 ```{r dataLoad, echo = FALSE, message=FALSE, results = 'hide', warning=FALSE}
 
-version <- '0.9-6'
+version <- '0.9-7'
 
 #  Choose one of the two below (3175 is the Albers, 4326 is lat/long):
 model.proj <- '+init=epsg:3175'
@@ -296,7 +296,7 @@ count.df <- data.frame(xyFromCell(count.plot, 1:ncell(count.plot)),
 write.csv(na.omit(count.df),
           paste0('../../data/output/wiki_outputs/plss_counts_alb_',version,'.csv'))
 
-source('R/base_calculationsv_1.3.R')
+source('R/base_calculationsv_1.4.R')
 
 rm(quadrant)
 
@@ -585,7 +585,8 @@ zone_cast <- zone_cast[,1:5]
 ```
 
 ```{r diff_table, echo = FALSE, message = FALSE, warning=FALSE, results='asis'}
-pandoc.table(zone_cast, style = "rmarkdown")
+
+pander::pandoc.table(zone_cast, style = "rmarkdown")
 
 ```
 
@@ -689,11 +690,11 @@ By far the largest novel forest type is `r fia.dominants[1,1]`, which accounts f
 `r fia.dominants[3,1]` forest accounts for `r round(fia.dominants[3,3],1)`% of all novel forests and `r round(fia.dominants[3,5],2)`% of the total region. This forest type is again broadly distributed, and is widely distributed across the region, representing a homogenous, early seral forest type, likely associated with more mesic sites. `r fia.dominants[4,1]` forest accounts for `r round(fia.dominants[4,3],1)`% of all novel forests and `r round(fia.dominants[4,5],2)`% of the total region. This grouping again shows a pattern of broad distribution across the region, associated with cedar/juniper percentages near 40%, with smaller components of poplar (14%) and maple (13%).
 
 ###Spatial Correlates of Novelty
-```{r figure10a, echo = FALSE, message = FALSE, warning=FALSE}
+```{r figure9, echo = FALSE, message = FALSE, warning=FALSE}
 
-source('R/figures/Fig11_noveltyDistance.R')
+source('R/figures/Fig9_noveltyDistance.R')
 
-fig10a_output <- figure_10a()
+fig9_output <- figure_9()
 
 ```
 

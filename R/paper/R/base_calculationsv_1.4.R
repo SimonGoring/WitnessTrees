@@ -205,8 +205,12 @@ reform <- function(x){
   comp.table
 }
 
+#  We use basal area throughout as our measure of composition:
 composition.table <- reform(basal.table)
 composition.table[,4:ncol(composition.table)] <- composition.table[,4:ncol(composition.table)]/rowSums(composition.table[,4:ncol(composition.table)], na.rm=TRUE)
+
+
+## Load in the table to match the PFTs to PLSS taxa:
 
 pft.trans <- read.csv('../../data/input/relation_tables/pft.trans.table.csv', stringsAsFactor = FALSE)
 

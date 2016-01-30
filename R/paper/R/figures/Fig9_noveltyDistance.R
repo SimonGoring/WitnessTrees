@@ -119,17 +119,17 @@ figure_9 <- function(){
     
     log_output <- log_output[order(log_output$values),]
     
-    ggplot(data = input[[2]], aes(x = sp_dist, y = eco_quant)) +
+    ggplot(data = input[[2]], aes(x = sp_dist, y = as.numeric(eco_quant))) +
       geom_jitter(position = position_jitter(width = 1, height = 0.2), alpha=0.5, aes(color = rem_class)) +
       geom_ribbon(data=log_output, aes(x = dist, ymin=val_min, ymax=val_max, color = rem_class),
                   inherit.aes=FALSE, alpha = 0.5) +
       geom_path(data=log_output, aes(x = dist, y = values, 
                                      group = rem_class, color = rem_class),
-                inherit.aes=FALSE, size = 1, name = 'Forest Type') +
-      scale_color_brewer(type='qual') +
+                inherit.aes=FALSE, size = 1) +
+      scale_color_brewer(type='qual', name = 'Forest Type') +
       geom_hline(yintercept = 0.5, linetype = 2, color = 'red') +
       theme_bw() +
-      coord_cartesian(xlim=c(0, 80), ylim=c(0, 1)) +
+      coord_cartesian(xlim=c(-1, 80), ylim=c(-0.1, 1), expand = FALSE) +
       theme(axis.title.y = element_blank(),
             axis.text.y  = element_blank(),
             axis.title.x = element_text(family='serif', size = 12, face='bold'),
