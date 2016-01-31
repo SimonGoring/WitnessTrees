@@ -1,3 +1,16 @@
+## ----setup-knitr, echo = FALSE, message = FALSE--------------------------
+knitr::opts_chunk$set(
+  comment = " ",
+  error = FALSE,
+  eval = TRUE,
+  cache = FALSE,
+  tidy = TRUE,
+  fig.path = "figure/",
+  cache.path = "cache/"
+)
+
+
+
 library("pander")
 library("plyr")
 panderOptions('table.style', 'rmarkdown')
@@ -7,7 +20,7 @@ ps.options(fonts='serif')
 
 ## ----dataLoad, echo = FALSE, message=FALSE, results = 'hide', warning=FALSE----
 
-version <- '0.9-6'
+version <- '0.9-7'
 
 #  Choose one of the two below (3175 is the Albers, 4326 is lat/long):
 model.proj <- '+init=epsg:3175'
@@ -47,6 +60,10 @@ good.trees <- with(used.data@data, (!(diam1 > 254 | diam2 > 254)) | (species1 %i
 
 used.data$good <- two.quads | good.trees
 
+base.rast <- raster(xmn = -71000, xmx = 2297000, ncols=296,
+                        ymn = 58000,  ymx = 1498000, nrows = 180,
+                        crs = '+init=epsg:3175')
+
 count.plot <- rasterize(spTransform(used.data, CRSobj = CRS(model.proj)), 
                         base.rast, 'good', sum)
   
@@ -57,7 +74,7 @@ count.df <- data.frame(xyFromCell(count.plot, 1:ncell(count.plot)),
 write.csv(na.omit(count.df),
           paste0('../../data/output/wiki_outputs/plss_counts_alb_',version,'.csv'))
 
-source('R/base_calculationsv_1.3.R')
+source('R/base_calculationsv_1.4.R')
 
 rm(quadrant)
 
@@ -259,8 +276,8 @@ test_clusts$dens <- (getValues((fiadens)) - getValues((dens)))[test_clusts$cell]
 test_clusts$basa <- (getValues((fiabasa)) - getValues((basal)))[test_clusts$cell]
 test_clusts$biom <- (getValues((fiabiom))/1000 - getValues((biomass)))[test_clusts$cell]
 test_clusts$plss_dens <- getValues((dens))[test_clusts$cell]
-test_clusts$plss_basa <- getValues((dens))[test_clusts$cell]
-test_clusts$plss_biom <- getValues((dens))[test_clusts$cell]
+test_clusts$plss_basa <- getValues((basal))[test_clusts$cell]
+test_clusts$plss_biom <- getValues((biomass))[test_clusts$cell]
 
 zone_melt <- melt(test_clusts, id.vars = c('x', 'y', 'cluster', 'cell'), variable.name = 'estimate')
 
@@ -286,7 +303,8 @@ colnames(zone_cast) <- c('Forest Type', 'Number of Cells',
 zone_cast <- zone_cast[,1:5]
 
 ## ----diff_table, echo = FALSE, message = FALSE, warning=FALSE, results='asis'----
-pandoc.table(zone_cast, style = "rmarkdown")
+
+pander::pandoc.table(zone_cast, style = "rmarkdown")
 
 
 ## ----diamdiff, echo = FALSE, message = FALSE, warning=FALSE--------------
@@ -294,11 +312,11 @@ pandoc.table(zone_cast, style = "rmarkdown")
 
   diam.diff.fia <- t.test((getValues(mdiam) - getValues(fiadiam))[getValues(mdiam) < getValues(fiadiam)])
                           
-  diam.diff.pls <- t.test((getValues(mdiam) - getValues(fiadiam))[getValues(mdiam) > getValues(fiadiam)])
+  diam.diff.plss<- t.test((getValues(mdiam) - getValues(fiadiam))[getValues(mdiam) > getValues(fiadiam)])
 
   ranger <- ninefive(getValues(mdiam) - getValues(fiadiam))
 
-  cor.tests <- list(to.pls = cor.test((getValues(mdiam) - getValues(fiadiam)),
+  cor.tests <- list(to.PLSS= cor.test((getValues(mdiam) - getValues(fiadiam)),
                                        getValues(mdiam), 
                                        use = 'pairwise.complete.obs'),
                     to.fia = cor.test((getValues(mdiam) - getValues(fiadiam)),
@@ -346,14 +364,14 @@ fia.na <- cor(fia.data, fia.na)
 source('R/lost_and_novel_cluster.R')
 
 
-## ----figure9_calc, echo = FALSE, message = FALSE, warning=FALSE-------------
+## ----figure9, echo = FALSE, message = FALSE, warning=FALSE---------------
 
 source('R/figures/Fig9_noveltyDistance.R')
 
 fig9_output <- figure_9()
 
 
-## ----fig10_calc, echo = FALSE, message = FALSE, warning=FALSE------------
+## ----fig11_calc, echo = FALSE, message = FALSE, warning=FALSE------------
 
 source('R/figures/fig10_transect_plots.R')
 

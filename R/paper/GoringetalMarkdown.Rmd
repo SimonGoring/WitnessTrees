@@ -698,7 +698,7 @@ fig9_output <- figure_9()
 
 ```
 
-Modern compositional dissimilarity from the PLSS data is related to distance from 'remnant' forest. The dissimilarity quantile of FIA-PLSS distances increases with increasing distance to remnant cells, and this relationship is robust to higher thresholds for defining remnant forest classification, up to the 90%ile of within-PLSS near neighbor dissimilarities.  Using the 25%ile for within-PLSS dissimilarity, approximately `r round(sum(fig10a_output$quants$eco_quant<=0.25)/nrow(fig10a_output$quants)*100,0)`% of FIA cells can be classed as 'remnant' forest. The mean distance to remnant forests for cells with dissimilarities above the 25%ile is `r round(mean(fig10a_output$quants$sp_dist[fig10a_output$quants$sp_dist>0]),1)` km, higher than the mean of ~9.6km expected if each 8x8km cell had at least one adjacent 'remnant' cell.
+Modern compositional dissimilarity from the PLSS data is related to distance from 'remnant' forest. The dissimilarity quantile of FIA-PLSS distances increases with increasing distance to remnant cells, and this relationship is robust to higher thresholds for defining remnant forest classification, up to the 90%ile of within-PLSS near neighbor dissimilarities.  Using the 25%ile for within-PLSS dissimilarity, approximately `r round(sum(fig9_output$quants$eco_quant<=0.25)/nrow(fig9_output$quants)*100,0)`% of FIA cells can be classed as 'remnant' forest. The mean distance to remnant forests for cells with dissimilarities above the 25%ile is `r round(mean(fig9_output$quants$sp_dist[fig9_output$quants$sp_dist>0]),1)` km, higher than the mean of ~9.6km expected if each 8x8km cell had at least one adjacent 'remnant' cell.
 
 **Table 4**. *Spatial distance to novelty - modeled as a binomial - from remnant forests (forests within the first 25th percentile of nearest neighbor distances).  The null model uses permutation (n=100) where quantiles are resampled without replacement.*
 
@@ -858,7 +858,7 @@ grid.arrange(histogram, spatial.internal, spatial.external, ncol = 1)
 
 ```{r fig9_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 6, dpi=300, dev=c('png','tiff')}
 
-plot(fig10a_output$plot)
+plot(fig9_output$plot)
 
 ```
 
