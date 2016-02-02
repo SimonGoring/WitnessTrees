@@ -9,7 +9,16 @@ rem_class <- factor(old_classes$clustering,
                              'Hemlock/Cedar/Birch/Maple',
                              'Oak Savanna'))
 
-clust_plot <- data.frame(comp.pts, cluster = rem_class)
+clust_plot <- data.frame(comp.pts, 
+                         cluster = rem_class,
+                         clustNum = as.numeric(rem_class))
+
+cluster_out <- clust_plot
+coordinates(cluster_out) <- ~ x + y
+proj4string(cluster_out) <- CRS('+init=epsg:3175')
+
+clust_rast <- rasterize(cluster_out, base.rast, field = "clustNum")
+writeRaster(clust_rast, 'fig_rasters/plss_clusters.tif')
 
 map_plots <- base.map + 
   geom_tile(data = clust_plot, aes(x = x, y = y, fill=cluster)) +
