@@ -13,9 +13,9 @@ knitr::opts_chunk$set(
 
 library("pander")
 library("plyr")
-panderOptions('table.style', 'rmarkdown')
-panderOptions('table.split.table', 300)
-ps.options(fonts='serif')
+pander::panderOptions('table.style', 'rmarkdown')
+pander::panderOptions('table.split.table', 300)
+pander::ps.options(fonts='serif')
 
 
 ## ----dataLoad, echo = FALSE, message=FALSE, results = 'hide', warning=FALSE----
