@@ -45,14 +45,18 @@ fia.forest.types <- apply(fia.types.clust$medoid, 1,
                           })
 
 pls.dominants <- data.frame(types = pls.forest.types, 
-                            pct   = 100 * (table(pls.types.clust$clustering) / length(pls.types.clust$clustering)),
-                            tot   = 100 * (table(pls.types.clust$clustering) / nrow(comp.grid)),
+                            pct   = as.numeric(100 * (table(pls.types.clust$clustering) / length(pls.types.clust$clustering))),
+                            tot   = as.numeric(100 * (table(pls.types.clust$clustering) / nrow(comp.grid))),
                             stringsAsFactors = FALSE)
 
+pls.dominants <- pls.dominants[order(pls.dominants$pct, decreasing = TRUE),]
+
 fia.dominants <- data.frame(types = fia.forest.types, 
-                            pct   = 100 * (table(fia.types.clust$clustering) / length(fia.types.clust$clustering)),
-                            tot   = 100 * (table(fia.types.clust$clustering) / nrow(fia.aligned)),
+                            pct   = as.numeric(100 * (table(fia.types.clust$clustering) / length(fia.types.clust$clustering))),
+                            tot   = as.numeric(100 * (table(fia.types.clust$clustering) / nrow(fia.aligned))),
                             stringsAsFactors = FALSE)
+
+fia.dominants <- fia.dominants[order(fia.dominants$pct, decreasing = TRUE),]
 
 pls.lost <- SpatialPointsDataFrame(coords = pls.points, 
                                    data   = data.frame(type = pls.types.clust$clustering,
@@ -69,7 +73,7 @@ writeOGR(pls.lost,
          layer = paste0('mapped_lost_v',version),
          driver = 'ESRI Shapefile', overwrite=TRUE)
 
-writeRaster(rasterize(pls.lost, num.rast, field = 'type'), 
+writeRaster(rasterize(pls.lost, numbered.rast, field = 'type'), 
             filename = 'fig_rasters/pls_lost.tif',
             overwrite = TRUE)
 
@@ -78,12 +82,6 @@ writeOGR(fia.gain,
          layer = paste0('mapped_gain_v',version),
          driver = 'ESRI Shapefile', overwrite=TRUE)
 
-writeRaster(rasterize(fia.gain, num.rast, field = 'type'), 
+writeRaster(rasterize(fia.gain, numbered.rast, field = 'type'), 
             filename = 'fig_rasters/fia_gain.tif',
             overwrite = TRUE)
-
-#  The problem with k-means is that because there's a random start the order can change.
-#  So we need to do something:
-
-pls.dominants <- pls.dominants[order(pls.dominants[,3], decreasing = TRUE),]
-fia.dominants <- fia.dominants[order(fia.dominants[,3], decreasing = TRUE),]
