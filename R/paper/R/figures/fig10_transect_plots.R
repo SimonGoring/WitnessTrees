@@ -67,7 +67,7 @@ transect.taxa[[2]]$transect <- 'Two'
 transects <- do.call(rbind.data.frame, transect.taxa)
 
 transects$class <- factor(transects$class, levels = c('PLSS', 'FIA'))
-transects$PFT2  <- gsub('Evergreen|Deciduous', '', transects$PFT)
+transects$PFT2  <- gsub(' Evergreen|Deciduous', '', transects$PFT)
 
 getPalette <- colorRampPalette(brewer.pal(9, "Paired"))
 
@@ -83,7 +83,7 @@ trans.plot <- ggplot(transects, aes(x = cell,
                                 '', '', '', '5e+05', '', '')) +
   scale_y_sqrt() +
   coord_cartesian(ylim=c(0,1)) +
-  geom_smooth(method = 'gam', family = betar, se = FALSE,
+  geom_smooth(method = 'gam', method.args=list(family="betar"), se = FALSE,
               formula = y ~ te(x, k = 30), size = 1.2, aes(color = variable)) + 
   scale_color_manual(values = getPalette(9)) +
   facet_wrap(~transect+PFT2+class, ncol = 2) +
