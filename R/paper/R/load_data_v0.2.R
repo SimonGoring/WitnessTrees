@@ -1,4 +1,4 @@
-library(statsmod)
+library(statmod)
 library(RColorBrewer)
 library(ggplot2)
 library(gridExtra)
