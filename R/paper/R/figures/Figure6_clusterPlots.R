@@ -18,7 +18,7 @@ coordinates(cluster_out) <- ~ x + y
 proj4string(cluster_out) <- CRS('+init=epsg:3175')
 
 clust_rast <- rasterize(cluster_out, base.rast, field = "clustNum")
-writeRaster(clust_rast, 'fig_rasters/plss_clusters.tif')
+writeRaster(clust_rast, 'fig_rasters/plss_clusters.tif', overwrite = TRUE)
 
 map_plots <- base.map + 
   geom_tile(data = clust_plot, aes(x = x, y = y, fill=cluster)) +
