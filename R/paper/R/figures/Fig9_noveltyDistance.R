@@ -138,11 +138,16 @@ figure_9 <- function(){
       xlab('Distance from Remnant (25%ile) Forest')
   }
   
+  model_quantile <- ecdf(plss.dissim$dist[plss.dissim$class %in% c('PLSS')])
+  
+  log_mod[[2]]$eco_quantile <- model_quantile(log_mod[[2]]$eco_dist)
+    
+  
   dist_plot <- plot_output(log_mod)
   dist_dist <- ggplot(log_mod[[2]]) +
-    geom_bar(aes(x = eco_quant, y = (..count..)/sum(..count..)), 
-             breaks = seq(0,1,0.05), color = 'red', fill = 'lightgray', alpha = 0.5) +
-    coord_flip(xlim=c(-0.0001, 1)) +
+    geom_histogram(aes(x = eco_quantile, y = (..count..)/sum(..count..)), 
+             binwidth = 0.05, color = 'red', fill = 'lightgray', alpha = 0.5) +
+    coord_flip(xlim=c(-0.0001, 1), ylim = c(0, .4), expand = FALSE) +
     theme_bw() +
     scale_y_reverse() +
     geom_vline(xintercept = 0.95, linetype = 2, color = 'red') +
