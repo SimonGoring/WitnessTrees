@@ -102,6 +102,22 @@ spec.table$density[spec.table$density > nine.nine.pct['density']] <- nine.nine.p
 spec.table$basal[spec.table$basal > nine.nine.pct['basal']] <- nine.nine.pct['basal']
 #spec.table$biom[spec.table$biom > nine.nine.pct['biom']] <- nine.nine.pct['biom']
 
+#  Add the PFT classes to `spec.table`
+pft.trans <- read.csv('../../data/input/relation_tables/pft.trans.table.csv', stringsAsFactor = FALSE)
+
+to.pft <- function(x){
+  pft.melt <- melt(x, id = c('x', 'y', 'cell'))
+  pft.melt$pft <- pft.trans[match(gsub(' ', '.', pft.melt$variable), gsub(' ', '.', pft.trans$Taxon)),2]
+  pft.pft <- dcast(pft.melt, x + y + cell ~ pft, fun.aggregate = sum, na.rm=TRUE)
+  pft.pft <- pft.pft[,!colnames(pft.pft) %in% 'NA']
+  
+  colnames(pft.pft) <- c('x', 'y', 'cell', 'Grass', 'TBDT', 'TNDT', 'TNET')
+  pft.pft
+}
+
+spec.table$pft <- pft.trans$PFT[match(spec.table$spec, pft.trans$Taxon)]
+
+
 # These are not the full tables since they include only the cells with points in the database.
 count.table <- dcast(spec.table, x + y + cell ~ spec, sum, na.rm=TRUE, value.var = 'count')
 
@@ -113,9 +129,9 @@ unique.len <- function(x){length(unique(x))}
 
 biomass.points <- dcast(spec.table, x + y + cell ~ spec, unique.len, value.var = 'point')
 
-biomass.points.pft <- dcast(spec.table, x + y + cell ~ pft, unique.len, value.var = 'point')
-
 biomass.points     <- biomass.points[order(biomass.points$cell), ]
+# There are a set of NAs in the PFTs from "Unknown Tree"  
+biomass.points.pft <- dcast(spec.table, x + y + cell ~ pft, unique.len, value.var = 'point')
 biomass.points.pft <- biomass.points.pft[order(biomass.points.pft$cell), ]
 
 # Now get the total number of plots per cell:
@@ -138,6 +154,11 @@ density.table <- dcast(spec.table, x + y  + cell ~ spec, sum, na.rm=TRUE, value.
 basal.table   <- dcast(spec.table, x + y  + cell ~ spec, sum, na.rm=TRUE, value.var = 'basal')
 biomass.table <- dcast(spec.table, x + y  + cell ~ spec, sum, na.rm=TRUE, value.var = 'biom')
 diam.table    <- dcast(spec.table, x + y  + cell ~ spec, sum, na.rm=TRUE, value.var = 'diams')
+
+## This is to normalize.  Diameters need to be averaged by the tree number, otherwise, by
+##  the point number.
+points.by.cell <- rowSums(count.table[,4:ncol(count.table)], na.rm=TRUE)
+trees.by.cell  <- rowSums(count.table[,!colnames(count.table) %in% c('x', 'y', 'cell', 'No tree', 'Water')], na.rm=TRUE)
 
 #  The function averages the estimates to a point level estimate from the aggregated sum.
 #  Why is the multiplier * 2? Because there are two trees per point and we would underestimate otherwise.
@@ -212,28 +233,11 @@ composition.table[,4:ncol(composition.table)] <- composition.table[,4:ncol(compo
 
 ## Load in the table to match the PFTs to PLSS taxa:
 
-pft.trans <- read.csv('../../data/input/relation_tables/pft.trans.table.csv', stringsAsFactor = FALSE)
-
-to.pft <- function(x){
-  pft.melt <- melt(x, id = c('x', 'y', 'cell'))
-  pft.melt$pft <- pft.trans[match(gsub(' ', '.', pft.melt$variable), gsub(' ', '.', pft.trans$Taxon)),2]
-  pft.pft <- dcast(pft.melt, x + y + cell ~ pft, fun.aggregate = sum, na.rm=TRUE)
-  pft.pft <- pft.pft[,!colnames(pft.pft) %in% 'NA']
-
-  colnames(pft.pft) <- c('x', 'y', 'cell', 'Grass', 'TBDT', 'TNDT', 'TNET')
-  pft.pft
-}
-
-spec.table$pft <- pft.trans$PFT[match(spec.table$spec, pft.trans$Taxon)]
-
 dens.pft <- to.pft(density.table)
 basal.pft <- to.pft(basal.table)
 biomass.pft <- to.pft(biomass.table)
 
 unique.len <- function(x){length(unique(x))}
-
-# There are a set of NAs in the PFTs from "Unknown Tree"  
-biomass.points.pft <- dcast(spec.table, x + y + cell ~ pft, unique.len, value.var = 'point')
 
 #  Write.outputs:
 add.v <- function(x, name){
