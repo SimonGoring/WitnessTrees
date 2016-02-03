@@ -232,20 +232,20 @@ if(paste0('distances_v', version, '.Rds') %in% list.files('../../data/output/agg
 #
 
 ########
-  null.rast <- setValues(num.rast, NA)
+  null.rast <- setValues(numbered.rast, NA)
   plss.rast <- null.rast
   dist_subset <- subset(distances, class == "PLSS")
-  dist_subset$cell <- extract(num.rast, dist_subset[,1:2])
+  dist_subset$cell <- extract(numbered.rast, dist_subset[,1:2])
   plss.rast[dist_subset$cell] <- dist_subset$dist
 ########
 
 for(i in unique(distances$class)){
-  null.rast <- setValues(num.rast, NA)
+  null.rast <- setValues(numbered.rast, NA)
   out.rast <- null.rast
   
   dist_subset <- subset(distances, class == i)
   
-  dist_subset$cell <- extract(num.rast, dist_subset[,1:2])
+  dist_subset$cell <- extract(numbered.rast, dist_subset[,1:2])
   
   out.rast[dist_subset$cell] <- dist_subset$dist
   out.rast[is.na(plss.rast)] <- NA
