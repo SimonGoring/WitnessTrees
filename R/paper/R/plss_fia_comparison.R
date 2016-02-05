@@ -267,21 +267,14 @@ fia.plot.num <- data.frame(x = subset(distances, class == 'FIA')[,1],
 library(statmod)
 
 fia.highdist <- subset(fia.plot.num, dists > 0)
-fia.num.model <- gam(dists ~ s(x, y, plots), data = fia.highdist, family = Gamma)
+fia.num.model <- gam(dists ~ s(x, y, k = c(30, 30)), data = fia.highdist, family = Gamma)
 
 fia.rich.model <- gam(rich ~ s(x, y, by = plots), data = subset(fia.plot.num, rich > 0), family = poisson)
 
-tester <- rbind(fia.plot.num, fia.plot.num, fia.plot.num, fia.plot.num, fia.plot.num)
-tester$plots <- rep(c(1, 3, 5, 8, 10), each = nrow(fia.plot.num))
+tester <- fia.highdist
+tester$resid <- resid(fia.num.model, type = 'response')
 
-model.pred <- predict(fia.num.model, newdata = tester, type = 'response', se.fit = TRUE)
-model.rich <- predict(fia.rich.model, newdata = tester, type = 'response', se.fit = TRUE)
-
-tester$predicted <- model.pred[[1]]
-tester$predrich  <- model.rich[[1]]
-
-ggplot(tester, aes(x = x, y = predicted)) + geom_smooth(aes(color = factor(plots)))
-ggplot(tester, aes(x = x, y = predrich)) + geom_smooth(aes(color = factor(plots)))
+fia.plotless <- glm(resid ~ plots, data = tester)
 
 fia.cor<- try(t(cor(distances$dist[distances$class=='FIA'],fia.aligned)))
 plss.cor<- try(t(cor(distances$dist[distances$class=='PLSS'],comp.grid)))

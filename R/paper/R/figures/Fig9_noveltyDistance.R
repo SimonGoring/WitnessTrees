@@ -104,6 +104,7 @@ figure_9 <- function(){
   null_thresh  <- do.call(rbind.data.frame,lapply(mods,get_thresh, na_cut=0.5))
   model_thresh <- get_thresh(log_mod, 0.5)
   
+  # This is the null model.
   thresh_bounds <- aggregate(x = null_thresh, by = list(null_thresh$zone), FUN = mean)
   
   plot_output <- function(input){
@@ -160,5 +161,5 @@ figure_9 <- function(){
   return(list(plot = dist_plot,
          fun = log_mod[[1]],
          quants = log_mod[[2]],
-         distances = list(model_thresh, thresh_bounds)))
+         distances = list(observed = model_thresh, null = thresh_bounds)))
 }

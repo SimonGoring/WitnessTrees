@@ -134,6 +134,13 @@ biomass.points     <- biomass.points[order(biomass.points$cell), ]
 biomass.points.pft <- dcast(spec.table, x + y + cell ~ pft, unique.len, value.var = 'point')
 biomass.points.pft <- biomass.points.pft[order(biomass.points.pft$cell), ]
 
+# This is to get the points with trees:
+spec.adj <- spec.table
+spec.adj$tree <- spec.table$spec %in% "No tree"
+
+treed.points <- dcast(spec.adj, x + y + cell ~ tree, unique.len, value.var = 'point')
+treed.points <- treed.points[order(treed.points$cell),]
+
 # Now get the total number of plots per cell:
 stem.density$plot <- as.numeric(!is.na(stem.density$density))
 
@@ -261,6 +268,7 @@ add.v <- function(x, name){
 
 ## This is for the biomass model:
 add.v(points_per_cell_df, 'plss_plots')
+add.v(treed.points, 'plss_treed_plots')
 add.v(biomass.points, 'plss_biomass_plots')
 add.v(biomass.points.pft, 'plss_biomass_plots_pft')
 
