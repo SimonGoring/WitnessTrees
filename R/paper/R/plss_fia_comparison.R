@@ -267,9 +267,7 @@ fia.plot.num <- data.frame(x = subset(distances, class == 'FIA')[,1],
 library(statmod)
 
 fia.highdist <- subset(fia.plot.num, dists > 0)
-fia.num.model <- gam(dists ~ s(x, y, k = c(30, 30)), data = fia.highdist, family = Gamma)
-
-fia.rich.model <- gam(rich ~ s(x, y, by = plots), data = subset(fia.plot.num, rich > 0), family = poisson)
+fia.num.model <- gam(dists ~ s(x, y, k = 30), data = fia.highdist, family = Gamma)
 
 tester <- fia.highdist
 tester$resid <- resid(fia.num.model, type = 'response')
