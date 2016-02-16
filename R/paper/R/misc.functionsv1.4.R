@@ -100,3 +100,20 @@ morisita <- function(processed.data, correction.factor = NULL, veil=FALSE) {
   return(list(morisita.est, basal.area))
 
 }
+
+get_cells <- function(x, y = NULL){
+  ### This function is the basic function where we get xy coordinates of the points and then 
+  ### either create a raster with the focal dataset (y) or just the cell numbers:
+  cells <- extract(num.rast, x)
+  
+  if(is.null(y)){
+    return(cells)
+  }
+  
+  null.rast <- setValues(num.rast, NA)
+  
+  null.rast[cells] <- y
+  
+  return(null.rast)
+
+}

@@ -27,12 +27,17 @@ if(model.proj == '+init=epsg:4326'){
   base.rast <- raster(xmn = -98.6, xmx = -66.1, ncols=391,
                       ymn = 36.5,  ymx = 49.75, nrows = 160,
                       crs = '+init=epsg:4326')
+  numbered.rast <- setValues(base.rast, 1:ncell(base.rast))
+  numbered.cell <- extract(numbered.rast, spTransform(stem.density,CRSobj=CRS(model.proj)))
+
 }
 
 if(model.proj == '+init=epsg:3175'){
   base.rast <- raster(xmn = -71000, xmx = 2297000, ncols=296,
                           ymn = 58000,  ymx = 1498000, nrows = 180,
                           crs = '+init=epsg:3175')
+  numbered.rast <- setValues(base.rast, 1:ncell(base.rast))
+  numbered.cell <- extract(numbered.rast, spTransform(stem.density,CRSobj=CRS(model.proj)))
 }
 
 #  This ought to be a better way of aggregating the cell densities, diameters, basal areas &cetera
@@ -44,9 +49,6 @@ if(paste0('pointwise.ests','_v',version, '.RDS') %in% list.files('../../data/out
   spec.table <- readRDS(paste0('../../data/output/aggregated_midwest/pointwise.ests','_v',version, '.RDS'))
 
 } else {
-
-  numbered.rast <- setValues(base.rast, 1:ncell(base.rast))
-  numbered.cell <- extract(numbered.rast, spTransform(stem.density,CRSobj=CRS(model.proj)))
   
   spec.table <- data.frame(xyFromCell(base.rast, numbered.cell),
                            cell = numbered.cell,
@@ -100,18 +102,33 @@ spec.table$density[spec.table$density > nine.nine.pct['density']] <- nine.nine.p
 spec.table$basal[spec.table$basal > nine.nine.pct['basal']] <- nine.nine.pct['basal']
 #spec.table$biom[spec.table$biom > nine.nine.pct['biom']] <- nine.nine.pct['biom']
 
-# These are not the full tables since the include only the cells with points in the database.
+# These are not the full tables since they include only the cells with points in the database.
 count.table <- dcast(spec.table, x + y + cell ~ spec, sum, na.rm=TRUE, value.var = 'count')
 
-#61 3 62 49 43 53
+# This is to get count of plots with tree X by cell.
+#  we expect to get '1' if the species are X & X or X & Y, but 0 if it's Y & Y (where X
+#  is the focal species).
 
 unique.len <- function(x){length(unique(x))}
 
-biomass.trees  <- dcast(spec.table, x + y + cell ~ spec, sum, na.rm=TRUE, value.var = 'count')
 biomass.points <- dcast(spec.table, x + y + cell ~ spec, unique.len, value.var = 'point')
 
-points.by.cell <- rowSums(count.table[,4:ncol(count.table)], na.rm=TRUE)
-trees.by.cell  <- rowSums(count.table[,!colnames(count.table) %in% c('x', 'y', 'cell', 'No tree', 'Water')], na.rm=TRUE)
+biomass.points.pft <- dcast(spec.table, x + y + cell ~ pft, unique.len, value.var = 'point')
+
+biomass.points     <- biomass.points[order(biomass.points$cell), ]
+biomass.points.pft <- biomass.points.pft[order(biomass.points.pft$cell), ]
+
+# Now get the total number of plots per cell:
+stem.density$plot <- as.numeric(!is.na(stem.density$density))
+
+plots_per_cell <- rasterize(spTransform(stem.density, CRS(proj4string(base.rast))), 
+  base.rast, field = 'plot', fun = 'sum', na.rm=TRUE)
+
+points_per_cell_df <- data.frame(xyFromCell(plots_per_cell, 1:ncell(plots_per_cell)),
+                                 cell = getValues(numbered.rast),
+                                 plots = getValues(plots_per_cell))
+
+points_per_cell_df <- subset(na.omit(points_per_cell_df), plots > 0)
 
 #  The problem with dcast is that it sums or averages by the count of each species, so the
 #  mean per cell is not weighted properly.  We have to use the 'normalize' function defined
@@ -123,6 +140,7 @@ biomass.table <- dcast(spec.table, x + y  + cell ~ spec, sum, na.rm=TRUE, value.
 diam.table    <- dcast(spec.table, x + y  + cell ~ spec, sum, na.rm=TRUE, value.var = 'diams')
 
 #  The function averages the estimates to a point level estimate from the aggregated sum.
+#  Why is the multiplier * 2? Because there are two trees per point and we would underestimate otherwise.
 normalize <- function(x, mult = 2, value = points.by.cell) {x[,4:ncol(x)] <-  x[,4:ncol(x)] / value * mult; x}
 
 density.table <- normalize(density.table)
@@ -210,11 +228,15 @@ biomass.pft <- to.pft(biomass.table)
 
 unique.len <- function(x){length(unique(x))}
 
-biomass.trees.pft  <- dcast(spec.table, x + y + cell ~ pft, sum, na.rm=TRUE, value.var = 'count')
+# There are a set of NAs in the PFTs from "Unknown Tree"  
 biomass.points.pft <- dcast(spec.table, x + y + cell ~ pft, unique.len, value.var = 'point')
 
 #  Write.outputs:
 add.v <- function(x, name){
+  
+  if("cell" %in% colnames(x)){
+    x <- x[order(x$cell), ]
+  }
   
   #  Quick file name formatter:
   
@@ -228,11 +250,15 @@ add.v <- function(x, name){
 }
 
 #  Write everything out:
-add.v(count.table, 'plss_trees')
-add.v(biomass.points, 'plss_points')
-add.v(biomass.points.pft, 'plss_points_pft')
-add.v(biomass.trees.pft, 'plss_trees_pft')
 
+## This is for the biomass model:
+add.v(points_per_cell_df, 'plss_plots')
+add.v(biomass.points, 'plss_biomass_plots')
+add.v(biomass.points.pft, 'plss_biomass_plots_pft')
+
+## This is everything else:
+add.v(diam.table, 'plss_diam')
+add.v(count.table, 'plss_trees')
 add.v(density.table, 'plss_density')
 add.v(basal.table, 'plss_basal')
 add.v(biomass.table, 'plss_biomass')

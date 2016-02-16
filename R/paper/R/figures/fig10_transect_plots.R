@@ -1,5 +1,4 @@
-library(RColorBrewer)
-
+#  This is the code to plot the Transect data.
 #  Transect axes:
 transect.lims <- list(one = data.frame(x = c(-18093, 631094),
                                        y = c(1470422, 668889)),
@@ -13,9 +12,7 @@ get_points <- function(x){
   
   #  Input comes from the x & y limits of the transect (`transect`)
   
-  num.rast <- setValues(base.rast, 1:ncell(base.rast))
-  
-  cells <- extract(num.rast, 
+  cells <- extract(numbered.rast, 
                    data.frame(x = seq(x$x[1], x$x[2], length.out = 500),
                               y = seq(x$y[1], x$y[2], length.out = 500)))
   
@@ -36,8 +33,8 @@ get_points <- function(x){
   transect.fia[is.na(transect.fia)] <- 0
   
   #  We are just using the "x" axis of the data as the parameter on the x axis.
-  transect.plss$cell <- xyFromCell(num.rast, transect.plss$cell)[,1]
-  transect.fia$cell  <- xyFromCell(num.rast, transect.fia$cell)[,1]
+  transect.plss$cell <- xyFromCell(numbered.rast, transect.plss$cell)[,1]
+  transect.fia$cell  <- xyFromCell(numbered.rast, transect.fia$cell)[,1]
   
   transect.plss$class <- 'PLSS'
   transect.fia$class <- 'FIA'
@@ -69,25 +66,27 @@ transects <- do.call(rbind.data.frame, transect.taxa)
 
 transects$class <- factor(transects$class, levels = c('PLSS', 'FIA'))
 transects$PFT2  <- gsub('Evergreen|Deciduous', '', transects$PFT)
+transects$PFT2  <- gsub(' ', '', transects$PFT2, fixed = TRUE)
+
+transects$full <- apply(transects, 1, function(x){
+      paste(x[c('transect','PFT2', 'class')], collapse = ', ')})
 
 getPalette <- colorRampPalette(brewer.pal(9, "Paired"))
 
-trans.plot <- ggplot(transects, aes(x = cell, 
-                                    y = value, 
-                                    linetype = PFT)) +
-  geom_line(alpha = 0.2, aes(group = variable, color = variable)) +
+transects <- na.omit(transects)
+
+trans.plot <- ggplot(transects, aes(x = cell, y = value, linetype = PFT)) +
+  geom_line(alpha = 0.4, aes(group = variable, color = variable)) +
   scale_x_continuous(expand = c(0,0), 
                      breaks = c(seq(0, 6e+05, by = 5e+04)),
                      labels = c('', '', '1e+05', '', '', '', '3e+05',
                                 '', '', '', '5e+05', '', '')) +
+  scale_y_sqrt() +
   coord_cartesian(ylim=c(0,1)) +
-  #geom_smooth(se=FALSE, aes(color = variable)) +
-  #stat_smooth(se = FALSE, method = 'gam', 
-  #            formula = y ~ s(x, k=20), size = 2, aes(color = variable)) + 
-  geom_smooth(method = 'gam', family = betar, se = FALSE,
-              formula = y ~ te(x, k = 30), size = 1.2, aes(color = variable)) + 
+  geom_smooth(method = 'gam', method.args=list(family="betar"), se = FALSE,
+              formula = y ~ te(x), size = 1.2, aes(color = variable)) + 
   scale_color_manual(values = getPalette(9)) +
-  facet_wrap(~transect+PFT2+class, ncol = 2) +
+  facet_wrap(~full, ncol = 2) +
   theme_bw() +
   xlab('Meters East') + ylab('Percent Composition') +
   theme(axis.text = element_text(family='serif', size = 16),
@@ -138,7 +137,7 @@ fia.beta <- betadiver(fia.min, 'sor')
 
 
 get_cells <- function(x){
-  cells <- extract(num.rast, 
+  cells <- extract(numbered.rast, 
                    data.frame(x = seq(x$x[1], x$x[2], length.out = 500),
                               y = seq(x$y[1], x$y[2], length.out = 500)))
   

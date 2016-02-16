@@ -222,17 +222,57 @@ if(paste0('distances_v', version, '.Rds') %in% list.files('../../data/output/agg
                      fia.plss.dist, 
                      plss.fia.dist)  
   
-  distances$cell <- extract(num.rast, distances[,1:2])
+  distances$cell <- get_cells(distances[,1:2])
   
   saveRDS(distances, file = paste0('../../data/output/aggregated_midwest/distances_v', version, '.Rds'))
   rm(plss.dist, fia.dist, plss.fia, fia.plss)
 }
 
-#  Test against the number of FIA plots:
-fia.plot.num <- data.frame(dists = subset(distances, class == 'FIA')$dist,
-                       plots = extract(fia.plots, subset(distances, class == 'FIA')[,1:2]))
+#  Output the distances as raster layers:
+#
 
-fia.num.model <- lm(dists ~ plots, data = fia.plot.num)
+########
+  null.rast <- setValues(numbered.rast, NA)
+  plss.rast <- null.rast
+  dist_subset <- subset(distances, class == "PLSS")
+  dist_subset$cell <- extract(numbered.rast, dist_subset[,1:2])
+  plss.rast[dist_subset$cell] <- dist_subset$dist
+########
+
+for(i in unique(distances$class)){
+  null.rast <- setValues(numbered.rast, NA)
+  out.rast <- null.rast
+  
+  dist_subset <- subset(distances, class == i)
+  
+  dist_subset$cell <- extract(numbered.rast, dist_subset[,1:2])
+  
+  out.rast[dist_subset$cell] <- dist_subset$dist
+  out.rast[is.na(plss.rast)] <- NA
+  
+  writeRaster(out.rast, 
+              filename = paste0('fig_rasters/distRast_',i,'_v', version, '.tif'),
+              overwrite = TRUE)
+}
+
+####
+
+#  Test against the number of FIA plots:
+fia.plot.num <- data.frame(x = subset(distances, class == 'FIA')[,1],
+                           y = subset(distances, class == 'FIA')[,2],
+                           dists = subset(distances, class == 'FIA')$dist,
+                           plots = extract(fia.plots, subset(distances, class == 'FIA')[,1:2]),
+                           rich  = rowSums(fia.aligned[,-1]>0))
+
+library(statmod)
+
+fia.highdist <- subset(fia.plot.num, dists > 0)
+fia.num.model <- gam(dists ~ s(x, y, k = 30), data = fia.highdist, family = Gamma)
+
+tester <- fia.highdist
+tester$resid <- resid(fia.num.model, type = 'response')
+
+fia.plotless <- glm(resid ~ plots, data = tester)
 
 fia.cor<- try(t(cor(distances$dist[distances$class=='FIA'],fia.aligned)))
 plss.cor<- try(t(cor(distances$dist[distances$class=='PLSS'],comp.grid)))

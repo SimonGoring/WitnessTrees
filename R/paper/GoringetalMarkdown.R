@@ -13,14 +13,14 @@ knitr::opts_chunk$set(
 
 library("pander")
 library("plyr")
-panderOptions('table.style', 'rmarkdown')
-panderOptions('table.split.table', 300)
-ps.options(fonts='serif')
+pander::panderOptions('table.style', 'rmarkdown')
+pander::panderOptions('table.split.table', 300)
+pander::ps.options(fonts='serif')
 
 
 ## ----dataLoad, echo = FALSE, message=FALSE, results = 'hide', warning=FALSE----
 
-version <- '0.9-6'
+version <- '0.9-7'
 
 #  Choose one of the two below (3175 is the Albers, 4326 is lat/long):
 model.proj <- '+init=epsg:3175'
@@ -60,10 +60,21 @@ good.trees <- with(used.data@data, (!(diam1 > 254 | diam2 > 254)) | (species1 %i
 
 used.data$good <- two.quads | good.trees
 
+base.rast <- raster(xmn = -71000, xmx = 2297000, ncols=296,
+                        ymn = 58000,  ymx = 1498000, nrows = 180,
+                        crs = '+init=epsg:3175')
+
 count.plot <- rasterize(spTransform(used.data, CRSobj = CRS(model.proj)), 
-                        pot.veg, 'good', sum)
+                        base.rast, 'good', sum)
   
-source('R/base_calculationsv_1.3.R')
+count.df <- data.frame(xyFromCell(count.plot, 1:ncell(count.plot)),
+                       cell = get_cells(xyFromCell(count.plot, 1:ncell(count.plot))),
+                       points = getValues(count.plot))
+
+write.csv(na.omit(count.df),
+          paste0('../../data/output/wiki_outputs/plss_counts_alb_',version,'.csv'))
+
+source('R/base_calculationsv_1.4.R')
 
 rm(quadrant)
 
@@ -184,6 +195,12 @@ ggsave(composition.plots,
 rm(compplots)
 
 
+## ----ForestClusterPlots, echo = FALSE, warning=FALSE, message=FALSE------
+
+source('R/load_fia_data.R')
+source('R/figures/Figure6_clusterPlots.R')
+
+
 ## ----tTests, echo = FALSE, warning=FALSE, message=FALSE------------------
 comp.pft <- basal.pft[,4:7] / rowSums(basal.pft[,4:7], na.rm=TRUE)
 
@@ -242,17 +259,64 @@ diff.ts <- list(density = t.test(getValues((fiadens)) - getValues((dens))),
                 biomass = t.test(getValues((fiabiom))/1000 - getValues((biomass))),
                 diam    = t.test(getValues((fiadiam))[is.finite(getValues(mdiam))] - 
                                  getValues((mdiam))[is.finite(getValues(mdiam))]))
+tot_biom_diff <- sum(rowSums(cbind(-getValues(fiabiom)/1000, getValues(biomass))), na.rm=TRUE)
+
+
+## ----diff_by_zone, echo = FALSE, message = FALSE, warning=FALSE----------
+#comparing stuff:
+test_clusts <- clust_plot
+
+num.rast <- setValues(fiadens, 1:ncell(fiadens))
+
+test_clusts$cell <- extract(num.rast, test_clusts[,1:2])
+
+test_clusts$cells <- (!is.na(getValues((fiadens))) &
+                        !is.na(getValues((dens))))[test_clusts$cell]
+test_clusts$dens <- (getValues((fiadens)) - getValues((dens)))[test_clusts$cell]
+test_clusts$basa <- (getValues((fiabasa)) - getValues((basal)))[test_clusts$cell]
+test_clusts$biom <- (getValues((fiabiom))/1000 - getValues((biomass)))[test_clusts$cell]
+test_clusts$plss_dens <- getValues((dens))[test_clusts$cell]
+test_clusts$plss_basa <- getValues((basal))[test_clusts$cell]
+test_clusts$plss_biom <- getValues((biomass))[test_clusts$cell]
+
+zone_melt <- melt(test_clusts, id.vars = c('x', 'y', 'cluster', 'cell'), variable.name = 'estimate')
+
+zone_cast <- dcast(zone_melt, cluster ~ estimate, value.var = 'value', mean, na.rm=TRUE)
+zone_cast$cells <- dcast(zone_melt, 
+                         cluster ~ estimate, 
+                         value.var = 'value', sum, na.rm=TRUE)$cells
+
+zone_cast <- zone_cast[order(zone_cast$cells, decreasing = TRUE),]
+
+zone_cast[,3:8] <- round(zone_cast[,3:8], 1)
+
+zone_cast$dens <- paste0(zone_cast$dens, ' (',zone_cast$plss_dens,')')
+zone_cast$basa <- paste0(zone_cast$basa, ' (',zone_cast$plss_basa,')')
+zone_cast$biom <- paste0(zone_cast$biom, ' (',zone_cast$plss_biom,')')
+
+zone_cast <- zone_cast[,1:5]
+
+colnames(zone_cast) <- c('Forest Type', 'Number of Cells', 
+                         'Stem Density stems ha^-1^',
+                         'Basal Area m^2^ ha^-1^', 'Biomass Mg ha^-1^')
+
+zone_cast <- zone_cast[,1:5]
+
+## ----diff_table, echo = FALSE, message = FALSE, warning=FALSE, results='asis'----
+
+pander::pandoc.table(zone_cast, style = "rmarkdown")
+
 
 ## ----diamdiff, echo = FALSE, message = FALSE, warning=FALSE--------------
   diam.diff <- t.test(getValues(mdiam) - getValues(fiadiam))
 
   diam.diff.fia <- t.test((getValues(mdiam) - getValues(fiadiam))[getValues(mdiam) < getValues(fiadiam)])
                           
-  diam.diff.pls <- t.test((getValues(mdiam) - getValues(fiadiam))[getValues(mdiam) > getValues(fiadiam)])
+  diam.diff.plss<- t.test((getValues(mdiam) - getValues(fiadiam))[getValues(mdiam) > getValues(fiadiam)])
 
   ranger <- ninefive(getValues(mdiam) - getValues(fiadiam))
 
-  cor.tests <- list(to.pls = cor.test((getValues(mdiam) - getValues(fiadiam)),
+  cor.tests <- list(to.PLSS= cor.test((getValues(mdiam) - getValues(fiadiam)),
                                        getValues(mdiam), 
                                        use = 'pairwise.complete.obs'),
                     to.fia = cor.test((getValues(mdiam) - getValues(fiadiam)),
@@ -280,7 +344,7 @@ diffs <- (1 - (c(findInterval(intern.quant[96], PLS.fia.quant) - 1, findInterval
 
 PLS.na <- cor(comp.grid, distances$dist[distances$class == 'PLSS-FIA'] > intern.quant[95])
 
-#  We need to align the FIA and PLS data with the distance table.  This seems more problematic than it ought to be.
+#  We need to align the FIA and PLSS data with the distance table.  This seems more problematic than it ought to be.
 
 good.cells <- data.frame(cell = unique(c(fia.agg$cell, 
                                          subset(distances, class == 'FIA-PLSS')$cell)))
@@ -300,11 +364,11 @@ fia.na <- cor(fia.data, fia.na)
 source('R/lost_and_novel_cluster.R')
 
 
-## ----figure10a, echo = FALSE, message = FALSE, warning=FALSE-------------
+## ----figure9, echo = FALSE, message = FALSE, warning=FALSE---------------
 
-source('R/figures/Fig11_noveltyDistance.R')
+source('R/figures/Fig9_noveltyDistance.R')
 
-fig10a_output <- figure_10a()
+fig9_output <- figure_9()
 
 
 ## ----fig11_calc, echo = FALSE, message = FALSE, warning=FALSE------------
@@ -336,53 +400,22 @@ fig1plot <- base.map +
 
 fig1plot
 
-## ----fig2_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=4, fig.height = 4, dpi=300, dev=c('png','tiff')----
-
-angle.plot
-
-
-## ----fig3_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=5, fig.height = 5, dpi=300, dev=c('png','tiff')----
+## ----fig2_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=5, fig.height = 5, dpi=300, dev=c('png','tiff')----
 
 grid.arrange(dens.facet, anders.facet, basa.facet, biom.facet, nrow = 2)
 
 
-## ----fig4_output, echo=FALSE, message=FALSE, warning=FALSE, width=5, fig.height = 5, dpi=300, dev=c('png','tiff')----
+## ----fig3_output, echo=FALSE, message=FALSE, warning=FALSE, width=5, fig.height = 5, dpi=300, dev=c('png','tiff')----
 
   biom_sd
 
 
-## ----fig5_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=7, fig.height = 5, dpi=300, dev=c('png','tiff')----
+## ----fig4_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=7, fig.height = 5, dpi=300, dev=c('png','tiff')----
 composition.plots
 
-## ----fig6_clusters, echo = FALSE, warning=FALSE, message=FALSE, fig.width=7, fig.height = 5, dpi=300, dev=c('png','tiff')----
+## ----fig5_clusters, echo = FALSE, warning=FALSE, message=FALSE, fig.width=7, fig.height = 5, dpi=300, dev=c('png','tiff')----
 
-
-  old_classes <- pam(comp.grid[,-1], k = 5) # Based on a distance of 0.32
-  
-  rem_class <- factor(old_classes$clustering,
-                      labels=c('Tamarack/Pine/Spruce/Poplar',
-                               'Oak/Poplar/Basswood/Maple',
-                               'Pine',
-                               'Hemlock/Cedar/Birch/Maple',
-                               'Oak Savanna'))
-
-  clust_plot <- data.frame(comp.pts, cluster = rem_class)
-
-  map_plots <- base.map + 
-    geom_tile(data = clust_plot, aes(x = x, y = y, fill=cluster)) +
-  scale_fill_brewer(type = 'qual') +
-    geom_path(data=river.subset, aes(x = long, y = lat, group = group), color = 'blue', alpha = 0.1) +
-    geom_polygon(data=lakes.subset, aes(x = long, y = lat, group = group), fill = '#ADD8E6') +
-    geom_path(data = umw.domain, aes(x = long, y = lat, group = group, linesize = paleon)) +
-    geom_path(data = can.domain, aes(x = long, y = lat, group = group)) +
-    theme_bw() +
-    theme(axis.title.y = element_blank(),
-        axis.text.y  = element_blank(),
-        axis.title.x = element_blank(),
-        axis.text.x  = element_blank(),
-        legend.position = "none")
-
-
+map_plots
 
 
 ## ----fig6_output, echo = FALSE, message = FALSE, warning=FALSE, results='hide', fig.width=6, fig.height=6, dpi=300, dev=c('png','tiff')----
@@ -406,14 +439,9 @@ grid.arrange(histogram, spatial.internal, spatial.external, ncol = 1)
 
 ## ----fig9_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 6, dpi=300, dev=c('png','tiff')----
 
-trans.plot
+plot(fig9_output$plot)
 
 
 ## ----fig10_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 6, dpi=300, dev=c('png','tiff')----
-
-plot(fig10a_output$plot)
-
-
-## ----fig11_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 6, dpi=300, dev=c('png','tiff')----
 trans.plot
 

@@ -1,3 +1,5 @@
+library(statmod)
+library(RColorBrewer)
 library(ggplot2)
 library(gridExtra)
 library(mgcv)
@@ -6,6 +8,7 @@ library(raster)
 library(reshape2)
 library(rgdal)
 library(rgeos)
+library(maptools)
 library(sp)
 library(spdep)
 library(vegan)
@@ -16,6 +19,7 @@ library(cluster)
 source('R/misc.functionsv1.4.R')
 
 #  Ramankutty raster, for use as a template.
+#  No longer used, but we'll leave it for now.
 pot.veg <- raster(read.asciigrid(fname='../../data/input/rasters/glpotveg_5min.asc'))
 projection(pot.veg) <- '+init=epsg:4326'
 
