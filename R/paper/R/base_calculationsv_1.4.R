@@ -117,7 +117,6 @@ to.pft <- function(x){
 
 spec.table$pft <- pft.trans$PFT[match(spec.table$spec, pft.trans$Taxon)]
 
-
 # These are not the full tables since they include only the cells with points in the database.
 count.table <- dcast(spec.table, x + y + cell ~ spec, sum, na.rm=TRUE, value.var = 'count')
 
@@ -127,9 +126,10 @@ count.table <- dcast(spec.table, x + y + cell ~ spec, sum, na.rm=TRUE, value.var
 
 unique.len <- function(x){length(unique(x))}
 
+# This ultimately gets output to 
 biomass.points <- dcast(spec.table, x + y + cell ~ spec, unique.len, value.var = 'point')
-
 biomass.points     <- biomass.points[order(biomass.points$cell), ]
+
 # There are a set of NAs in the PFTs from "Unknown Tree"  
 biomass.points.pft <- dcast(spec.table, x + y + cell ~ pft, unique.len, value.var = 'point')
 biomass.points.pft <- biomass.points.pft[order(biomass.points.pft$cell), ]
@@ -140,6 +140,7 @@ spec.adj$tree <- spec.table$spec %in% "No tree"
 
 treed.points <- dcast(spec.adj, x + y + cell ~ tree, unique.len, value.var = 'point')
 treed.points <- treed.points[order(treed.points$cell),]
+colnames(treed.points) <- c('x', 'y', 'cell', 'tree', 'no tree')
 
 # Now get the total number of plots per cell:
 stem.density$plot <- as.numeric(!is.na(stem.density$density))
@@ -237,7 +238,6 @@ reform <- function(x){
 composition.table <- reform(basal.table)
 composition.table[,4:ncol(composition.table)] <- composition.table[,4:ncol(composition.table)]/rowSums(composition.table[,4:ncol(composition.table)], na.rm=TRUE)
 
-
 ## Load in the table to match the PFTs to PLSS taxa:
 
 dens.pft <- to.pft(density.table)
@@ -261,7 +261,8 @@ add.v <- function(x, name){
     p.ext <- '_alb'
   }
   
-  write.csv(x, paste0('../../data/output/wiki_outputs/', name, p.ext, '_v',version, '.csv'))
+  write.csv(x, paste0('../../data/output/wiki_outputs/', name, p.ext, '_v',version, '.csv'),
+            row.names = FALSE)
 }
 
 #  Write everything out:

@@ -9,8 +9,6 @@ knitr::opts_chunk$set(
   cache.path = "cache/"
 )
 
-
-
 library("pander")
 library("plyr")
 pander::panderOptions('table.style', 'rmarkdown')
