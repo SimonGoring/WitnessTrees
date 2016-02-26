@@ -24,8 +24,6 @@ knitr::opts_chunk$set(
   cache.path = "cache/"
 )
 
-
-
 library("pander")
 library("plyr")
 pander::panderOptions('table.style', 'rmarkdown')
@@ -92,10 +90,10 @@ version <- '0.9-7'
 model.proj <- '+init=epsg:3175'
 #model.proj <- '+init=epsg:4326'
 
-if(model.proj == '+init=epsg:3175'){
+if (model.proj == '+init=epsg:3175') {
   xylimits <- c(-100000, 1050000, 600000, 1600000)
 }
-if(model.proj == '+init=epsg:4326'){
+if (model.proj == '+init=epsg:4326') {
   xylimits <- c(-98, -83, 42, 50)
 }
 
@@ -348,7 +346,7 @@ resids$resid[!is.na(resids$dens)] <- resid(mean.mod, type = 'response')
 
 biom_sd <- base.map +
             geom_tile(data = resids, aes(x = x, y = y, fill = resid)) +
-            scale_fill_gradient2(low='blue', mid = 'white', high='red', na.value = NA) +
+            scale_fill_gradient2(low = 'blue', mid = 'white', high = 'red', na.value = NA) +
             geom_path(data = umw.domain, aes(x = long, y = lat, group = group, linesize = paleon)) +
             geom_path(data = can.domain, aes(x = long, y = lat, group = group)) +
             theme_bw() +
@@ -376,13 +374,13 @@ taxon.cor <- data.frame(taxon = colnames(density.table)[4:ncol(density.table)],
                         df = NA,
                         stat = NA)
 
-for(i in 4:ncol(density.table)){
+for(i in 4:ncol(density.table)) {
   is.good <- basal.table[,i] > 0 & rowSums(basal.table[, 4:ncol(density.table)], na.rm=TRUE) > 0
-  
-  sample.prop <- basal.table[is.good,i] / rowSums(basal.table[is.good, 4:ncol(density.table)], na.rm=TRUE)
+   
+  sample.prop <- basal.table[is.good,i] / rowSums(basal.table[is.good, 4:ncol(density.table)], na.rm = TRUE)
   
   test <- try(cor.test(sample.prop, rowSums(basal.table[is.good, 4:ncol(density.table)], na.rm=TRUE)))
-  if(!class(test) == 'try-error'){
+  if (!class(test) == 'try-error') {
     taxon.cor$cor[i-3]  <- test$estimate
     taxon.cor$pval[i-3] <- test$p.value
     taxon.cor$stat[i-3] <- test$statistic
