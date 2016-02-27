@@ -24,8 +24,6 @@ knitr::opts_chunk$set(
   cache.path = "cache/"
 )
 
-
-
 library("pander")
 library("plyr")
 pander::panderOptions('table.style', 'rmarkdown')
@@ -92,10 +90,10 @@ version <- '0.9-7'
 model.proj <- '+init=epsg:3175'
 #model.proj <- '+init=epsg:4326'
 
-if(model.proj == '+init=epsg:3175'){
+if (model.proj == '+init=epsg:3175') {
   xylimits <- c(-100000, 1050000, 600000, 1600000)
 }
-if(model.proj == '+init=epsg:4326'){
+if (model.proj == '+init=epsg:4326') {
   xylimits <- c(-98, -83, 42, 50)
 }
 
@@ -348,7 +346,7 @@ resids$resid[!is.na(resids$dens)] <- resid(mean.mod, type = 'response')
 
 biom_sd <- base.map +
             geom_tile(data = resids, aes(x = x, y = y, fill = resid)) +
-            scale_fill_gradient2(low='blue', mid = 'white', high='red', na.value = NA) +
+            scale_fill_gradient2(low = 'blue', mid = 'white', high = 'red', na.value = NA) +
             geom_path(data = umw.domain, aes(x = long, y = lat, group = group, linesize = paleon)) +
             geom_path(data = can.domain, aes(x = long, y = lat, group = group)) +
             theme_bw() +
@@ -376,13 +374,13 @@ taxon.cor <- data.frame(taxon = colnames(density.table)[4:ncol(density.table)],
                         df = NA,
                         stat = NA)
 
-for(i in 4:ncol(density.table)){
+for(i in 4:ncol(density.table)) {
   is.good <- basal.table[,i] > 0 & rowSums(basal.table[, 4:ncol(density.table)], na.rm=TRUE) > 0
-  
-  sample.prop <- basal.table[is.good,i] / rowSums(basal.table[is.good, 4:ncol(density.table)], na.rm=TRUE)
+   
+  sample.prop <- basal.table[is.good,i] / rowSums(basal.table[is.good, 4:ncol(density.table)], na.rm = TRUE)
   
   test <- try(cor.test(sample.prop, rowSums(basal.table[is.good, 4:ncol(density.table)], na.rm=TRUE)))
-  if(!class(test) == 'try-error'){
+  if (!class(test) == 'try-error') {
     taxon.cor$cor[i-3]  <- test$estimate
     taxon.cor$pval[i-3] <- test$p.value
     taxon.cor$stat[i-3] <- test$statistic
@@ -575,9 +573,10 @@ zone_cast$dens <- paste0(zone_cast$dens, ' (',zone_cast$plss_dens,')')
 zone_cast$basa <- paste0(zone_cast$basa, ' (',zone_cast$plss_basa,')')
 zone_cast$biom <- paste0(zone_cast$biom, ' (',zone_cast$plss_biom,')')
 
-zone_cast <- zone_cast[,!(regexpr("plss", colnames(zone_cast))>0| colnames(zone_cast) %in% "clustNum")]
+zone_cast <- zone_cast[, !(regexpr("plss", colnames(zone_cast)) > 0 | 
+                             colnames(zone_cast) %in% "clustNum")]
 
-!colnames(zone_cast) %in% c('cluster', 'clustNum','cells')
+# !colnames(zone_cast) %in% c('cluster', 'clustNum','cells')
 
 colnames(zone_cast) <- c('Forest Type', 'Area km^2^', 
                          '$\\Delta$ Stem Density stems ha^-1^',
@@ -775,7 +774,7 @@ Ultimately the pre-settlement vegetation data present an opportunity to develop 
 
 Acknowledgements
 ==================
-The authors would like to thanks the large number of individuals who have worked to first, undertake the PLSSsurvey, to bring the original survey data together, to digitize and standardize much of the survey results, and finally, to assist in interpreting and compiling the data in its present form. We would like to thank our reviewers, Kerry Woods and Greg Guerin, and those who provided comments on the preprint (http://dx.doi.org/10.1101/026575). This material is based upon work carried out by the PalEON Project (paleonproject.org) with support from the National Science Foundation Macrosystems Biology program, under grants no. DEB-1065656, 1065848, 1065732, 1065702, 1241891, 1241868, and 1241874.  Maps were made using data from Natural Earth (http://naturalearth.com), which provides raster & vector map data in the public domain.
+The authors would like to thanks the large number of individuals who have worked to first, undertake the PLSSsurvey, to bring the original survey data together, to digitize and standardize much of the survey results, and finally, to assist in interpreting and compiling the data in its present form. We would like to thank our reviewers, Kerry Woods and Greg Guerin, and those who provided comments on the preprint (http://dx.doi.org/10.1101/026575). This material is based upon work carried out by the PalEON Project (paleonproject.org) with support from the National Science Foundation Macrosystems Biology program, under grants no. DEB-1065656, 1065848, 1065732, 1065702, 1241891, 1241868, and 1241874.  Maps were made using data from Natural Earth (http://naturalearth.com), which provides raster & vector map data in the public domain. Any use of trade, firm, or product name is for descriptive purposes only and does not imply endorsment by the U.S. Government.
 
 ***
 ```{r fig1_output,echo=FALSE,warning=FALSE,message=FALSE,fig.width=4,fig.height = 3,dpi=300, dev=c('png','tiff')}

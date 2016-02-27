@@ -9,13 +9,11 @@ knitr::opts_chunk$set(
   cache.path = "cache/"
 )
 
-
-
 library("pander")
 library("plyr")
 pander::panderOptions('table.style', 'rmarkdown')
 pander::panderOptions('table.split.table', 300)
-pander::ps.options(fonts='serif')
+grDevices::ps.options(fonts='serif')
 
 
 ## ----dataLoad, echo = FALSE, message=FALSE, results = 'hide', warning=FALSE----
@@ -26,10 +24,10 @@ version <- '0.9-7'
 model.proj <- '+init=epsg:3175'
 #model.proj <- '+init=epsg:4326'
 
-if(model.proj == '+init=epsg:3175'){
+if (model.proj == '+init=epsg:3175') {
   xylimits <- c(-100000, 1050000, 600000, 1600000)
 }
-if(model.proj == '+init=epsg:4326'){
+if (model.proj == '+init=epsg:4326') {
   xylimits <- c(-98, -83, 42, 50)
 }
 
@@ -101,7 +99,7 @@ resids$resid[!is.na(resids$dens)] <- resid(mean.mod, type = 'response')
 
 biom_sd <- base.map +
             geom_tile(data = resids, aes(x = x, y = y, fill = resid)) +
-            scale_fill_gradient2(low='blue', mid = 'white', high='red', na.value = NA) +
+            scale_fill_gradient2(low = 'blue', mid = 'white', high = 'red', na.value = NA) +
             geom_path(data = umw.domain, aes(x = long, y = lat, group = group, linesize = paleon)) +
             geom_path(data = can.domain, aes(x = long, y = lat, group = group)) +
             theme_bw() +
@@ -124,13 +122,13 @@ taxon.cor <- data.frame(taxon = colnames(density.table)[4:ncol(density.table)],
                         df = NA,
                         stat = NA)
 
-for(i in 4:ncol(density.table)){
+for(i in 4:ncol(density.table)) {
   is.good <- basal.table[,i] > 0 & rowSums(basal.table[, 4:ncol(density.table)], na.rm=TRUE) > 0
-  
-  sample.prop <- basal.table[is.good,i] / rowSums(basal.table[is.good, 4:ncol(density.table)], na.rm=TRUE)
+   
+  sample.prop <- basal.table[is.good,i] / rowSums(basal.table[is.good, 4:ncol(density.table)], na.rm = TRUE)
   
   test <- try(cor.test(sample.prop, rowSums(basal.table[is.good, 4:ncol(density.table)], na.rm=TRUE)))
-  if(!class(test) == 'try-error'){
+  if (!class(test) == 'try-error') {
     taxon.cor$cor[i-3]  <- test$estimate
     taxon.cor$pval[i-3] <- test$p.value
     taxon.cor$stat[i-3] <- test$statistic
@@ -288,19 +286,22 @@ zone_cast$cells <- dcast(zone_melt,
 
 zone_cast <- zone_cast[order(zone_cast$cells, decreasing = TRUE),]
 
-zone_cast[,3:8] <- round(zone_cast[,3:8], 1)
+zone_cast[,!colnames(zone_cast) %in% c('cluster', 'clustNum','cells')] <- round(zone_cast[,!colnames(zone_cast) %in% c('cluster', 'clustNum','cells')], 1)
 
 zone_cast$dens <- paste0(zone_cast$dens, ' (',zone_cast$plss_dens,')')
 zone_cast$basa <- paste0(zone_cast$basa, ' (',zone_cast$plss_basa,')')
 zone_cast$biom <- paste0(zone_cast$biom, ' (',zone_cast$plss_biom,')')
 
-zone_cast <- zone_cast[,1:5]
+zone_cast <- zone_cast[,!(regexpr("plss", colnames(zone_cast))>0| colnames(zone_cast) %in% "clustNum")]
 
-colnames(zone_cast) <- c('Forest Type', 'Number of Cells', 
-                         'Stem Density stems ha^-1^',
-                         'Basal Area m^2^ ha^-1^', 'Biomass Mg ha^-1^')
+!colnames(zone_cast) %in% c('cluster', 'clustNum','cells')
 
-zone_cast <- zone_cast[,1:5]
+colnames(zone_cast) <- c('Forest Type', 'Area km^2^', 
+                         '$\\Delta$ Stem Density stems ha^-1^',
+                         '$\\Delta$ Basal Area m^2^ ha^-1^', '$\\Delta$ Biomass Mg ha^-1^')
+
+rownames(zone_cast) <- NULL
+
 
 ## ----diff_table, echo = FALSE, message = FALSE, warning=FALSE, results='asis'----
 
