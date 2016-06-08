@@ -178,7 +178,10 @@ trees.by.cell  <- rowSums(count.table[,!colnames(count.table) %in% c('x', 'y', '
 
 #  The function averages the estimates to a point level estimate from the aggregated sum.
 #  Why is the multiplier * 2? Because there are two trees per point and we would underestimate otherwise.
-normalize <- function(x, mult = 2, value = points.by.cell) {x[,4:ncol(x)] <-  x[,4:ncol(x)] / value * mult; x}
+normalize <- function(x, mult = 2, value = points.by.cell) {
+  x[,4:ncol(x)] <-  x[,4:ncol(x)] / value * mult
+  x
+}
 
 density.table <- normalize(density.table)
 basal.table   <- normalize(basal.table)

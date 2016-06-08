@@ -72,6 +72,8 @@ re.agg <- function(x){
     x.cast <- cbind(x.cast, append.it)
   }
   
+  x.cast[is.na(x.cast)] <- 0
+  
   x.cast[,c('cell', unique(fia.trans$PalEON)[!is.na(unique(fia.trans$PalEON))])]
 }
 
@@ -114,4 +116,4 @@ comp.grid <- comp.grid[good.points, ]
 
 comp.grid[is.na(comp.grid)] <- 0
 
-comp.grid[,2:ncol(comp.grid)] <- comp.grid[,-1] / rowSums(comp.grid[,-1], na.rm=TRUE)
+comp.grid[,2:ncol(comp.grid)] <- comp.grid[,-1] / rowSums(comp.grid[,-1], na.rm = TRUE)

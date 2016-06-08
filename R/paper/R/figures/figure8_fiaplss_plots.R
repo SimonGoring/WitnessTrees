@@ -9,7 +9,7 @@ allometry.plot <- data.frame(plss = c(plss.diam,
                              fia =  c(getValues(fiadiam),
                                       getValues(fiadens),
                                       getValues(fiabasa),
-                                      getValues(fiabiom/1000)),
+                                      getValues(fiabiom)),
                              vars = rep(c('Diameter', 'Density', 'Basal Area', 'Biomass'), 
                                         each = ncell(dens)),
                              lowval = rep(getValues(dens), 4))

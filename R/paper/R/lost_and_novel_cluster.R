@@ -49,14 +49,14 @@ pls.dominants <- data.frame(types = pls.forest.types,
                             tot   = as.numeric(100 * (table(pls.types.clust$clustering) / nrow(comp.grid))),
                             stringsAsFactors = FALSE)
 
-pls.dominants <- pls.dominants[order(pls.dominants$pct, decreasing = TRUE),]
+#pls.dominants <- pls.dominants[order(pls.dominants$pct, decreasing = TRUE),]
 
 fia.dominants <- data.frame(types = fia.forest.types, 
                             pct   = as.numeric(100 * (table(fia.types.clust$clustering) / length(fia.types.clust$clustering))),
                             tot   = as.numeric(100 * (table(fia.types.clust$clustering) / nrow(fia.aligned))),
                             stringsAsFactors = FALSE)
 
-fia.dominants <- fia.dominants[order(fia.dominants$pct, decreasing = TRUE),]
+#fia.dominants <- fia.dominants[order(fia.dominants$pct, decreasing = TRUE),]
 
 pls.lost <- SpatialPointsDataFrame(coords = pls.points, 
                                    data   = data.frame(type = pls.types.clust$clustering,
@@ -77,11 +77,44 @@ writeRaster(rasterize(pls.lost, numbered.rast, field = 'type'),
             filename = 'fig_rasters/pls_lost.tif',
             overwrite = TRUE)
 
+pls.lost.rast <- rasterize(pls.lost, numbered.rast, field = 'type')
+
 writeOGR(fia.gain, 
          dsn = paste0('../../data/output/wiki_outputs/mapped_gain_v',version,'.shp'),
          layer = paste0('mapped_gain_v',version),
          driver = 'ESRI Shapefile', overwrite=TRUE)
 
 writeRaster(rasterize(fia.gain, numbered.rast, field = 'type'), 
-            filename = 'fig_rasters/fia_gain.tif',
+            filename = 'fig_rasters/fia_gainv0.9.9.tif',
             overwrite = TRUE)
+
+fia.gain.rast <- rasterize(fia.gain, numbered.rast, field = 'type')
+
+small_gainloss <- na.omit(data.frame(gain = getValues(fia.gain.rast), 
+                                     loss = getValues(pls.lost.rast),
+                                     cell = getValues(numbered.rast)))
+
+mod_loss <- do.call(cbind.data.frame, lapply(1:5, function(x){
+                colMeans(fia.aligned[match(small_gainloss$cell[small_gainloss$loss == x],
+                                           fia.aligned$cell), -1], na.rm=TRUE)
+                }))
+
+mod_gain <- do.call(cbind.data.frame, lapply(1:5, function(x){
+  colMeans(fia.aligned[match(small_gainloss$cell[small_gainloss$gain == x],
+                             fia.aligned$cell), -1], na.rm=TRUE)
+}))
+
+pls_loss <- do.call(cbind.data.frame, lapply(1:5, function(x){
+  colMeans(comp.grid[match(small_gainloss$cell[small_gainloss$loss == x],
+                           comp.grid$cell), -1], na.rm=TRUE)
+}))
+
+pls_gain <- do.call(cbind.data.frame, lapply(1:5, function(x){
+  colMeans(comp.grid[match(small_gainloss$cell[small_gainloss$gain == x],
+                             comp.grid$cell), -1], na.rm=TRUE)
+}))
+
+colnames(pls_gain) <- 1:5
+colnames(pls_loss) <- 1:5
+colnames(mod_gain) <- 1:5
+colnames(mod_loss) <- 1:5

@@ -13,12 +13,12 @@ library("pander")
 library("plyr")
 pander::panderOptions('table.style', 'rmarkdown')
 pander::panderOptions('table.split.table', 300)
-grDevices::ps.options(fonts='serif')
+grDevices::ps.options(fonts = 'serif')
 
 
 ## ----dataLoad, echo = FALSE, message=FALSE, results = 'hide', warning=FALSE----
 
-version <- '0.9-7'
+version <- '0.9-9'
 
 #  Choose one of the two below (3175 is the Albers, 4326 is lat/long):
 model.proj <- '+init=epsg:3175'
@@ -113,7 +113,6 @@ rast.output <- writeRaster(setValues(dens, resids$resid),
                            overwrite = TRUE)
 
 
-
 ## ----StemDensityCors, echo=FALSE, message=FALSE, warning=FALSE-----------
 
 taxon.cor <- data.frame(taxon = colnames(density.table)[4:ncol(density.table)],
@@ -127,12 +126,13 @@ for(i in 4:ncol(density.table)) {
    
   sample.prop <- basal.table[is.good,i] / rowSums(basal.table[is.good, 4:ncol(density.table)], na.rm = TRUE)
   
-  test <- try(cor.test(sample.prop, rowSums(basal.table[is.good, 4:ncol(density.table)], na.rm=TRUE)))
+  test <- try(cor.test(sample.prop, rowSums(basal.table[is.good, 4:ncol(density.table)], na.rm = TRUE)))
+  
   if (!class(test) == 'try-error') {
-    taxon.cor$cor[i-3]  <- test$estimate
-    taxon.cor$pval[i-3] <- test$p.value
-    taxon.cor$stat[i-3] <- test$statistic
-    taxon.cor$df[i-3]   <- sum(is.good) - 2
+    taxon.cor$cor[i - 3]  <- test$estimate
+    taxon.cor$pval[i - 3] <- test$p.value
+    taxon.cor$stat[i - 3] <- test$statistic
+    taxon.cor$df[i - 3]   <- sum(is.good) - 2
   }
 }
 
@@ -141,9 +141,9 @@ rownames(taxon.cor) <- taxon.cor[,1]
 taxon.cor[,2] <- round(taxon.cor[,2], 2)
 
 taxon.pct <- data.frame(all = colMeans(composition.table[,4:ncol(composition.table)]*100,
-                                       na.rm=TRUE),
-                        forested = colMeans(composition.table[getValues(dens)>47,4:ncol(composition.table)]*100,
-                                       na.rm=TRUE))
+                                       na.rm = TRUE),
+                        forested = colMeans(composition.table[getValues(dens) > 47,4:ncol(composition.table)] * 100,
+                                       na.rm = TRUE))
 
 taxon.pct <- round(taxon.pct, 0)
 
@@ -194,7 +194,7 @@ rm(compplots)
 
 
 ## ----ForestClusterPlots, echo = FALSE, warning=FALSE, message=FALSE------
-
+  
 source('R/load_fia_data.R')
 source('R/figures/Figure6_clusterPlots.R')
 
@@ -272,7 +272,7 @@ test_clusts$cells <- (!is.na(getValues((fiadens))) &
                         !is.na(getValues((dens))))[test_clusts$cell]
 test_clusts$dens <- (getValues((fiadens)) - getValues((dens)))[test_clusts$cell]
 test_clusts$basa <- (getValues((fiabasa)) - getValues((basal)))[test_clusts$cell]
-test_clusts$biom <- (getValues((fiabiom))/1000 - getValues((biomass)))[test_clusts$cell]
+test_clusts$biom <- (getValues((fiabiom)) - getValues((biomass)))[test_clusts$cell]
 test_clusts$plss_dens <- getValues((dens))[test_clusts$cell]
 test_clusts$plss_basa <- getValues((basal))[test_clusts$cell]
 test_clusts$plss_biom <- getValues((biomass))[test_clusts$cell]
@@ -292,9 +292,10 @@ zone_cast$dens <- paste0(zone_cast$dens, ' (',zone_cast$plss_dens,')')
 zone_cast$basa <- paste0(zone_cast$basa, ' (',zone_cast$plss_basa,')')
 zone_cast$biom <- paste0(zone_cast$biom, ' (',zone_cast$plss_biom,')')
 
-zone_cast <- zone_cast[,!(regexpr("plss", colnames(zone_cast))>0| colnames(zone_cast) %in% "clustNum")]
+zone_cast <- zone_cast[, !(regexpr("plss", colnames(zone_cast)) > 0 | 
+                             colnames(zone_cast) %in% "clustNum")]
 
-!colnames(zone_cast) %in% c('cluster', 'clustNum','cells')
+# !colnames(zone_cast) %in% c('cluster', 'clustNum','cells')
 
 colnames(zone_cast) <- c('Forest Type', 'Area km^2^', 
                          '$\\Delta$ Stem Density stems ha^-1^',
@@ -387,9 +388,9 @@ val.plot$dens[!val.plot$dens] <- NA
 fig1plot <- base.map +
   geom_tile(data = na.omit(val.plot), 
             aes(x = x, y = y), alpha = 0.8, fill = 'lightgray') +
-  geom_path(data=river.subset, 
+  geom_path(data = river.subset, 
             aes(x = long, y = lat, group = group), color = 'blue', alpha = 0.1) +
-    geom_polygon(data=lakes.subset, 
+    geom_polygon(data = lakes.subset, 
                  aes(x = long, y = lat, group = group), fill = '#ADD8E6') +
   geom_path(data = umw.domain, aes(x = long, y = lat, group = group, linesize = paleon)) +
   geom_path(data = can.domain, aes(x = long, y = lat, group = group)) +
