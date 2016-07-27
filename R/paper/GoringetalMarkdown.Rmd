@@ -3,7 +3,7 @@ title: "Forest Change in the Upper Midwestern United States"
 author: "Simon Goring *et al*."
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: word_document
-
+  reference_docx: word_template.docx
 bibliography: goringetal_references.bib
 csl: plos.csl
 ---
@@ -58,31 +58,31 @@ Jason S. McLachlan^11^
 
 John W. Williams^12,13^
 
-^1^Department of Geography, University of Wisconsin, Madison, 550 N Park St, Madison WI 53706
+^1^Department of Geography, University of Wisconsin, Madison, 550 N Park St, Madison WI, United States, 53706
 
-^2^Department of Forest and Wildlife Ecology, University of Wisconsin-Madison, 1630 Linden Dr, Madison WI 53706
+^2^Department of Forest and Wildlife Ecology, University of Wisconsin-Madison, 1630 Linden Dr, Madison WI, United States, 53706
 
-^3^Harvard Forest, Harvard University, 324 N Main St, Petersham MA 01366
+^3^Harvard Forest, Harvard University, 324 N Main St, Petersham MA, United States, 01366
 
-^4^Harvard Forest, Harvard University, 324 N Main St, Petersham MA 01366
+^4^Harvard Forest, Harvard University, 324 N Main St, Petersham MA, United States, 01366
 
-^5^Department of Biology, Bryn Mawr College, 101 North Merion Ave., Bryn Mawr PA 19010
+^5^Department of Biology, Bryn Mawr College, 101 North Merion Ave., Bryn Mawr PA, United States, 19010
 
-^6^Department of Statistics, University of California, Berkeley, 367 Evans Hall, Berkeley CA 94720
+^6^Department of Statistics, University of California, Berkeley, 367 Evans Hall, Berkeley CA, United States, 94720
 
-^7^Department of the Interior Southwest Climate Science Center, U.S. Geological Survey, 1955 E. Sixth St. Tucson, AZ 85719; School of Natural Resources and the Environment and Department of Geosciences, University of Arizona, Tucson AZ 85721
+^7^Department of the Interior Southwest Climate Science Center, U.S. Geological Survey, 1955 E. Sixth St. Tucson, AZ 85719; School of Natural Resources and the Environment and Department of Geosciences, University of Arizona, Tucson AZ, United States, 85721
 
-^8^Department of Earth and Environment, Boston University, 685 Commonwealth Ave, Boston, MA 02215
+^8^Department of Earth and Environment, Boston University, 685 Commonwealth Ave, Boston, MA, United States, 02215
 
-^9^Department of Statistics, University of California, Berkeley, 367 Evans Hall, Berkeley CA 94720
+^9^Department of Statistics, University of California, Berkeley, 367 Evans Hall, Berkeley CA, United States, 94720
 
-^10^Department of Geography, Dartmouth College, 6017 Fairchild, Hanover, NH 03755
+^10^Department of Geography, Dartmouth College, 6017 Fairchild, Hanover, NH, United States, 03755
 
-^11^Department of Biological Sciences, University of Notre Dame, 100 Galvin Life Sciences Center, Notre Dame, IN 46556
+^11^Department of Biological Sciences, University of Notre Dame, 100 Galvin Life Sciences Center, Notre Dame, IN, United States, 46556
 
-^12^Department of Geography, University of Wisconsin, Madison, 550 N Park St, Madison WI 53706
+^12^Department of Geography, University of Wisconsin, Madison, 550 N Park St, Madison WI, United States, 53706
 
-^13^Center for Climatic Research, University of Wisconsin, Madison, 1225 W Dayton St, Madison WI 53706
+^13^Center for Climatic Research, University of Wisconsin, Madison, 1225 W Dayton St, Madison WI, United States, 53706
 
 **Corresponding Author**: Simon Goring - goring@wisc.edu
 
@@ -95,13 +95,6 @@ version <- '0.9-9'
 #  Choose one of the two below (3175 is the Albers, 4326 is lat/long):
 model.proj <- '+init=epsg:3175'
 #model.proj <- '+init=epsg:4326'
-
-if (model.proj == '+init=epsg:3175') {
-  xylimits <- c(-100000, 1050000, 600000, 1600000)
-}
-if (model.proj == '+init=epsg:4326') {
-  xylimits <- c(-98, -83, 42, 50)
-}
 
 source('R/load_data_v0.2.R')
 source('R/natural_earth.R')
@@ -175,7 +168,7 @@ Estimating stem density from PLSS data is based on a plotless density estimator 
 
 We estimate stem density (stems m^-2^) based on the Morisita two-tree density estimator, which uses the distance-to-tree measurements for the two closest trees at each point [@morisita1954estimation]. The correction to the estimate uses explicit and spatially varying factors that account for variations in sampling designs over time and among surveyors. All code to perform the analysis is included in S1 File (*misc.functionsv1.4.R*). 
 
-We estimate the basic stem density (stems m^-2^) using the point-to-tree distances for the closest trees to each point within a defined number of sectors around the point [Eqn 31: @morisita1957estimation]:
+We estimate the basic stem density (stems m^-2^) using the point-to-tree distances for the closest trees to each point within a defined number of sectors around the point [Eqn 31 in @morisita1957estimation]:
                       
 $\lambda_{\hat{m_2}} = \frac{k - 1}{\pi \times n} \times \sum_{i=1}^N\frac{k}{\sum_{j=1}^{k}\left( {r_{ij}} \right)^2}$
 
@@ -281,13 +274,12 @@ quadrant <- floor(apply(used.data@data[,16:19], 2, function(x)as.numeric(as.char
 
 two.quads <- !(quadrant[,1] - quadrant[,2] == 0)
 
-good.trees <- with(used.data@data, (!(diam1 > 254 | diam2 > 254)) | (species1 %in% c('No Tree', 'Water') & species2 %in% c('No Tree', 'Water')))
+good.trees <- with(used.data@data, 
+                   (!(diam1 > 254 | diam2 > 254)) | 
+                     (species1 %in% c('No Tree', 'Water') & 
+                        species2 %in% c('No Tree', 'Water')))
 
 used.data$good <- two.quads | good.trees
-
-base.rast <- raster(xmn = -71000, xmx = 2297000, ncols=296,
-                        ymn = 58000,  ymx = 1498000, nrows = 180,
-                        crs = '+init=epsg:3175')
 
 count.plot <- rasterize(spTransform(used.data, CRSobj = CRS(model.proj)), 
                         base.rast, 'good', sum)
@@ -297,7 +289,8 @@ count.df <- data.frame(xyFromCell(count.plot, 1:ncell(count.plot)),
                        points = getValues(count.plot))
 
 write.csv(na.omit(count.df),
-          paste0('../../data/output/wiki_outputs/plss_counts_alb_',version,'.csv'))
+          paste0('../../data/output/wiki_outputs/plss_counts_alb_', version, '.csv'),
+          row.names = FALSE)
 
 source('R/base_calculationsv_1.4.R')
 
@@ -550,9 +543,7 @@ Table 2. Mean cell-wise change in forest zone density and basal area since the P
 #comparing stuff:
 test_clusts <- clust_plot
 
-num.rast <- setValues(fiadens, 1:ncell(fiadens))
-
-test_clusts$cell <- extract(num.rast, test_clusts[,1:2])
+test_clusts$cell <- add_cells(test_clusts[,1:2])
 
 test_clusts$cells <- (!is.na(getValues((fiadens))) &
                         !is.na(getValues((dens))))[test_clusts$cell]
@@ -871,6 +862,7 @@ plot(fig9_output$plot)
 ***
 ```{r fig10_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 6, dpi=300, dev=c('png','tiff')}
 trans.plot
+check_vars()
 ```
 
 ***

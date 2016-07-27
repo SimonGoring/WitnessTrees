@@ -9,37 +9,20 @@ stem.density <- SpatialPointsDataFrame(coordinates(used.data),
                                        data = data.frame(density = estimates[[1]],
                                                          basal   = estimates[[2]],
                                                          diams = rowMeans(diams[,1:2], 
-                                                                          na.rm = TRUE) * 2.54))
+                                                                          na.rm = TRUE) * 2.54),
+                                       proj4string = CRS(proj4string(used.data))) %>% 
+  spTransform(CRS(model.proj))
 
-proj4string(stem.density) <- proj4string(used.data)
 
 #  Based on our knowledge of the dataset, assuming NA values are density 0 is
 #  justified in some regions.  Effectively this doesn't do anything, because we've already
 #  checked it, but this is just a double check.
-zero.trees <- is.na(stem.density$density) & (species[,2] %in% c('No tree', 'Water') | species[,1] %in% c('No tree', 'Water'))
+zero.trees <- is.na(stem.density$density) & 
+                 (species[,2] %in% c('No tree', 'Water') | 
+                     species[,1] %in% c('No tree', 'Water'))
 
 stem.density$density[zero.trees] <- 0
 stem.density$basal[zero.trees] <- 0
-
-#  We use two different projection systems here.  This is the test to create the
-#  base resolution.
-if (model.proj == '+init=epsg:4326') {
-  #  lat/long
-  base.rast <- raster(xmn = -98.6, xmx = -66.1, ncols = 391,
-                      ymn = 36.5,  ymx = 49.75, nrows = 160,
-                      crs = '+init=epsg:4326')
-  numbered.rast <- setValues(base.rast, 1:ncell(base.rast))
-  numbered.cell <- extract(numbered.rast, spTransform(stem.density, CRSobj = CRS(model.proj)))
-
-}
-
-if (model.proj == '+init=epsg:3175') {
-  base.rast <- raster(xmn = -71000, xmx = 2297000, ncols = 296,
-                          ymn = 58000,  ymx = 1498000, nrows = 180,
-                          crs = '+init=epsg:3175')
-  numbered.rast <- setValues(base.rast, 1:ncell(base.rast))
-  numbered.cell <- extract(numbered.rast, spTransform(stem.density, CRSobj = CRS(model.proj)))
-}
 
 #  This ought to be a better way of aggregating the cell densities, diameters, basal areas &cetera
 #  The idea is to use cast/melt to put everything together.
@@ -53,8 +36,8 @@ if (paste0('pointwise.ests','_v',version, '.RDS') %in% list.files('../../data/ou
 
 } else {
   
-  spec.table <- data.frame(xyFromCell(base.rast, numbered.cell),
-                           cell = numbered.cell,
+  spec.table <- data.frame(coordinates(stem.density),
+                           cell = add_cells(stem.density),
                            spec = c(as.character(species[,1]), as.character(species[,2])),
                            count = 1,
                            point = 1:nrow(species),
@@ -86,6 +69,7 @@ if (paste0('pointwise.ests','_v',version, '.RDS') %in% list.files('../../data/ou
   biomass <- rep(NA, nrow(spec.table))
   
   for (i in 1:nrow(spec.table)) {
+    # It's just really slow, so I do it this way to see what's happening.
     biomass[i] <- form(spec.table[i,])
     cat(i,'\n')
   }
@@ -96,7 +80,12 @@ if (paste0('pointwise.ests','_v',version, '.RDS') %in% list.files('../../data/ou
   
   spec.table$spec[spec.table$spec == 'No Tree'] <- 'No tree'
   
-  saveRDS(spec.table, file = paste0('../../data/output/aggregated_midwest/pointwise.ests','_v',version, '.RDS'))
+  colnames(spec.table)[1:2] <- c('x', 'y')
+  
+  saveRDS(spec.table, 
+          file = paste0('../../data/output/aggregated_midwest/pointwise.ests','_v', 
+                        version, 
+                        '.RDS'))
 }
 
 # Any plot with only one tree (and one No tree) should be removed.
@@ -111,7 +100,7 @@ nine.nine.pct <- apply(spec.table[,6:9], 2, quantile, probs = 0.99, na.rm = TRUE
 
 spec.table$density[spec.table$density > nine.nine.pct['density']] <- nine.nine.pct['density']
 spec.table$basal[spec.table$basal > nine.nine.pct['basal']] <- nine.nine.pct['basal']
-#spec.table$biom[spec.table$biom > nine.nine.pct['biom']] <- nine.nine.pct['biom']
+spec.table$biom[spec.table$biom > nine.nine.pct['biom']] <- nine.nine.pct['biom']
 
 #  Add the PFT classes to `spec.table`
 pft.trans <- read.csv('../../data/input/relation_tables/pft.trans.table.csv', stringsAsFactor = FALSE)
@@ -160,6 +149,7 @@ plots_per_cell <- plots_per_cell[order(plots_per_cell$cell),]
 points_per_cell_df <- data.frame(plots_per_cell,
                                  treed = treed.points$tree,
                                  untreed = treed.points$`no tree`)
+
 colnames(points_per_cell_df)[4] <- "total"
 
 #  The problem with dcast is that it sums or averages by the count of each species, so the
@@ -186,7 +176,8 @@ normalize <- function(x, mult = 2, value = points.by.cell) {
 density.table <- normalize(density.table)
 basal.table   <- normalize(basal.table)
 biomass.table <- normalize(biomass.table)
-diam.table    <- normalize(diam.table, mult = 2.54, trees.by.cell)
+diam.table    <- normalize(diam.table, mult = 2.54) # [weighted]
+diam.table.uw <- normalize(diam.table, mult = 2.54, 1) # [weighted]
 
 #  We want rasterized versions of these tables with sums:
 rast.fun <- function(x) {
@@ -284,7 +275,7 @@ add.v(biomass.points, 'plss_plots_taxa')
 add.v(biomass.points.pft, 'plss_plots_pft')
 
 ## This is everything else:
-add.v(diam.table, 'plss_diam')
+add.v(diam.table.uw, 'plss_diam')
 add.v(count.table, 'plss_composition')
 add.v(density.table, 'plss_density')
 add.v(basal.table, 'plss_basal')

@@ -5,9 +5,8 @@ transects <- list(one = data.frame(x = c(-18093, 631094),
                                    y = c(832084, 1151701)))
 
 get_cells <- function(x){
-  cells <- extract(num.rast, 
-                   data.frame(x = seq(x$x[1], x$x[2], length.out = 500),
-                              y = seq(x$y[1], x$y[2], length.out = 500)))
+  cells <- add_cells(data.frame(x = seq(x$x[1], x$x[2], length.out = 500),
+                                y = seq(x$y[1], x$y[2], length.out = 500)))
   
   cells <- cells[!duplicated(cells)]
   cells
@@ -16,9 +15,8 @@ get_cells <- function(x){
 trans.cells <- lapply(transects, get_cells)
 
 get_points <- function(x){
-  cells <- extract(num.rast, 
-                   data.frame(x = seq(x$x[1], x$x[2], length.out = 500),
-                              y = seq(x$y[1], x$y[2], length.out = 500)))
+  cells <- add_cells(data.frame(x = seq(x$x[1], x$x[2], length.out = 500),
+                                y = seq(x$y[1], x$y[2], length.out = 500)))
   
   cells <- cells[!duplicated(cells)]
   
@@ -31,7 +29,8 @@ get_points <- function(x){
   transect.plss$class <- 'PLSS'
   transect.fia$class <- 'FIA'
   
-  transect.fia[,2:(ncol(transect.fia)-1)] <- transect.fia[,2:(ncol(transect.fia)-1)] / rowSums(transect.fia[,2:(ncol(transect.fia)-1)], na.rm=TRUE)
+  transect.fia[,2:(ncol(transect.fia) - 1)] <- transect.fia[,2:(ncol(transect.fia) - 1)] / rowSums(transect.fia[,2:(ncol(transect.fia) - 1)], 
+                                                                                                   na.rm = TRUE)
   
   good.taxa <- c('cell', 'class', 'Tamarack', 'Pine', 'Birch', 'Elm', 
                  'Maple', 'Oak', 'Poplar', 'Spruce', 'Hemlock')
@@ -64,19 +63,17 @@ trans.plot <- ggplot(transects, aes(x = cell,
                                color = variable)) +
   scale_x_continuous(expand = c(0,0)) +
   scale_y_sqrt(expand = c(0,0)) +
-  #  stat_smooth(se = FALSE, method = 'gam', 
-  #              formula = y ~ te(x), family = binomial, size = 2) + 
   stat_smooth(method = 'gam', family = betar, se = TRUE,
               formula = y ~ s(x, k = 10), alpha = 0.1, size = 1.2) + 
   stat_smooth(method = 'gam', family = betar, se = FALSE,
               formula = y ~ s(x, k = 10), size = 1.2) + 
-  facet_wrap(~class+transect, nrow = 2) +
+  facet_wrap(~class + transect, nrow = 2) +
   theme_bw() +
   xlab('Meters East') + ylab('Percent Composition') +
-  theme(axis.text = element_text(family='serif', size = 16),
-        axis.title = element_text(family='serif', size = 18, face = 'bold'),
-        legend.text = element_text(family='serif', size = 14),
-        strip.text =  element_text(family='serif', size = 18, face = 'bold')) 
+  theme(axis.text   = element_text(family = 'serif', size = 16),
+        axis.title  = element_text(family = 'serif', size = 18, face = 'bold'),
+        legend.text = element_text(family = 'serif', size = 14),
+        strip.text  = element_text(family = 'serif', size = 18, face = 'bold')) 
 
 colnames(transects)[3] <- 'taxon'
 transects$taxon <- as.character(transects$taxon)
@@ -102,7 +99,7 @@ taxon.spec <- data.frame(transect = c('One', 'Two'),
                          taxon    = rep(unique(transects$taxon), each = 2),
                          AIC = NA)
 
-for(i in 1:nrow(taxon.spec)){
+for (i in 1:nrow(taxon.spec)) {
   output <- gam.test(i)
   taxon.spec$AIC[i] <- output[1]
 }
@@ -111,7 +108,7 @@ for(i in 1:nrow(taxon.spec)){
 comp.min <- comp.grid[plss.cells %in% fia.rows,]
 rownames(comp.min) <- plss.cells[plss.cells %in% fia.rows]
 
-fia.min <- fia.aligned[fia.rows%in% plss.cells,]
+fia.min <- fia.aligned[fia.rows %in% plss.cells,]
 rownames(fia.min) <- fia.rows[fia.rows %in% plss.cells]
 
 pls.beta <- betadiver(comp.min, 'sor')
@@ -129,7 +126,7 @@ get_trans_t <- function(x){
   fia.matches <- get_match(trans.cells, x, fia.min)
   fia.trans.a <- as.matrix(fia.beta)[t(fia.matches)]
   
-  t.test(fia.trans.a, pls.trans.a, paired=TRUE)
+  t.test(fia.trans.a, pls.trans.a, paired = TRUE)
 }
 
 trans.t.tests <- lapply(1:2, get_trans_t)

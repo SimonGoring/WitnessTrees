@@ -93,7 +93,8 @@ morisita <- function(processed.data, correction.factor = NULL, veil=FALSE) {
   #  The stem density is measured in trees / ha.
   met.rad <- (diam / 2) * 2.54 / 100
   
-  basal.area <- morisita.est * rowSums(pi * met.rad^2, na.rm=TRUE)
+  basal.area <- morisita.est * rowSums(pi * met.rad ^ 2, 
+                                       na.rm = TRUE)
   
   basal.area[ q < 2 ] <- NA
   
@@ -104,13 +105,13 @@ morisita <- function(processed.data, correction.factor = NULL, veil=FALSE) {
 get_cells <- function(x, y = NULL){
   ### This function is the basic function where we get xy coordinates of the points and then 
   ### either create a raster with the focal dataset (y) or just the cell numbers:
-  cells <- extract(num.rast, x)
+  cells <- extract(numbered.rast, x)
   
-  if(is.null(y)){
+  if (is.null(y)) {
     return(cells)
   }
   
-  null.rast <- setValues(num.rast, NA)
+  null.rast <- setValues(numbered.rast, NA)
   
   null.rast[cells] <- y
   

@@ -1,0 +1,874 @@
+---
+title: "Witness Tree paper"
+author: "Simon Goring *et al*."
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: word_document
+
+bibliography: goringetal_references.bib
+csl: plos.csl
+---
+
+Novel and lost forests in the upper Midwestern United States, from new estimates of settlement-era composition, stem density, and biomass.
+===============================
+
+<!--
+
+```{r setup-knitr, echo = FALSE, message = FALSE}
+knitr::opts_chunk$set(
+  comment = " ",
+  error = FALSE,
+  eval = TRUE,
+  cache = FALSE,
+  tidy = TRUE,
+  fig.path = "figure/",
+  cache.path = "cache/"
+)
+
+
+
+library("pander")
+library("plyr")
+pander::panderOptions('table.style', 'rmarkdown')
+pander::panderOptions('table.split.table', 300)
+grDevices::ps.options(fonts='serif')
+
+```
+-->
+
+Author List
+=============================
+
+Simon J. Goring^1^
+
+David J. Mladenoff^2^
+
+Charles V. Cogbill^3^
+
+Sydne Record^3,4^
+
+Christopher J. Paciorek^5^
+
+Stephen T. Jackson^6^
+
+Michael C. Dietze^7^
+
+Andria Dawson ^5^
+
+Jaclyn Hatala Matthes^8^
+
+Jason S. McLachlan^9^
+
+John W. Williams^1,10^
+
+^1^Department of Geography, University of Wisconsin, Madison, 550 N Park St, Madison WI 53706
+
+^2^Department of Forest and Wildlife Ecology, University of Wisconsin-Madison, 1630 Linden Dr, Madison WI 53706
+
+^3^Harvard Forest, Harvard University, 324 N Main St, Petersham MA 01366
+
+^4^Department of Biology, Bryn Mawr College, 101 North Merion Ave., Bryn Mawr PA 19010
+
+^5^Department of Statistics, University of California, Berkeley, 367 Evans Hall, Berkeley CA 94720
+
+^6^Department of the Interior Southwest Climate Science Center, U.S. Geological Survey, 1955 E. Sixth St. Tucson, AZ 85719; School of Natural Resources and the Environment and Department of Geosciences, University of Arizona, Tucson AZ 85721
+
+^7^Department of Earth and Environment, Boston University, 685 Commonwealth Ave, Boston, MA 02215
+
+^8^Department of Geography, Dartmouth College, 6017 Fairchild, Hanover, NH 03755
+
+^9^Department of Biological Sciences, University of Notre Dame, 100 Galvin Life Sciences Center, Notre Dame, IN 46556
+
+^10^Center for Climatic Research, University of Wisconsin, Madison, 1225 W Dayton St, Madison WI 53706
+
+**Corresponding Author**: Simon Goring - goring@wisc.edu
+
+******
+
+```{r dataLoad, echo = FALSE, message=FALSE, results = 'hide', warning=FALSE}
+
+version <- '0.9-7'
+
+#  Choose one of the two below (3175 is the Albers, 4326 is lat/long):
+model.proj <- '+init=epsg:3175'
+#model.proj <- '+init=epsg:4326'
+
+if(model.proj == '+init=epsg:3175'){
+  xylimits <- c(-100000, 1050000, 600000, 1600000)
+}
+if(model.proj == '+init=epsg:4326'){
+  xylimits <- c(-98, -83, 42, 50)
+}
+
+source('R/load_data_v0.2.R')
+source('R/natural_earth.R')
+
+```
+
+Abstract
+---------------------
+
+*EuroAmerican land-use and its legacies have transformed forest structure and composition across the United States (US). More accurate reconstructions of historical states are critical to understanding the processes governing past, current, and future forest dynamics. Here we present new gridded (8x8km) reconstructions of pre-settlement (1800s) forest composition and structure from the upper Midwestern US (Minnesota, Wisconsin, and most of Michigan), using 19th Century Public Land Survey System (PLSS), with estimates of relative composition, above-ground biomass, stem density, and basal area for 28 tree types. This mapping is more robust than past efforts, using spatially varying correction factors to accommodate sampling design, azimuthal censoring, and biases in tree selection.*
+
+*We compare pre-settlement to modern forests using US Forest Service Forest Inventory and Analysis (FIA) data to show the prevalence of lost forests (pre-settlement forests with no current analog), and novel forests (modern forests with no past analogs). Differences between pre-settlement and modern forests are spatially structured owing to differences in land-use impacts and accompanying ecological responses. Overall modern forests coincident with historical forest in the Upper Midwest have lost 55,000 Mg of biomass, approximately 11% of the pre-settlement baseline. Modern biomass is higher than pre-settlement biomass in northern Minnesota, and along the former prairie-forest border in western and south-central Wisconsin through southern Minnesota. PLSS biomass was higher today in northern Wisconsin and upper and lower Michigan due to shifts in species composition and, presumably, average stand age. Modern forests are more homogeneous, and ecotonal gradients are more diffuse today than in the past. Novel forest assemblages represent 29% of all FIA cells, while 25% of pre-settlement forests no longer exist in a modern context.*
+
+*Lost forests include hemlock and cedar dominated forests in north-central Wisconsin and along the Upper Peninsula of Michigan, elm, oak, basswood and ironwood forests along the forest-prairie boundary in south central Minnesota and eastern Wisconsin and tamarack dominated forests in north-eastern Minnesota. Novel FIA forest assemblages are distributed evenly across the region, but novelty shows a strong relationship to spatial distance from remnant forests in the upper Midwest, with novelty predicted at between 20 to 60km from remnants, depending on historical forest type.*
+
+*The spatial relationships between remnant and novel forests, shifts in ecotone structure and the loss of historic forest types point to significant challenges for land managers if landscape restoration is a priority. The spatial signals of novelty and ecological change also point to potential challenges in using modern spatial distributions of species and communities and their relationship to underlying geophysical and climatic attributes in understanding potential responses to changing climate. The signal of human settlement on modern forests is broad, spatially varying and acts to homogenize modern forests relative to their historic counterparts, with significant implications for future management.*
+
+**Key Words**: Euroamerican settlement, land-use change, public land survey, historical ecology, novel ecosystems, biomass, forest inventory and analysis, ecotone, forest ecology
+
+# Introduction:
+
+Composition, demography, and structure of forests in eastern North America has changed continuously over the last millennium, driven changes in by human land-use [@ramankutty1999estimating;@thompson2013four;@munoz2014defining;@ellis2008putting;@foster1998land] and climate variability [@pederson2014legacy;@booth2012multi;@hotchkiss2007response;@umbanhowar2006asymmetric]. While human effects have been a component of these systems for millennia, the EuroAmerican settlement and industrialization period has increased anthropogenic effects by orders of magnitude [@brugam1978pollen;@fuller1998impact;@mcandrews1988human]. Legacies of post-settlement land-use in the upper Midwest [@grossmann2008farms] and elsewhere have been shown to persist at local and regional scales [@foster1998land;@dupouey2002irreversible;@etienne2013searching], and nearly all North American forests have been affected by the intensification of land-use in the past three centuries. Hence, contemporary ecological processes in North American forests integrate the contemporary and historical anthropogenic impacts of the EuroAmerican settlement period and natural influences at decadal to centennial scales.
+
+Multiple major ecotones exist within the upper Midwestern United States (US), including the prairie-forest boundary, historic savanna, and the Tension Zone between southern and northern forests [@curtis1959vegetation]. Large and well-documented changes in forest structure and composition have occurred in this region since EuroAmerican settlement [@rhemtulla2009historical; @grossmann2008farms;@friedman2005regional;@leahy2003comparison;@rhemtulla2009legacies]. The extent to which ecotones have shifted, and their extent both prior to and following EuroAmerican settlement is of critical importance to biogeochemical and biogeophysical vegetation-atmosphere feedbacks [@matthes_inprep], carbon sequestration [@rhemtulla2009historical], and regional management and conservation policy [@radeloff2000historical;@fritschle2008reconstructing;@knoot2010state;@gimmi2013assessing].
+
+At a regional scale many modern forests in the upper Midwest (*i.e.*, Minnesota, Wisconsin and Michigan) have low species richness and functional diversity relative to forests of the pre-EuroAmerican settlement (hereafter pre-settlement, *ca*. mid-late 1800s) period [@schulte2007homogenization; @hanberry2012comparison; @li2014drivers] due to near-complete logging, often followed by severe wildfire. For example, forests in Wisconsin are in a state of regrowth, with an unfilled carbon sequestration potential of 69 TgC [@rhemtulla2009historical] as a consequence of land cover conversion and subsequent recovery following abandonment of farm lands in the 1930s.  Differences in land-use history across the Midwest, superimposed on original vegetation patterns and modern environmental gradients, may have led, not only to broad spatial patterns, but also to significant local-to-regional variation.  For example, while fire suppression occurred throughout the region, effects of suppression have and will continue to manifest themselves differently depending on the historical vegetation and biophysical characteristics of the site or region.
+
+Land-use legacies emerge at regional scales [@foster2003importance; @hamburg1986disturbance; @deinesohio]. Under intensive land-use change, natural processes of succession, senescence and recruitment may be heavily altered or redirected. Broad-scale land-use change can drive changes in forest structure, species pools, and ecosystem properties that may not be apparent on the relatively narrow time scales at which ecological processes are traditionally observed [@wolkovich2014temporal;@hamburg1986disturbance]; modern chronosequences may miss important changes in structure and composition. The recolonization of forested landscapes following agricultural clearance in the upper Midwest [@rhemtulla2009legacies], highlights the importance of understanding ecological trajectories and land-use legacies in understanding modern forest dynamics [@foster2003importance]. Cramer *el al*. [-@cramer2008s] cite successional theory to suggest that many old fields will return to a 'natural' state, but point out that recovery is not universal. In particular, intense fragmentation of the landscape can deplete the regional species pool, leading to failures of recruitment that might favor species with longer distance seed dispersal [@bellemare2002legacies].
+
+While debate persists over how to conceptualize and identify novel ecosystems, and their scientific and management implications [@radeloff2015rise;@murcia2014critique;@hobbs2014novel], the fact remains that there are now forest and vegetation communities on the landscape without historic analogues that must be managed [@higgs2012changing]. Long-term management of forest ecosystems and their associated services requires understanding the extent to which landscapes have been modified by historic land-use and the spatial (and temporal) scales at which novel ecosystems arise.  While restoration efforts have generally focused on ecosystems at local scales, there is an increasing need to focus on management and restoration at landscape scales [@menz2013hurdles]. An understanding of landscape-level processes driving ecological novelty can help prioritize intervention strategies at local scales [@hobbs2014managing], and provide a better understanding of the role of remnant patches in restoring hybrid or novel landscapes.
+
+Building upon prior work [@schulte2007homogenization;@hanberry2012comparison;@kronenfeld2007accounting;@liu2011broadscale;@almendinger1996minnesota;@anderson1975presettlement;@bolliger2004assessing;@manies2000testing;@schulte2002quantitative;@hanberry2012comparison;@friedman2005regional] and USFS-NCRS: [http://www.ncrs.fs.fed.us/gla/](), we use the Public Land Survey System (PLSS) to derive estimates of pre-settlement (*ca*. mid-late 1800s) forest composition, basal area, stem density, and biomass. Most prior PLS-based reconstructions are for individual states or smaller extents [@duren2012vegetation; @hanberry2012comparison; @rhemtulla2009historical; @friedman2005regional;@deinesohio] often aggregated at the scale of regional forest zones [@schulte2007homogenization;@hanberry2012comparison], although aggregation may also occur at the section [@rhemtulla2009historical] or township scale [@kronenfeld2010influence]. With spatially extensive historical datasets for the Upper Midwestern United States it becomes possible to quantify the extent of change in forest structure and composition since EuroAmerican Settlement.  There is a critical need for a rigorously vetted, and quantitatively robust mapping of historical forest communities that is compatible with modern forest cover data such as the Forest Inventory and Analysis data produced by the US Forest Service.  Forest cover data at two time points, separated by major land use conversion can provide greater insight into forest structure and function than any single dataset, and, further, will allow us to cross time-scales, for example, with the use of pollen data [@Dawson2015quantifying].
+
+Forest Inventory and Analysis (FIA) forest surveys, which began in the 1930s, are the closest modern equivalent of the spatially extensive PLSS data. Modern forest structure and composition data [@gray2012forest] play a ubiquitous role in forest management, conservation, carbon accounting, and basic research on forest ecosystems and community dynamics. In general, FIA datasets are systematically organized and widely available to the forest ecology and modelling community [@woudenberg2010forest], whereas most PLSS data compilations are of local, or at most, state-level extents.  This absence of widely available data on settlement-era forest composition and structure has been a major barrier to understanding and modeling the current and future processes governing forest dynamics at broader, regional scales.  For example, distributional models of tree species often rely upon FIA or other contemporary observational data to build species-climate relationships that can be used to predict potential range shifts [@iverson1998predicting;@iverson2013tree], without consideration of historical forest data.
+
+Our work develops new approaches to address well known and substantial challenges to the ecological interpretation and application of PLSS data, including lack of standardization in tree species names [@mladenoff2002narrowing], azimuthal censoring by surveyors [@kronenfeld2007accounting], variations in sampling design over time [@white1983history], and differential biases in tree selection among different kinds of survey points within the survey design at any point in time [@liu2011broadscale;@kronenfeld2014validating]. The correction factors developed here are spatially varying, allowing us to accommodate temporal and spatial variations in surveyor methods.
+
+We aggregate point-based estimates of stem density, basal area and biomass to an 8 x 8km grid, and classify forest types in the upper Midwest to facilitate comparisons between FIA and PLSS data. We compare the PLSS data to late-20th-century estimates of forest composition, tree stem density, basal area and biomass. Using analog analyses, we identify lost forests with no close compositional counterpart today, and novel forests with no close historical analogs, and we model the spatial relationships between cells with novel forest types and those that had close historical counterparts.  We explore how forest homogenization has changed the structure of two major ecotones from southern deciduous to northern evergreen forests, and the forest-prairie boundary. This work provides insight into the compositional and structural changes between historic and contemporary forests, while setting the methodological foundation for a new generation of regional to subcontinental-scale maps and analyses of settlement-era forests in the Eastern US.
+
+Methods:
+--------------------
+### Public Lands Survey Data: Assembly, and Standardization
+
+The PLSS was designed to facilitate the division and sale of federal lands from Ohio westward and south. The survey created a 1 mile^2^ (2.56 km^2^) grid (sections) on the landscape. At each section corner and half-mile (quarter-section) point, a stake was placed as the official location marker. To mark these survey points, PLSS surveyors recorded tree stem diameters, measured distances and azimuths of the two to four trees 'closest' to the survey point and identified tree taxa using common (and often regionally idiosyncratic) names. PLSS data thus represent measurements by hundreds of surveyors from 1832 until 1907, with changing sets of instructions over time [@stewart1935public;@white1983history]. The work presented here builds upon prior digitization and classification of PLSS data for Wisconsin [@manies2000testing;@schulte2002quantitative], Minnesota [@almendinger1996minnesota] and Michigan (USFS-NCRS: http://www.ncrs.fs.fed.us/gla/). 
+
+The PLSS replaced earlier Town Proprietor Surveys (TPS) used in the northeastern US and British Colonies [@cogbill2002forests;@thompson2013four]. The TPS provided estimates of relative forest composition at the township level, but no structural attributes. The PLSS produced spatially explicit point level data, with information about tree spacing and diameter, which can be used to estimate absolute tree density and biomass. PLSS notes include tree identification at the point level, disturbance [@schulte2005severe] and other features of the pre-settlement landscape. However, uncertainties exist within the PLSS [@bourdo1956review].
+
+Ecological uncertainty in the PLSS arises from the dispersed spatial sampling design (fixed sampling every half mile), precision and accuracy in converting surveyor's use of common names for tree species to scientific nomenclature [@mladenoff2002narrowing], digitization of the original survey notes, and surveyor bias during sampling [@schulte2001original;@bourdo1956review;@manies2001assessing;@liu2011broadscale]. Estimates vary regarding the ecological significance of surveyor bias. Terrail *et al*. [-@terrail2014early] show strong fidelity between taxon abundance in early land surveys versus old growth plot surveys. Liu *et al* [-@liu2011broadscale] estimate the ecological significance of some of the underlying sources of bias in the PLSS and show ecologically significant (>10% difference between classes) bias in species and size selection for corner trees. However Liu *et al*. [-@liu2011broadscale] also indicate that the true sampling error cannot be determined, particularly because most of these historic ecosystems are largely lost to us. 
+
+Kronenfeld and Wang [-@kronenfeld2007accounting], working with historical witness tree datasets in western New York, indicate that direct estimates of density using plotless estimators may be off by nearly 37% due to azimuthal censoring (*i.e.*, the tendency of surveyors  to avoid trees close to cardinal directions), while species composition estimates may be adjusted by between -4 to +6%, varying by taxon, although Kronenfeld [-@kronenfeld2014validating] shows adjustments of less than 1%. These biases can be minimized by appropriate analytical decisions; many efforts over the years have assessed and corrected for the biases and idiosyncrasies in the original surveyor data [@liu2011broadscale;@kronenfeld2007accounting;@williams2011testing;@manies2001assessing;@cogbill2015corrections;@hanberry2012adjusting;@hanberry2012comparison;@bouldin2008some;@hanberry2011spatial]. Even given these caveats, PLSS records remain the best source of data about both forest composition and structure in the United States prior to EuroAmerican settlement.
+
+This analysis builds upon and merges previous state-level efforts to digitize and database the point-level PLSS data for Wisconsin, Minnesota and the Upper Peninsula and upper third of the Lower Peninsula of Michigan. These datasets were combined using spatial tools in R [@team2014r; package *rgdal*: @bivand2014] to form a common dataset for the upper Midwest (Fig 1) using the Albers Great Lakes and St Lawrence projection (see code in Supplement 1, file: *step_one_clean_bind.R*; proj4: *+init:EPSG:3175*).
+
+**Fig 1**. *The domain of the Public Land Survey investigated in this study. The broad domain includes Minnesota, Wisconsin and the upper two thirds of Michigan state (greyed cells). A 8x8km grid is superimposed over the region to aggregate data, resulting in a total of 7940 cells containing data.  The striped band represents the Tension Zone [@curtis1959vegetation], adapted across the region from Andersen [-@andersen2005historical].*
+
+We took several steps to standardize the dataset and minimize the potential effects of surveyor bias upon estimates of forest composition, density, and biomass. All steps are preserved in the supplementary R code (Supplement 1: *step_one_clean_bind.R*). We excluded line and meander trees (i.e. trees encountered along survey lines, versus trees located at section or quarter-section corners). Surveyor selection biases for tree size and species appear to have been more strongly expressed for line trees. Meander trees were used to avoid obstacles, such as water-bodies, and so have non-random habitat preferences [@liu2011broadscale].  Lastly, there are inherent differences in sampling design between line, meander and corner points. We used only the closest two trees at each corner point because the third and fourth farthest trees have stronger biases with respect to species composition and diameter [@liu2011broadscale]. Corner points were used only if 1) there were at least two trees (or non-tree records, *e.g.* "rock" or "No Tree"), 2) the two trees were from different quadrants (defined by the cardinal directions), and 3) there were valid azimuths to the trees (a defined quadrant with an angle between 0 and 90) and valid diameters (numeric, non-zero).
+
+Many species-level identifications used by PLSS surveyors are ambiguous. Statistical models can predict the identity of ambiguous species [@mladenoff2002narrowing], but these models introduce a second layer of uncertainty into the compositional data, both from the initial surveyors' identification, and from the statistical disambiguation. Given the regional scale of the analysis, and the inherent uncertainty in the survey data itself, we chose to avoid this layer of taxonomic uncertainty, and retained only genus-level identification (Supplement 2, *Standardized Taxonomy*). The ecological implications for the use of genera-level taxonomies are important for this region.  While fire tolerance is fairly well conserved within genera, shade tolerance can vary. *Betula* contains shade intolerant *B. papyrifera* and the intermediate *B. alleghaniensis*, while *Pinus* contains the very shade intolerant *P. banksiana*, the intolerant *P. resinosa* and the moderately tolerant *P. strobus*.  For cases where shade tolerance (or fire tolerance) varies strongly within a genera we examine the data to determine the suitability of the assignment, or extent of confusion within the assigned genera.
+
+In areas of open prairie or other treeless areas, *e.g.* southwestern Minnesota, surveyors recorded distances and bearings to 'Non Tree' objects. When points were to be located in water bodies the point data indicates 'Water'. Points recorded 'No Tree' are considered to have been from extremely open vegetation, with an estimated point-level stem density of 0 stems ha^-1^. We based our estimates on terrestrial coverage, so water cells are excluded completely. Hence, absence of trees at 'No Tree' locations does reduce the gridded estimates of terrestrial stem density, but absence of trees at 'Water' locations does not.
+
+Digitization of the original surveyor notebooks introduces the possibility of transcription errors. The Wisconsin dataset was compiled by the Mladenoff lab group, and has undergone several revisions over the last two decades in an effort to provide accurate data [@manies2000testing;@radeloff2000historical;@schulte2002quantitative;@mladenoff2002narrowing;@liu2011broadscale]. The Minnesota transcription error rate is likely between 1 and 5%, and the treatment of azimuths to trees varies across the dataset [@almendinger1996minnesota]. Michigan surveyor observations were transcribed to Mylar sheets overlaid on State Quadrangle maps, so that the points were displayed geographically, and then digitized to a point based shapefile (Ed Schools, pers. comm.; Great Lakes Ecological Assessment. USDA Forest Service Northern Research Station. Rhinelander, WI. http://www.ncrs.fs.fed.us/gla/), carrying two potential sources of transcription error. Preliminary assessment of Southern Michigan data indicates a transcription error rate of 3 - 6%. To reduce errors associated with transcription across all datasets, we exclude sites for which multiple large trees have a distance of 1 link (20.12 cm) to point center, trees with very large diameters (diameter at breast height - dbh > 100 in; 254 cm), points where the azimuth to the tree is unclear, and points where the tree is at point center but has a recorded azimuth. All removed points are documented in the code used for analysis (Supplement 1: *step_one_clean_bind.R*) and are commented for review.
+
+### Data Aggregation
+
+We binned the point data using a 64km^2^ grid (Albers Gt. Lakes St Lawrence projection; Supplement 1: *base_calculations.R*) to create a dataset that has sufficient numerical power for spatial statistical modeling and sufficient resolution for regional scale analysis [@paciorek2015composition]. This resolution is finer than the 100km^2^ gridded scale used in Freidman and Reich [-@friedman2005regional], but coarser than township grids used in  other studies [@kronenfeld2014validating;@rhemtulla2009historical] to provide a scale comparable to aggregated FIA data at a broader scale. Forest compositional data is based on the number of individuals of each genus or plant functional type (PFT) present at all points within a cell. Stem density, basal area and biomass are averaged across all trees at all points within the cell.
+
+### Stem Density
+
+Estimating stem density from PLSS data is based on a plotless density estimator that uses the measured distances from each survey point to the nearest trees at the point location, the Morisita density estimator [@morisita1957estimation;@perrson1971robustness]. The Morisita density estimate is then corrected to minimize error due to different sampling geometries and several known surveyor biases [@liu2011broadscale;@kronenfeld2007accounting;@williams2011testing;@manies2001assessing;@hanberry2012adjusting;@hanberry2012comparison;@bouldin2008some;@hanberry2011spatial]. The standardized approach for this method is well validated, however surveyors did not use a consistent approach to point level sampling. Survey sampling instructions changed throughout the implementation of the PLSS in this region and differed between section and quarter-section points and between internal and external points within a township [@liu2011broadscale;@white1983history]. Our approach allows for spatial variation in surveyor methods by applying correction factors based on the empirical sample geometry, and known surveyor biases deviating from this design (Cogbill, *pers. comm.*). These estimates are based on empirical examination of the underlying data, and have been validated using simulations on stem mapped stands (Cogbill, *pers. comm.*).
+
+We estimate stem density (stems m^-2^) based on the Morisita two-tree density estimator, which uses the distance-to-tree measurements for the two closest trees at each point [@morisita1954estimation]. The correction to the estimate uses explicit and spatially varying factors that account for variations in sampling designs over time and among surveyors. All code to perform the analysis is included in Supplement 1 (file: *misc.functionsv1.4.R*). 
+
+We estimate the basic stem density (stems m^-2^) using the point-to-tree distances for the closest trees to each point within a defined number of sectors around the point [Eqn 31: @morisita1957estimation]:
+                      
+$\lambda_{\hat{m_2}} = \frac{k - 1}{\pi \times n} \times \sum_{i=1}^N\frac{k}{\sum_{j=1}^{k}\left( {r_{ij}} \right)^2}$  (1)
+
+where $\lambda$ is density ;  $k$ is the number of sectors within which trees are sampled, $N$ is the number of points over which estimates are aggregated, $r$ is the distance of point-to-tree (as m). This estimate can be modified [@morisita1954estimation;@cottam1956use], which creates a correction, herein called $\kappa$, that accounts for different sampling designs. This "Cottam" correction factor recognizes that different sampling designs, which affect the number and order of the distances in different quadrants (or sectors), will lead to different apparent tree densities. When either four quadrants or trees are sampled (point quarter design), or when two trees in opposite semicircles (point halves design) are sampled, the equation is accurate and $\kappa$ = 1;  when the two trees are in the nearest of two quadrants (two nearest quadrants design), $\kappa$ = 0.857; and when two trees are in quadrants on the same side of  the direction of travel (one-sided or interior half design),   $\kappa$ = 2. This  parameter, in  Cottam's notation [@cottam1956use], is a divisor of the denominator above, or here, the mathematically equivalent multiplier in the numerator of the reciprocal of the squared distances.
+
+We further simplify the density estimate in equation (1) so that it is calculated at each point (N=1) and for two sample trees only (k=2):
+
+$\lambda_{M} = \frac{2}{\pi \times \sum_{j=1}^{2}{r_{j}}^2}$
+
+Then the point values for any sampling design can be Cottam corrected ($\kappa \times \lambda_{M}$). For example, the basic Morisita equation  for two sectors  assumes trees are located in opposite halves, so if the actual design is the nearest tree in the two nearest quadrants, the density from equation 2  will be overestimated and must be correspondingly corrected by multiplying by  $\kappa$ = 0.857.
+
+Further corrections account for the restriction of trees to less than the full sector ($\theta$),  censoring of trees near the cardinal azimuths ($\zeta$), and under-sampling of trees smaller than a certain diameter limit ($\phi$). These parameters are derived from analyses of measurements of bearing angles and diameters actually observed in surveys of witness trees within a subset of townships across the upper Midwest. 
+
+Sector bias ($\theta$). Although the density model for two tree points assumes that the trees are on opposite sides of a sample line (point halves), the actual sample is often more restricted (< 180^o^) within the sector, or is a less restricted (> 180^o^) angle beyond the sector (see Supplement 3). This deviation from the equation's assumption of equal distribution of angles across the 180^o^ sector is quantified using the empirical angle between the bearings of the two trees (pair angle). The pair angle frequencies (Supplement 3) that the observed proportion of trees (p) within any restricted sector divided by the proportion of that angle within the circle ($\alpha$) are an estimate of the bias imposed by the actual sampling [inspired by @kronenfeld2007accounting]. The factor ($\theta$ = p/$\alpha$) indicates bias associated with differences in  geometry of two tree samples. This parameter ($\theta$) varies from 0.71 to 1.27, indicating sampling from effectively 253^o^ to 141^o^ sectors.
+
+Azimuthal censoring ($\zeta$). In addition to sector bias, surveyors did not always sample trees near the cardinal directions [@kronenfeld2007accounting;@bouldin2008some;@hanberry2012adjusting]. This azimuthal censoring is commonly found along the line of travel on section lines and sometimes on the perpendicular quarter-section lines. Trees near the cardinal directions were passed over, and a replacement was found within a more restricted angular region. The correction for this bias is calculated following Kronenfeld and Wang [-@kronenfeld2007accounting] in a manner similar to the sector bias. The factor $\zeta$ is the ratio of the proportion of trees in the restricted area (p) divided by the proportion of the complete circle ($\alpha$) that is used. The azimuthal censoring parameter ($\zeta$) ranges from 1.03 to 1.25 indicating an equivalent to complete elimination of trees from 10^o^ to 72^o^  azimuths adjacent to the cardinal directions. 
+
+Diameter limit ($\phi$). Examination of the diameter distributions from settlement era surveys across the upper Midwest clearly demonstrate witness trees less than 8 inches (20 cm) in diameter were under-sampled [@bouldin2008some;@liu2011broadscale;@cogbill2015corrections]. We have confirmed this bias in our own inspection of plots of diameter frequency in the PLSS data, which show a sharp drop in the frequency of reported diameters below 8". This bias can be accommodated by setting a diameter limit, and only calculating the density for trees with diameters above this limit. Total density calculated from all trees is reduced to this reference limit by simply multiplying the total by the percentage of trees above this limit. This effectively eliminates the smaller trees from the total and normalizes the value of trees above this standard. The parameter ($\phi$) represents diameter size bias is simply the percentage of trees $\geq$ 8" and, in practice, ranges from 0.6 - 0.95.
+
+If all surveyor bias corrections are independent and do not overlap, they are simple multipliers of the model density, and the bias-minimized estimate of the point density of trees $\geq$ 8" (20 cm) is:
+
+$\lambda_{M corrected} = \kappa \times \theta \times \zeta \times \phi \times \lambda_{M}$   (3)
+
+Estimates for each point *i* can be averaged for all *N* points in any region. Correction factors are calculated separately for different regions, years, internal versus external lines, section versus quarter-section points, and surveyor sampling designs (Supplement 4). All code to perform the analyses is included in Supplement 1. Simulations using stem mapped stands from the region (Cogbill, *pers comm*) supports the robustness of this method, as opposed to other methods presented in the literature.
+
+###Basal Area and Biomass Estimates
+
+Forest basal area is calculated by multiplying the point-based stem density estimate by the average stem basal area from the reported diameters at breast height for the closest two trees at the point (n=2). Aboveground dry biomass (Mg ha^-1^) is calculated using the USFS FIA tree volume and dry aboveground biomass equations for the United States [@jenkins2004comprehensive].
+
+```{r fig2_angles, echo = FALSE, warning=FALSE, message=FALSE}
+
+source('R/figures/figure2_angles.R')
+source('R/figures/figureX_angles.R')
+
+```
+
+Biomass equations share the basic form:
+
+$m = Exp(\beta_{0} + \beta_{1} * \ln dbh)$
+
+where $m$ represents stem biomass for an individual tree in kg. $\beta_{0}$ and $\beta_{1}$ are parameters derived from [@jenkins2004comprehensive] and described in Table 1. $dbh$ is the stem diameter at breast height (converted to cm) recorded in the survey notes. The biomass estimates are averaged across both trees at a survey point and multiplied by the stem density calculated at that point to produce an estimate of aboveground biomass reported in Mg ha^-1^ [@jenkins2004comprehensive].
+
+**Table 1.** *Biomass parameters used for the calculation of biomass in the pre-settlement dataset (rounded for clarity).*
+
+Jenkins Species Group | $\beta_{0}$ | $\beta_{1}$ | PalEON Taxa Included (Supp. 2)
+--- | --- | --- | ---
+Aspen, Alder, Poplar, Willow  | -2.20 | 2.38 | Poplar, Willow, Alder
+Soft Maple, Birch | -1.91  | 2.36  | Birch
+Mixed Hardwood | -2.48 | 2.48 | Ash, Elm, Maple, Basswood, Ironwood, Walnut, Hackberry, Cherries, Dogwood, Buckeye
+Hard Maple, Oak, Hickory, Beech | -2.01 | 2.43 | Oak, Hickory, Beech, Other Hardwood
+Cedar and Larch | -2.03 | 2.26 | Tamarack, Cedar
+Fir and Hemlock | -2.54 | 2.43 | Fir, Hemlock
+Pine | -2.54 | 2.43 | Pine
+Spruce | -2.08 | 2.33 | Spruce
+
+Matching PLSS tree genera to the species groups defined by Jenkins *et al*. [-@jenkins2004comprehensive] is straightforward, placing the 28 genera used in this study into 8 allometric groups (Table 1). However, all maples are assigned to the generic "Hardwood" group since separate allometric relationships exist for soft and hard maple (Table 1). Biomass estimates for "Non tree" survey points are assigned 0 Mg ha^-1^.
+
+We use the stem density thresholds of Anderson and Anderson [-@anderson1975presettlement] to discriminate prairie, savanna, and forest.
+	
+### FIA Stem Density, Basal Area and Biomass
+```{r loadFIAplotsperCell, echo = FALSE, message=FALSE, results = 'hide', warning=FALSE}
+
+fia.plots <- raster('../../data/input/rasters/numplots_alb.tif')
+
+```
+
+The United States Forest Service has monitored the nation's forests through the FIA Program since 1929, with an annualized state inventory system implemented in 1998 [@woudenberg2010forest]. On average there is one permanent FIA plot per 2,428 ha of land in the United States classified as forested. Each FIA plot consists of four 7.2m fixed-radius subplots in which measurements are made of all trees >12.7cm dbh [@woudenberg2010forest]. We used data from the most recent full plot inventory (2007-2011). The FIA plot inventory provides a median of `r median(getValues(fia.plots), na.rm=TRUE)` FIA plots per cell using the 64km^2^ grid. 
+
+We calculated mean basal area (m^2^ ha^-1^), stem density (stems ha^-1^), and mean diameter at breast height (cm) for all live trees with dbh greater than 20.32cm (8in). Biomass calculations (mean biomass: Mg ha^-1^) used the same set of allometric regression equations as for the PLSS data [@jenkins2004comprehensive]. All calculations followed instructions in Woudenberg *et al* [-@woudenberg2010forest] using forested plots only (COND\_STATUS\_CD 1).
+
+One critical issue is the reliance on forested condition for the FIA sampling.  This reduces our capacity to compare forest state between PLSS and FIA cover in regions with historical  prairie and savanna coverage that are now patches of closed canopy forest among a largely agricultural landscape.  In addition, it may result in the overestimation of modern density, basal area and biomass at the mesoscale in these same regions by drawing from a sample biased specifically towards plots with > 10% forest cover [@woudenberg2010forest], however, the 10% cover threshold is fairly low, but more likely in line with "open forest" [*sensu* @anderson1975presettlement] than savanna.
+
+### Gridding and Analysing PLSS and FIA Data
+
+Maps of stem density, basal area and biomass were generated by averaging all PLSS point or FIA plot estimates within a 64km^2^ raster cell. Differences in sampling design between PLSS and FIA data  combined with spatially structured forest heterogeneity will affect the partitioning of within-cell versus between-cell variance, but not the expected estimates. Most 64km^2^ cells have one or a few intensively sampled FIA plots. Therefore at this scale of aggregation, the low density of FIA plots in heterogeneous forests could result in high within-cell variance and high between-cell variability. For the PLSS plotless (point based) estimates, stem density estimates are sensitive to trees close to the corner. Point-level estimates with very high stem densities can skew the rasterized values, and it is difficult to distinguish artifacts from locations truly characterized by high densities. To accommodate points with exceptionally high densities we carry all values through the analysis, but exclude the top 2.5 percentile when reporting means and standard deviations in our analysis. PLSS-based estimates are highly variable among points due to the small sample size, but have low variance among 64 km^2^ raster cells due to the uniform sampling pattern of the data. Thus, within-cell variance is expected to be high for the PLSS point data, but spatial patterns are expected to be robust at the cell level. The base raster and all rasterized data are available as Supplement 3.
+
+Standard statistical analysis of the gridded data, including correlations, paired t-tests and regression, was carried out in R [@team2014r], and is documented in supplementary material that includes a subset of the raw data to allow reproducibility. Analysis and presentation uses elements from the following R packages: `cluster` [@maechler2014cluster], `ggplot2` [@wickham2009ggplot2; @ggplot2009], `gridExtra` [@grid2012], `igraph` [@csardi2006], `mgcv` [@wood2011], `plyr` [@wickham2011plyr], `raster` [@hijmans2014], `reshape2` [@reshape2007], `rgdal` [@bivand2014], `rgeos` [@bivand2014rgeos], `sp` [@pebesma2005sp;@bivand2013], `statmod` [@smyth2016statmod], and `spdep` [@bivand2014spdep].
+
+We identify analogs and examine differences in composition between and within PLSS and FIA datasets using Bray-Curtis dissimilarity [*vegdist* in `vegan`; @oksanen2014vegan] for proportional composition within raster cells using the relative basal area of each species. For the analog analysis we are interested only in the minimum compositional distance between a focal cell and its nearest compositional (not spatial) neighbor. The distribution of compositional dissimilarities within datasets indicates forest heterogeneity within each time period, while the search for closest analogs between datasets indicates whether contemporary forests lack analogs in pre-settlement forests ('novel forests'), or vice versa ('lost forests'). For the analog analyses,  we compute Bray-Curtis distance between each 64km^2^ cell in either the FIA or the PLSS periods to all other cells within the other dataset (FIA to FIA, PLSS to PLSS), and between datasets (PLSS to FIA and FIA to PLSS), retaining only the minimum. For within era analyses (FIA to FIA and PLSS to PLSS), cells were not allowed to match themselves.  We define vegetation classes for lost and novel forests using k-medoid clustering [*pam* in `cluster`; @maechler2014cluster].
+
+The differences in sampling design and scale between the PLSS and FIA datasets, described above, potentially affect between-era  assessments of compositional similarity [*e.g.*, @kronenfeld2010influence]. The effects of differences in scale should be strongest in regions where there are few FIA plots per 64 km^2^ cell, or where within-cell heterogeneity is high. For the analog analyses, this effect should increase the compositional differences between the FIA and PLSS datasets. 
+
+Because Bray-Curtis dissimilarity is sensitive both to species turnover and to species richness, we expect that more FIA plots within a cell should result in greater richness (due to sampling effects) and thus, greater turnover between cells. We test for the importance of this effect on our analog analyses via a sensitivity analysis in which we test whether dissimilarities between FIA and PLSS grid cells are affected by the number of FIA plots per cell. In this region richness, dissimilarity and FIA plot number are all collinear because of a regional collinearity in species richness that exists in spite of sampling effect. Because of this colinearity we limit our analysis to a simple test for cell number effect since it becomes increasingly difficult to partition the effects of the shift from monotypic oak savanna, which has low forest cover, and thus low FIA sampling intensity, to the diverse mixedwood forests of north-central Wisconsin. We do find a small but significant effect (see below), suggesting that our analyses are mainly sensitive to the compositional and structural processes operating on large spatial scales.
+
+To understand the extent to which the processes governing novelty operate at landscape scales, we relate the novelty of a cell to the spatial distance between individual novel cells and the nearest 'remnant' forest cell, *i.e.*, what is the minimum distance from a remnant forest cell at which all cells are predicted to be novel. Novel forests are defined as any cell in the FIA dataset for which dissimilarity to the PLSS era is above the 95%ile of dissimilarities within the PLSS data.  We examine whether the distance to novel forest relationship varies between forest types, and whether it is different than the relationship we might see if the dissimilarity values were distributed randomly on the landscape. The definition of "remnant" forest is likely to be arbitrary and, possibly, contentious. We use a threshold, the lowest 25%ile of compositional dissimilarity within the PLSS data, as our cutoff.  This means that all FIA cells with nearest neighbor dissimilarities to the PLSS era forests below this cutoff are considered to be representative of the PLSS era forests. The analysis presented below is robust to higher cutoffs for the remnant forest threshold.
+
+We use a generalized linear model with a binomial family to relate novelty (as a binomial, either novel or not) to the spatial distance from the nearest 'remnant' cell for each of the five major forest types within the PLSS data (Oak savanna, Oak-Poplar-Basswood-Maple, Pine, Hemlock-Cedar-Birch-Maple and Tamarack-Pine-Spruce-Poplar forests). Because the geographic extent of this region is complex, with islands, peninsulas and political boundaries, we use permutation, resampling the FIA to PLSS nearest neighbor distances without replacement, to estimate the expected distance to novelty if FIA to PLSS nearest neighbor dissimilarities were distributed randomly on the landscape.
+
+We expect a weak relationship will indicate that novelty, following landscape-scale land-use change, is moderated by a species pool culled from small remnant patches, individual specimens, or local scale restoration efforts. A significant relationship between distance from remnant forest and novelty indicates that small patches have been insufficient to restore natural forest cover within the region, and would indicate that greater efforts are needed to restore landscapes at regional scales.
+
+To illustrate the spatial effects of land use changes on forest composition, we select two linear transects through the region and model vegetation using smooth splines as part of a generalized additive model [`gam` in package `mgcv`: @wood2011] using R [@Team2014].  This smoothing is used for visualization purposes only, but is applied to each individual taxon using the beta regression family ("*betar*").  We use smoothing to reduce the noise of the individual species curves.  The raw data neccessary to plot the curve is available from the supplemental material.
+
+All datasets and analytic codes presented here are publicly available and open source at http://github.com/PalEON-Project/WitnessTrees, with the goal of enabling further analyses of ecological patterns across the region and the effects of post-settlement land-use  on forest composition and structure. Data are also archived at the Long Term Ecological Research Network Data Portal ([https://portal.lternet.edu/nis/home.jsp]()).
+
+Results:
+---------------------------
+### Data Standardization
+
+```{r CountHist, echo = FALSE, warning=FALSE, message=FALSE}
+#  Note that this will not produce the same results as presented in the paper since the dataset attached here represents only a 30% subset of the total dataset used in analysis.
+#  This code does not produce any plots.
+
+quadrant <- floor(apply(used.data@data[,16:19], 2, function(x)as.numeric(as.character(x)))/90)
+
+two.quads <- !(quadrant[,1] - quadrant[,2] == 0)
+
+good.trees <- with(used.data@data, (!(diam1 > 254 | diam2 > 254)) | (species1 %in% c('No Tree', 'Water') & species2 %in% c('No Tree', 'Water')))
+
+used.data$good <- two.quads | good.trees
+
+base.rast <- raster(xmn = -71000, xmx = 2297000, ncols=296,
+                        ymn = 58000,  ymx = 1498000, nrows = 180,
+                        crs = '+init=epsg:3175')
+
+count.plot <- rasterize(spTransform(used.data, CRSobj = CRS(model.proj)), 
+                        base.rast, 'good', sum)
+  
+count.df <- data.frame(xyFromCell(count.plot, 1:ncell(count.plot)),
+                       cell = get_cells(xyFromCell(count.plot, 1:ncell(count.plot))),
+                       points = getValues(count.plot))
+
+write.csv(na.omit(count.df),
+          paste0('../../data/output/wiki_outputs/plss_counts_alb_',version,'.csv'))
+
+source('R/base_calculationsv_1.4.R')
+
+rm(quadrant)
+
+```
+
+The original PLSS dataset contains `r p(length(used.data), fixed = TRUE)` corner points (excluding line and meander points), with `r p(sum(regexpr('wi', used.data$Township)>0, na.rm=TRUE), fixed=TRUE)` points from Wisconsin, `r p(sum(regexpr('mn', used.data$Township)>0, na.rm=TRUE), fixed=TRUE)` points from Minnesota and `r p(sum(regexpr('mi', used.data$Township)>0, na.rm=TRUE), fixed=TRUE)` points from Michigan. Standardizing data and accounting for potential outliers, described above, removed 1.5% of points from the dataset, yielding a final total of `r p(sum(!is.na(estimates[[1]])), fixed=TRUE)` corner points.
+
+Rasterizing the PLSS dataset to the Albers 64km^2^ grid produces `r p(sum(!is.na(as.vector(count.plot))), fixed=TRUE)` raster cells with data. Each cell contains between `r min(getValues(count.plot), na.rm=TRUE)` and `r max(getValues(count.plot), na.rm=TRUE)` corner points, with a mean of `r p(mean(getValues(count.plot), na.rm=TRUE))` ($\sigma$ = `r p(sd(getValues(count.plot), na.rm=TRUE))`) and a median of `r median(getValues(count.plot), na.rm=TRUE)` corners (Supplement 3). Cells with a low number of points were mainly near water bodies or along political boundaries such as the Canadian/Minnesota border, or southern Minnesota and Wisconsin borders. Only `r p(sum(getValues(count.plot) < 10, na.rm=TRUE) / sum(!is.na(getValues(count.plot)), na.rm=TRUE) * 100)`% of cells have fewer than 10 points per cell.
+
+Species assignments to genera were rarely problematic. Only `r sum(species[,1:2] == 'Unknown tree')` PLSS trees were assigned to the Unknown Tree category, representing less than 0.01% of all points. These unknown trees largely consisted of corner trees for which taxon could not be interpreted, but for which diameter and azimuth data was recorded. A further `r p(sum(species[,1:2] == 'Other hardwood')/(length(used.data)*2)*100)`% of trees were assigned to the "Other hardwood" taxon (*e.g.*, hawthorn, "may cherry", and "white thorn").
+
+```{r loadtaxon, echo = FALSE, warning=FALSE, message=FALSE}
+taxon_table <- read.csv('../../data//output//tests//clean.bind.test.csv')
+
+```
+
+Maple has very high within-genera specificity for a number of assignments. A total of `r p(sum(taxon_table$Maple), TRUE)` trees are assigned to "Maple".  Of these, surveyors do use common names that can be ascribed to the species level (e.g., *A. saccharum*, n = `r p(sum(taxon_table[taxon_table$X == 'SU',-1], na.rm=TRUE), TRUE)`), but a large number of the remaining assignments are above the species level (n = `r p(sum(taxon_table[taxon_table$X %in% c('WM', 'SM', 'sm', 'map', 'MA'),-1], na.rm=TRUE),TRUE)`). This lack of specificity for a large number of records causes challenges in using the species level data.  A similar pattern is found for pine, where many individual trees (n = `r p(sum(taxon_table$Pine),TRUE)`) can be identified to the level of species (*P. strobus*, n = `r p(sum(taxon_table[taxon_table$X == 'WP',-1], na.rm=TRUE),TRUE)`; *P. banksiana*, n = `r p(sum(taxon_table[taxon_table$X == 'JP',-1], na.rm=TRUE),TRUE)`; *P. resinosa*, n = `r p(sum(taxon_table[taxon_table$X == 'RP',-1], na.rm=TRUE),TRUE)`), but there remains a large number of pine identified only at the genus level, or with unclear assignment (n = `r p(sum(taxon_table[taxon_table$X %in% c('pine', 'PI', 'PN', 'HP', 'GP'),-1], na.rm=TRUE),TRUE)`).
+
+The data for ash includes both surveyor attributions to "brown ash" (likely a vernacular synonym for *Fraxinus nigra*) and black ash  (n=`r p(taxon_table$Ash[taxon_table$X %in% 'BA'],TRUE)`), and white ash (n = `r p(taxon_table$Ash[taxon_table$X %in% 'WA'],TRUE)`), but again, also includes a large number of ash for which no distinction is made within the genera (n = `r p(sum(taxon_table$Ash[taxon_table$X %in% c('AA', 'AH', 'GY', 'SA')], na.rm=TRUE),TRUE)`).
+
+These patterns are repeated throughout the data.  For spruce this within-genera confusion is even higher, with `r p(sum(taxon_table$Spruce[taxon_table$X %in% c('SP', 'sp', 'spr', 'SPR')], na.rm=TRUE),TRUE)` assignments to genera-level classes and only `r p(sum(taxon_table$Spruce[taxon_table$X %in% c('BS', 'WS')], na.rm=TRUE),TRUE)` to either black or white spruce.
+
+### Spatial Patterns of Settlement-Era Forest Composition: Taxa and PFTs
+
+### Stem Density, Basal Area and Biomass
+
+```{r fig3_calculations, echo = FALSE, warning=FALSE, message=FALSE}
+
+source('R/figures/figure3_panel_means.R')
+
+```
+
+The mean stem density for the region (Fig 2a) is `r p(mean(getValues(dens), na.rm=TRUE))` stems ha^-1^. Stem density exclusive of prairie is `r p(mean(getValues(dens)[getValues(dens)> 0.5], na.rm=TRUE))` stems ha^-1^ and is `r p(mean(getValues(dens)[getValues(dens)> 47], na.rm=TRUE))` stems ha^-1^ when both prairie and savanna are excluded. The 95th percentile range is 0 - `r p(ninefive(getValues(dens))[2])` stems ha^-1^, and within-cell standard deviations between 0 and `r p(ninefive(dens.sd[,2])[2])` stems ha^-1^. Basal area in the domain (Fig 2c) has a 95th percentile range between 0 and `r p(ninefive(getValues(basal))[2])` m^2^ ha^-1^, a mean of `r p(mean(getValues(basal), na.rm=TRUE))` m^2^ ha^-1^, within-cell standard deviations range from 0 to `r p(ninefive(basal.sd[,2])[2])` m^2^ ha^-1^. Biomass ranges from 0 to `r p(ninefive(getValues(biomass))[2])` Mg ha^-1^ (Fig 2d), with cell level standard deviations between 0 and `r p(ninefive(biomass.sd[,2])[2])` Mg ha^-1^. High within-cell standard deviations relative to mean values within cells for density, basal area and biomass indicate high levels of heterogeneity within cells, as expected for the PLSS data, given its dispersed sampling design.
+
+**Fig 2.** *Total stem density (a) in the Upper Midwest, along with forest type classification (b) based on PLSS data and the stem density thresholds defined by Anderson and Anderson [-@anderson1975presettlement] (Prairie: < 0.5 stems ha^-1^; Savanna: 0.5 - 47 stems ha^-1^; Forested: > 47 stems ha^-1^); Table 2). Fine lines represent major rivers. To a first order, basal area (c) and biomass (d) show similar patterns to stem density (but see* Fig 3*).*
+
+In the PLSS data, stem density is lowest in the western and southwestern portions of the region, regions defined as prairie and savanna (Fig 2b). When the Anderson and Anderson [-@anderson1975presettlement] stem density thresholds (0.5 - 47 stems ha^-1^ for Savanna) are used, the extent of area classified as savanna is roughly equivalent to prior reconstructions [@curtis1959vegetation;@rhemtulla2009legacies;@bolliger2004assessing] (Fig 2b). The highest stem densities occur in north-central Minnesota and in northeastern Wisconsin (Fig 2a), indicating younger forests and/or regions of lower forest productivity.
+
+```{r fig4_calc, echo=FALSE, message=FALSE, warning=FALSE}
+
+resids <- data.frame(xyFromCell(dens, 1:ncell(dens)),
+                     dens = getValues(ninefive(dens)),
+                     biom = getValues(ninefive(biomass)))
+
+mean.mod <- lm(biom ~ dens - 1, data = resids)
+
+resids$resid <- NA
+resids$resid[!is.na(resids$dens)] <- resid(mean.mod, type = 'response')
+
+biom_sd <- base.map +
+            geom_tile(data = resids, aes(x = x, y = y, fill = resid)) +
+            scale_fill_gradient2(low='blue', mid = 'white', high='red', na.value = NA) +
+            geom_path(data = umw.domain, aes(x = long, y = lat, group = group, linesize = paleon)) +
+            geom_path(data = can.domain, aes(x = long, y = lat, group = group)) +
+            theme_bw() +
+            theme(axis.text.x = element_blank(),
+                  axis.text.y = element_blank(),
+                  legend.position = 'none') +
+            xlab('') + ylab('')
+
+rast.output <- writeRaster(setValues(dens, resids$resid), 
+                           paste0('fig_rasters/fig4resid_v', version,'.tif'),
+                           overwrite = TRUE)
+
+
+```
+
+Forest structure during the settlement era can be understood in part by examining the ratio of stem density to biomass, a measure that incorporates both tree size and stocking. Regions in northern Minnesota and northwestern Wisconsin had low biomass and high stem densities (Fig 3, blue). This indicates the presence of young, small-diameter, even-aged stands, possibly due to frequent stand-replacing fire disturbance in the pre-EuroAmerican period or to poor edaphic conditions. Fire-originated vegetation is supported by  co-location with fire-prone landscapes in Wisconsin [@schulte2005spatial]. High-density, low-biomass regions also have shallower soils, colder climate, and resulting lower productivity. High-biomass values relative to stem density (Fig 3, red) are found in Michigan and southern Wisconsin. These regions have higher proportions of deciduous species, with higher tree diameters than in northern Minnesota.
+
+**Fig 3.** *The ratio between biomass and stem density as an indicator of forest structure. Regions with high stem density to biomass ratios (blue) indicate dense stands of smaller trees, while regions with low stem density to biomass ratios (red) indicate larger trees with wider spacings.*
+
+```{r StemDensityCors, echo=FALSE, message=FALSE, warning=FALSE}
+
+taxon.cor <- data.frame(taxon = colnames(density.table)[4:ncol(density.table)],
+                        cor = NA,
+                        pval = NA,
+                        df = NA,
+                        stat = NA)
+
+for(i in 4:ncol(density.table)){
+  is.good <- basal.table[,i] > 0 & rowSums(basal.table[, 4:ncol(density.table)], na.rm=TRUE) > 0
+  
+  sample.prop <- basal.table[is.good,i] / rowSums(basal.table[is.good, 4:ncol(density.table)], na.rm=TRUE)
+  
+  test <- try(cor.test(sample.prop, rowSums(basal.table[is.good, 4:ncol(density.table)], na.rm=TRUE)))
+  if(!class(test) == 'try-error'){
+    taxon.cor$cor[i-3]  <- test$estimate
+    taxon.cor$pval[i-3] <- test$p.value
+    taxon.cor$stat[i-3] <- test$statistic
+    taxon.cor$df[i-3]   <- sum(is.good) - 2
+  }
+}
+
+taxon.cor <- taxon.cor[!is.na(taxon.cor[,2]),]
+rownames(taxon.cor) <- taxon.cor[,1]
+taxon.cor[,2] <- round(taxon.cor[,2], 2)
+
+taxon.pct <- data.frame(all = colMeans(composition.table[,4:ncol(composition.table)]*100,
+                                       na.rm=TRUE),
+                        forested = colMeans(composition.table[getValues(dens)>47,4:ncol(composition.table)]*100,
+                                       na.rm=TRUE))
+
+taxon.pct <- round(taxon.pct, 0)
+
+```
+
+### Pre-Settlement Composition
+Taxon composition (percent composition, based on stem density, unless otherwise indicated) within settlement-era forests is spatially structured along gradients from south to north (deciduous dominated to conifer dominated forests) and from east to west (mixed wood forests to open prairie) (Fig 4). Oak is dominant in the south of the region, with an average composition of `r taxon.pct['Oak', 1]`%, however, that proportion drops to `r taxon.pct['Oak', 2]`% when only forested cells (cells with stem density > 47 stems/ha) are considered, due to its prevalence as a monotypic dominant in the savanna and prairie. Pine distributions represent three dominant taxa, *Pinus strobus*, *Pinus resinosa* and *Pinus banksiana*. These three species have overlapping but ecologically dissimilar distributions, occurring in close proximity in some regions, such as central Wisconsin, and are typically associated with sandy soils with low water availability. Other taxa with high average composition in forested cells include maple (`r taxon.pct['Maple', 2]`%), birch (`r taxon.pct['Birch', 2]`%), tamarack (`r taxon.pct['Tamarack', 2]`%) and hemlock (`r taxon.pct['Hemlock', 2]`%).
+
+```{r fig5_calc, echo = FALSE, warning=FALSE, message=FALSE}
+
+#  Composition.table should actually be the basal table, and we've set that already in base_calculations.
+excl <- !colnames(composition.table) %in% c('x', 'y', 'cell', 'Water')
+
+comp.intoplot <- composition.table[,excl]
+comp.intoplot[comp.intoplot == 0 ] <- NA
+
+# Top taxa:
+top.set <- colSums(comp.intoplot, na.rm=TRUE) > 
+  sort(colSums(comp.intoplot, na.rm=TRUE))[ncol(comp.intoplot) - 15]
+
+comp.intoplot <- comp.intoplot[,top.set]
+comp.intoplot <- comp.intoplot / rowSums(comp.intoplot, na.rm=TRUE)
+
+comp.intoplot <- data.frame(composition.table[,1:2], comp.intoplot)
+
+compplots <- melt(comp.intoplot, id = c('x', 'y'))
+
+compplots$species <- factor(compplots$variable, 
+                            levels = c('Tamarack', 
+                                       'Cedar.juniper', 
+                                       'Fir', 'Hemlock', 'Pine', 'Spruce',
+                                       'Ash', 'Basswood', 'Beech', 'Birch', 'Elm',
+                                       'Ironwood', 'Maple', 'Oak', 'Poplar'))
+
+composition.plots <- base.map +
+      geom_tile(data = compplots, aes(x = x, y = y, fill=value), alpha = 0.8) +
+      scale_fill_gradient(low='white', high='black', trans='sqrt', na.value = NA) +
+      geom_path(data = umw.domain, aes(x = long, y = lat, group = group, linesize = paleon)) +
+      geom_path(data = can.domain, aes(x = long, y = lat, group = group)) +
+      theme_bw() +
+      facet_wrap(~species, nrow=3) +
+      theme(axis.text.x = element_blank(),
+            axis.text.y = element_blank(),
+            strip.text = element_text(family='serif', size = 20, face = 'bold'),
+            legend.position = 'none')
+            
+#  This needs to get fixed so that the strip.background = element_rect(fill = c('#ffff99', '#80b1d3', rep('#bebada', 5), rep('#8dd3c7', 8))))
+ggsave(composition.plots, 
+       filename = paste0('figures/fig5_compplots_v', version, '.tiff'), 
+                         dpi = 300, width = 15, height = 9)
+rm(compplots)
+
+```
+**Fig 4**. *Forest composition (%, using stem density) for the 15 most abundant tree taxa. The scale is drawn using a square-root transform to emphasize low abundances. Shading of the bar above individual taxon maps indicates plant functional type assignments (dark gray: needleleaved deciduous; light gray: needleleaved evergreen; white: broadleaved deciduous).*
+
+Spruce in the PLSS represents two species (*Picea glauca*, *Picea mariana*) with overlapping distributions, but complex site preferences that vary in space.  *P. glauca* is generally associated with dry upland to wet-mesic sites, while *P. mariana* is associated with hydric sites, but *P. mariana* also frequently occupies upland sites in northern Minnesota. Both cedar (*Thuja occidentalis*) and fir (*Abies balsamea*) are mono-specific genera in this region.
+
+Northern hardwoods, such as yellow birch, sugar maple, and beech, are much less common in  the lower peninsula of Michigan, and  southern Wisconsin, except along Lake Michigan. Birch has extensive cover in the north, likely reflecting high pre-settlement proportions of yellow birch (*Betula alleghaniensis*) on mesic soils, and paper birch (*B. papyrifera*) on sandy fire-prone soils and in northern Minnesota (birch proportions reach upwards of `r p(ninefive(basal.table$Birch/rowSums(basal.table[, 4:ncol(basal.table)], na.rm=TRUE))*100)[2]`% in northeastern Minnesota). Hardwoods in the southwest, such as oak, elm, ironwood and basswood, are most typically mono-specific groupings, with the exception of oak, which comprises 7 species (see Supplement 2). Hardwoods in the southwest are located primarily along the savanna and southern forest margins, or in the southern temperate deciduous forests. Finally, maple and poplar (aspen) have a broad regional distribution, occupying nearly the entire wooded domain. Poplar comprises four species in the region, while maple comprises five species (Supplement 2). Both hardwood classes, those limited to the southern portions of the region, and those with distributions across the domain, correspond to well-defined vegetation patterns for the region [@curtis1959vegetation].
+
+Individual species distributions result in a mosaic of forest classes across the region (Fig 5).  The dominant class is the Hemlock-Cedar-Birch-Maple assemblage in northern Wisconsin and upper Michigan (Fig 5, yellow).  This mixedwood assemblage is interspersed by both Pine dominated landscapes (Fig 5, orange) and, to a lesser degree, the softwood assemblage Tamarack-Pine-Spruce-Poplar (Fig 5, green), which dominates in north-eastern Minnesota.  The softwood assemblage is itself interspersed with Pine dominated landscapes, and grades into a mixed-hardwood assemblage of Oak-Poplar-Basswood-Maple (Fig 5, light purple) to the west.  This mixed- softwood forest assemblage grades south into mono-specific Oak savanna (Fig 5, dark blue).
+
+**Fig 5**. *The five dominant forest types in the Upper Midwest as defined by k-medoid clustering.  Forest types (from largest to smallest) include Hemlock-Cedar-Birch-Maple (yellow), Oak-Poplar-Basswood-Maple (light purple), Tamarack-Pine-Spruce-Poplar (light green), Oak Savanna (dark purple) and Pine (orange). These forest types represent meso-scale (64km^2^) forest associations, rather than local-scale associations.*
+
+```{r ForestClusterPlots, echo = FALSE, warning=FALSE, message=FALSE}
+
+source('R/load_fia_data.R')
+source('R/figures/Figure6_clusterPlots.R')
+
+```
+
+The broad distributions of most plant functional types (Fig 6) results in patterns within individual PFTs that are dissimilar to the forest cover classes (Fig 5). Thus overlap among PFT distributions (Fig 6) emerges from the changing composition within the plant functional type from deciduous broadleaved species associated with the southern, deciduous dominated region, to broadleaved deciduous species associated with more northern regions in the upper Midwest.
+
+**Fig 6**. *Proportional distribution of Plant Functional Types (PFTs) in the upper Midwest from PLSS data, for broadleaved deciduous trees (BDT), needleleaved deciduous trees (NDT), and needleleaved evergreen trees (NET). Distributions are shown as proportions relative to total basal area, total biomass, and composition (*Fig 2*). The grassland PFT is mapped onto non-tree cells with the assumption that if trees were available surveyors would have sampled them.*
+
+```{r tTests, echo = FALSE, warning=FALSE, message=FALSE}
+comp.pft <- basal.pft[,4:7] / rowSums(basal.pft[,4:7], na.rm=TRUE)
+
+bn.test <- t.test(comp.pft$TBDT[comp.pft$TNDT > 0 & basal.pft$TBDT > 0], 
+                  comp.pft$TNDT[comp.pft$TNDT > 0 & basal.pft$TBDT > 0])
+
+comp.means <- round(apply(comp.pft, 2, function(x) mean(x[x>0], na.rm=TRUE)) * 100, 1)
+comp.sd <-  round(apply(comp.pft, 2, function(x) sd(x[x>0], na.rm=TRUE)) * 100, 1)
+
+```
+
+```{r fig6_calc, dpi=150, echo = FALSE, message = FALSE, warning=FALSE, results='hide'}
+
+source('R/figures/figure6_comp_prep.R')
+
+```
+
+```{r fig7_calc, echo = FALSE, warning=FALSE, message=FALSE, fig.width=7, fig.height = 5, dpi=150}
+#  Plotting out the qualitative composition data.
+#  Note that I think the Basal Class assignment is wrong for this figure and that MW and TN are reversed.
+
+source('R/composition.clusters.R')
+
+factor.vals <- factor(c(getValues(base), 
+                        getValues(dens.class), 
+                        getValues(basal.class), 
+                        getValues(biom.class)))
+
+levels(factor.vals) <- c('TN', 'TD', 'MW', 'Sa', 'Pr')
+factor.vals <- factor(factor.vals, levels = c('Sa', 'Pr', 'TN', 'TD', 'MW'))
+
+
+plot.frame <- data.frame(xyFromCell(base, 1:ncell(base)),
+                         values = factor.vals,
+                         model = factor(rep(c('RK1999', 'Density', 'Basal Area', 'Biomass'), each = ncell(base)),
+                                        levels = c('Density', 'RK1999', 'Basal Area', 'Biomass')))
+
+plot.frame <- plot.frame[plot.frame$model %in% c('Density'),]
+
+forest.class <- base.map +
+        geom_tile(data = plot.frame, aes(x = x, y = y, fill = values)) +
+        scale_fill_brewer(type = 'qual', palette='Set3') +
+        geom_path(data = umw.domain, aes(x = long, y = lat, group = group, linesize = paleon)) +
+        geom_path(data = can.domain, aes(x = long, y = lat, group = group)) +
+        theme_bw() + facet_wrap(~model, nrow=1) +
+        theme(axis.text.x = element_blank(),
+              axis.text.y = element_blank()) +
+        xlab('') + ylab('')
+
+```
+
+### Structural Changes Between PLSS and FIA Forests
+
+```{r fig8_calc, echo = FALSE, message = FALSE, warning=FALSE}
+source('R/plss_fia_comparison.R')
+
+source('R/figures/figure8_fiaplss_plots.R')
+
+diff.ts <- list(density = t.test(getValues((fiadens)) - getValues((dens))),
+                basal   = t.test(getValues((fiabasa)) - getValues((basal))),
+                biomass = t.test(getValues((fiabiom))/1000 - getValues((biomass))),
+                diam    = t.test(getValues((fiadiam))[is.finite(getValues(mdiam))] - 
+                                 getValues((mdiam))[is.finite(getValues(mdiam))]))
+tot_biom_diff <- sum(rowSums(cbind(-getValues(fiabiom)/1000, getValues(biomass))), na.rm=TRUE)
+
+```
+
+Comparing cell by cell in aggregate across the entire region, modern forests (FIA) have higher stem densities (+`r p(diff.ts[[1]]$estimate)` stems ha^-1^, $t_{1,5177}$ = `r p(diff.ts[[1]]$statistic)`, $p$ < 0.01) than PLSS forests, but lower basal areas (`r p(diff.ts[[2]]$estimate)` m^2^ ha^-1^, $t_{1,5177}$ = `r p(diff.ts[[2]]$statistic)`, $p$ < 0.01) and lower biomass (`r p(diff.ts[[3]]$estimate)` Mg ha^-1^, $t_{1,5177}$ = `r p(diff.ts[[3]]$statistic)`, $p$ < 0.01) (Fig 7). We use only point pairs where both FIA and PLSS data occur since non-forested regions are excluded from the FIA and as such cannot be directly compared with PLSS estimates. Total biomass was `r p(tot_biom_diff)` Mg higher in the PLSS when summed across all cells coincident between the FIA and PLSS, a change of `r p(tot_biom_diff/sum(getValues(biomass), na.rm=TRUE)* 100)`% from the pre-settlement baseline.
+
+**Table 2.** *Mean cell-wise change in forest zone density, basal area and biomass since PLSS for cells with coverage in both PLSS and FIA eras by forest class. All forest zones show increases in stem density since the PLSS era (positive values, historical values are included in parentheses). All zones but Oak Savanna most show declines in mean basal area since the PLSS era, while modern biomass is lower in the FIA-era for the both Hemlock-Cedar-Birch-Maple and Pine forest zones, but higher in the remaining three zones.*
+
+```{r diff_by_zone, echo = FALSE, message = FALSE, warning=FALSE}
+#comparing stuff:
+test_clusts <- clust_plot
+
+num.rast <- setValues(fiadens, 1:ncell(fiadens))
+
+test_clusts$cell <- extract(num.rast, test_clusts[,1:2])
+
+test_clusts$cells <- (!is.na(getValues((fiadens))) &
+                        !is.na(getValues((dens))))[test_clusts$cell]
+test_clusts$dens <- (getValues((fiadens)) - getValues((dens)))[test_clusts$cell]
+test_clusts$basa <- (getValues((fiabasa)) - getValues((basal)))[test_clusts$cell]
+test_clusts$biom <- (getValues((fiabiom))/1000 - getValues((biomass)))[test_clusts$cell]
+test_clusts$plss_dens <- getValues((dens))[test_clusts$cell]
+test_clusts$plss_basa <- getValues((basal))[test_clusts$cell]
+test_clusts$plss_biom <- getValues((biomass))[test_clusts$cell]
+
+zone_melt <- melt(test_clusts, id.vars = c('x', 'y', 'cluster', 'cell'), variable.name = 'estimate')
+
+zone_cast <- dcast(zone_melt, cluster ~ estimate, value.var = 'value', mean, na.rm=TRUE)
+zone_cast$cells <- dcast(zone_melt, 
+                         cluster ~ estimate, 
+                         value.var = 'value', sum, na.rm=TRUE)$cells
+
+zone_cast <- zone_cast[order(zone_cast$cells, decreasing = TRUE),]
+
+zone_cast[,!colnames(zone_cast) %in% c('cluster', 'clustNum','cells')] <- round(zone_cast[,!colnames(zone_cast) %in% c('cluster', 'clustNum','cells')], 1)
+
+zone_cast$dens <- paste0(zone_cast$dens, ' (',zone_cast$plss_dens,')')
+zone_cast$basa <- paste0(zone_cast$basa, ' (',zone_cast$plss_basa,')')
+zone_cast$biom <- paste0(zone_cast$biom, ' (',zone_cast$plss_biom,')')
+
+zone_cast <- zone_cast[,!(regexpr("plss", colnames(zone_cast))>0| colnames(zone_cast) %in% "clustNum")]
+
+!colnames(zone_cast) %in% c('cluster', 'clustNum','cells')
+
+colnames(zone_cast) <- c('Forest Type', 'Area km^2^', 
+                         '$\\Delta$ Stem Density stems ha^-1^',
+                         '$\\Delta$ Basal Area m^2^ ha^-1^', '$\\Delta$ Biomass Mg ha^-1^')
+
+rownames(zone_cast) <- NULL
+
+```
+
+```{r diff_table, echo = FALSE, message = FALSE, warning=FALSE, results='asis'}
+
+pander::pandoc.table(zone_cast, style = "rmarkdown")
+
+```
+
+Every one of the five historical PLSS zones shows an increase in stem density (Table 2).  The two forest types bordering the prairie, Oak Savanna and Oak-Poplar-Basswood-Maple both show increases in density that likely reflect, in part, the issues addressed earlier with respect to the sampling of forested plots in the FIA (over 10% cover). Density and biomass in the Oak Savanna in currently forested areas increases (Table 2), with the highest biomass increase of any zone. Oak-Poplar-Basswood-Maple forests were historically open forest and have seen a large increase in estimated FIA-era stem density but with a much lower increases in biomass than the Oak Savanna, and a negligible increase in basal area (Table 2).  The largest forest zone, Hemlock-Cedar-Birch-Maple shows the largest decline in biomass and basal area, and shows an average increase in FIA era stem density (Table 2).
+
+**Fig 7**. *Scatter plots of the relationship between (a) average stem density, (b) total basal area and (c) biomass values in the PLSS and FIA datasets. Stem density tends to be higher in the FIA, but total basal area and average cell biomass tends to be higher in the PLSS.  A 1:1 line has been added to panels a-c to indicate equality. Panel d shows the net direction of biomass shifts between pre-settlement and contemporary forests, showing that the net gain or loss varies spatially across the region.*
+
+```{r diamdiff, echo = FALSE, message = FALSE, warning=FALSE}
+  diam.diff <- t.test(getValues(mdiam) - getValues(fiadiam))
+
+  diam.diff.fia <- t.test((getValues(mdiam) - getValues(fiadiam))[getValues(mdiam) < getValues(fiadiam)])
+                          
+  diam.diff.plss<- t.test((getValues(mdiam) - getValues(fiadiam))[getValues(mdiam) > getValues(fiadiam)])
+
+  ranger <- ninefive(getValues(mdiam) - getValues(fiadiam))
+
+  cor.tests <- list(to.PLSS= cor.test((getValues(mdiam) - getValues(fiadiam)),
+                                       getValues(mdiam), 
+                                       use = 'pairwise.complete.obs'),
+                    to.fia = cor.test((getValues(mdiam) - getValues(fiadiam)),
+                                       getValues(fiadiam), 
+                                       use = 'pairwise.complete.obs'))
+
+  biom.test <- cor.test((getValues(mdiam) - getValues(fiadiam)),
+                                       getValues(biomass), 
+                                       use = 'pairwise.complete.obs')
+```
+
+Across the forested region, pre-settlement forests have lower overall mean stem diameter than the FIA ($\Delta_{diam}$ = `r p(diam.diff$estimate)` cm, 95%CI from `r p(ranger[1])` to `r p(ranger[2])`cm). This difference is strongest in the northwestern and western parts of the domain (on average modern forest data has `r -p(diam.diff.fia$estimate)` cm higher diameters), overlapping almost exactly with regions with low biomass to stem density ratios (Fig 3, brown regions). Conversely, regions with high biomass to stem density ratios, in north central Wisconsin, and the Upper and Lower Peninsulas of Michigan, had higher average diameters during the PLSS than in the FIA, by `r p(diam.diff.plss$estimate)` cm. Hence, tree size has increased in the sub-boreal region and decreased in temperate mixedwood forests. Tree size and biomass are highly variable spatially, with the forests of northern Wisconsin having lost biomass since the pre-settlement era and forests of northern Minnesota having gained biomass.
+
+Differences between FIA and PLSS data in sampling design are unlikely to be a factor for most measures (see below); these differences are expected to affect how these datasets sample local- to landscape-scale heterogeneity, but should not affect the overall trends between datasets. Differences in variability introduce noise into the relationship, but given the large number of samples used here, the trends should be robust.
+
+### Compositional Changes Between PLSS and FIA Forests: Novel and Lost Forests
+
+```{r fig9_calc, echo = FALSE, warning=FALSE, message=FALSE, results='hide'}
+
+source('R/figures/fig9_dissimilarities.R')
+
+intern.quant <- quantile(distances$dist[distances$class %in% c('PLSS','FIA')], 
+                        seq(0, 1, by = 0.01), na.rm=TRUE)
+
+PLS.fia.quant <- quantile(distances$dist[distances$class %in% c('PLSS-FIA')], 
+                        seq(0, 1, by = 0.01), na.rm=TRUE)
+
+fia.PLS.quant <- quantile(distances$dist[distances$class %in% c('FIA-PLSS')], 
+                        seq(0, 1, by = 0.01), na.rm=TRUE)
+
+diffs <- (1 - (c(findInterval(intern.quant[96], PLS.fia.quant) - 1, findInterval(intern.quant[96], fia.PLS.quant) - 1)/100)) * 100
+
+PLS.na <- cor(comp.grid, distances$dist[distances$class == 'PLSS-FIA'] > intern.quant[95])
+
+#  We need to align the FIA and PLSS data with the distance table.  This seems more problematic than it ought to be.
+
+good.cells <- data.frame(cell = unique(c(fia.agg$cell, 
+                                         subset(distances, class == 'FIA-PLSS')$cell)))
+good.cells$fia <- match(good.cells$cell, fia.agg$cell)
+good.cells$dist <- match(good.cells$cell, subset(distances, class == 'FIA-PLSS')$cell)
+
+good.cells <- na.omit(good.cells)
+ 
+fia.data <- fia.agg[good.cells$fia,-1]
+fia.na <-  subset(distances, class == 'FIA-PLSS')$dist[good.cells$dist] > intern.quant[95]
+
+fia.na <- cor(fia.data, fia.na)
+
+```
+
+Both the PLS- and FIA-era compositional data show similar patterns of within-dataset dissimilarity, with the highest dissimilarities found in central Minnesota and northwestern Wisconsin. High within-PLSS dissimilarities are associated with high proportions of maple, birch and fir while high within-FIA dissimilarities are associated with high proportions of hemlock, cedar and fir. Dissimilarity values in the FIA dataset are less spatially structured than in the PLSS. Moran's I for dissimilarities within the FIA ($I_{FIA}$ = `r p(moran.stats[1])`, p < 0.001) are lower than the dissimilarities within the PLSS ($I_{PLSS}$ = `r p(moran.stats[2])`, p < 0.001), suggesting lower spatial autocorrelation in the FIA dataset. Cells with identical pairs represent `r p(sum(distances$dist[distances$class=='PLSS'] == 0) / sum(distances$class=='PLSS')*100)`% of the PLSS cells and `r p(sum(distances$dist[distances$class=='FIA'] == 0) / sum(distances$class=='FIA')*100)`% of FIA cells. Identical cells in the PLSS are largely located along the southern margin and most (`r p(sum(distances$dist[distances$class=='PLSS'] == 0 & comp.grid[,'Oak'] == 1)/sum(distances$dist[distances$class=='PLSS'] == 0)*100)`%) are composed entirely of oak. Cells in the FIA with identical compositional neighbors are composed of either pure oak (`r p(sum(distances$dist[distances$class=='FIA'] == 0 & fia.aligned[,'Oak'] == 1)/sum(distances$dist[distances$class=='FIA'] == 0)*100)`%), pure poplar (`r round(sum(distances$dist[distances$class=='FIA'] == 0 & fia.aligned[,'Poplar'] == 1)/sum(distances$dist[distances$class=='FIA'] == 0)*100, 0)`%) or pure ash (`r round(sum(distances$dist[distances$class=='FIA'] == 0 & fia.aligned[,'Ash'] == 1)/sum(distances$dist[distances$class=='FIA'] == 0)*100, 0)`%).
+
+There is a small but significant positive relationship (${F}_{1, 5522}$= `r p(anova(fia.plotless, test="F")$F[2])`, p < 0.001) between the number of FIA plots and within-FIA dissimilarity once the spatial relationship has been accounted for. The relationship accounts for 3% of total variance and estimates an increase of $\Delta_{d}$ = `r p(coef(fia.plotless)[2])` for every FIA plot within a cell. This increase represents only `r p(coef(fia.plotless)[2]/range(fia.plot.num$dists)[2]*100)`% of the total range of dissimilarity values for the FIA data. There is a gradient of species richness that is co-linear with the number of FIA plots within a cell, where the number of plots increases from open forest in the south-west to closed canopy, mixed forest in the Upper Peninsula of Michigan. There is also a significant positive relationship between taxon richness and plot number, which complicates the analysis. Hence, differences in within- and between-cell variability between the PLSS and FIA datasets seem to have only a minor effect on these regional-scale dissimilarity analyses.
+
+We define novel communities as those whose nearest neighbor is beyond the 95%ile for dissimilarities within a particular dataset. In the PLSS dataset, forests that have no modern analogs are defined as "lost forests", while forest types in the FIA with no past analogs are defined as "novel forests". More than `r diffs[1]`% of PLSS sites have no analog in the FIA dataset ('lost forests'; PLS-FIA dissimilarity, Fig 8c), while `r diffs[2]`% of FIA sites have no analog in the PLSS data ('novel forests'; FIA-PLSS dissimilarity, Fig 8d).
+
+**Fig 8**. *Minimum dissimilarity maps. Distributions of minimum (within dataset) dissimilarities during the PLSS (a) and FIA (b) show spatially structured patterns of dissimilarity, with stronger spatial coherence for the PLS.  Lost forests (c) show strong compositional and spatial coherence, and have more taxa with percent composition > 10% than within Novel forests during the FIA era (d). The lost Elm-Oak-Basswood-Ironwood zone lies south of the Tension Zone [@curtis1959vegetation;@andersen2005historical], while the other zones lie largely north or east of the Tension Zone. The spatial structure of the novel forests is less well defined.*
+
+```{r quantifyingLost_n_found, echo = FALSE, warning=FALSE, message=FALSE, results='hide'}
+
+source('R/lost_and_novel_cluster.R')
+
+```
+
+Lost forests are drawn from across the domain, and show strong ecological and spatial coherence (Fig 8c). The lost forests fall into five classes: `r pls.dominants$types[1]` accounts for `r p(pls.dominants$pct[1])`% of all lost forests and `r p(pls.dominants$tot[1])`% of the total region. This forest type is largely found in north eastern Minnesota, extending southward to central Minnesota, into Wisconsin and along the Upper Peninsula of Michigan, as well as in scattered locations on the Lower Peninsula of Michigan (Fig 8c). This forest likely represents a mesic to hydric forest assemblage, particularly further eastward. Modern forests spatially overlapping this lost type are largely composed of poplar ($\bar{x}_{FIA}$ = 12%) and oak ($\bar{x}_{FIA}$ = 12%). Tamarack in these forests has declined significantly, from 23% to only 5% in the FIA, while poplar has increased from 10% to 22%, resulting in forests that look more like early successional forests.
+
+`r pls.dominants$types[2]` accounts for `r p(pls.dominants$pct[2])`% of all lost forests and `r p(pls.dominants$tot[2])`% of the total region. This forest type is found largely in northeastern Wisconsin, and the Upper and Lower Peninsulas of Michigan. This lost forest type has been predominantly replaced by maple, poplar, and pine, retaining relatively high levels of cedar ($\bar{x}_{PLS}$ = 19%; $\bar{x}_{FIA}$ = 14%). The loss of hemlock is widespread across the region, but particularly within this forest type, declining to only 3% from a pre-settlement average of 18%.
+
+`r pls.dominants$type[3]` accounts for `r p(pls.dominants$pct[3])`% of all lost forests and `r p(pls.dominants$tot[3])`% of the total region. The region is centered largely within savanna and prairie-forest margins, both in south-central Minnesota and in eastern Wisconsin, but, is largely absent from savanna in the Driftless area of southwestern Wisconsin. In particular, much of this zone lies in the Big Woods region of Minnesota [@grimm1984fire;@umbanhowar2004interaction]. These forests were historically elm dominated ($\bar{x}_{PLS}$ = 25%), not oak dominated savanna, as elsewhere (particularly in the Driftless). Modern forests replacing these stands are dominated by oak and ash, with strong components of maple, and basswood. Elm has declined strongly in modern forests ($\bar{x}_{FIA}$ = 1%), possibly in part due to Dutch Elm Disease and land-use. The increase in ash in these forests is substantial, from $\bar{x}_{PLS}$ = 5% to $\bar{x}_{FIA}$ = 15%.
+
+`r pls.dominants$type[4]` accounts for `r p(pls.dominants$pct[4])`% of all lost forests and `r p(pls.dominants$tot[4])`% of the total region. This forest type, dominant in north central Wisconsin, was dominated by hemlock ($\bar_{x}_{PLS}$ = 26%) and what was likely late seral yellow birch ($\bar{x}_{PLS}$ = 24%), replaced largely by maple (from $\bar{x}_{PLS}$ = 12% to $\bar{x}_{FIA}$ = 27%). Poplar increases from 1% to 13% in the FIA, again indicating a shift to earlier seral forests in the FIA. Hemlock is almost entirely lost from the forests, declining from 26% to 4% in the FIA.
+
+Lastly, `r pls.dominants$type[5]` accounts for `r p(pls.dominants$pct[5])`% of all lost forests and `r p(pls.dominants$tot[5])`% of the total region. This forest type is found exclusively on the central, western shore of Lake Michigan and in the Lower Peninsula, in part due to the limited geographic range of Beech in the PLSS dataset (Fig 4). Beech is almost entirely excluded from the modern forests in this region, declining from $\bar{x}_{PLS}$ = 37% to $\bar{x}_{FIA}$ = 4%. Pine in the region increases from 9% to 16%, while maple, the dominant taxa in the modern forests, increases from 16 to 25%.
+
+On average lost forests contain higher proportions of ironwood (r = `r p(PLS.na['Ironwood',])`), beech (r = `r p(PLS.na['Beech',])`), birch  (r = `r p(PLS.na['Birch',])`) and hemlock (r = `r p(PLS.na['Hemlock',])`) than the average PLSS forest, and lower proportions of oak (r = `r p(PLS.na['Oak',])`), poplar (r = `r p(PLS.na['Poplar',])`), and pine (r = `r p(PLS.na['Pine',])`).
+
+The distribution of novel ecosystems (Fig 8d) is spatially diffuse relative to the lost forest of the PLSS and the forest types tend to have fewer co-dominant taxa. FIA novel forest types also have a more uneven distribution in proportion than the PLSS lost forests and much weaker relationships with individual taxa, with no taxon association higher than `r p(max(fia.na, na.rm=TRUE))` (ash) or lower than `r p(min(fia.na, na.rm=TRUE))` (tamarack). This suggests that the loss of particular forest types associated with post-settlement land-use was concentrated in mesic deciduous forests and the ecotonal transition between southern and northern hardwood forests, while novel forests were more dispersed, resulting from an overall decline in seral age.
+
+By far the largest novel forest type is `r fia.dominants$type[1]`, which accounts for `r round(fia.dominants$pct[1],1)`% of all novel forests and `r round(fia.dominants$tot[1],2)`% of the total region. As with all novel forest types, this forest type is broadly distributed across the region. This forest type is associated with co-dominant maple ($\bar{x}_{FIA}$ = 23%) and ash ($\bar{x}_{FIA}$ = 22%). Hemlock has declined significantly across this forest type, from $\bar{x}_{PLS}$ = 24% to $\bar{x}_{FIA}$ = 4%.
+
+`r fia.dominants$type[2]`, accounts for `r round(fia.dominants$pct[2],1)`% of all novel forests and `r round(fia.dominants$tot[2],2)`% of the total region. The broad distribution of these novel forests makes assigning a past forest type more difficult than for the PLSS lost forests, the distribution is coincident with two classes of pre-settlement forest, Oak Savanna and Hemlock-Cedar-Birch-Maple (Figs 5, 8).
+
+`r fia.dominants$type[3]` forest accounts for `r round(fia.dominants$pct[3],1)`% of all novel forests and `r round(fia.dominants$tot[3],2)`% of the total region. This forest type is again broadly distributed, and is widely distributed across the region, representing a homogenous, early seral forest type, likely associated with more mesic sites. `r fia.dominants$type[4]` forest accounts for `r round(fia.dominants$pct[4],1)`% of all novel forests and `r round(fia.dominants$tot[4],2)`% of the total region. This grouping again shows a pattern of broad distribution across the region, associated with cedar/juniper percentages near 40%, with smaller components of poplar (14%) and maple (13%).
+
+###Spatial Correlates of Novelty
+```{r figure9, echo = FALSE, message = FALSE, warning=FALSE}
+
+source('R/figures/Fig9_noveltyDistance.R')
+
+fig9_output <- figure_9()
+
+```
+
+Modern compositional dissimilarity from the PLSS data is related to distance from 'remnant' forest. The dissimilarity quantile of FIA-PLSS distances increases with increasing distance to remnant cells, and this relationship is robust to higher thresholds for defining remnant forest classification, up to the 90%ile of within-PLSS near neighbor dissimilarities.  Using the 25%ile for within-PLSS dissimilarity, approximately `r round(sum(fig9_output$quants$eco_quant<=0.25)/nrow(fig9_output$quants)*100,0)`% of FIA cells can be classed as 'remnant' forest. The mean distance to remnant forests for cells with dissimilarities above the 25%ile is `r round(mean(fig9_output$quants$sp_dist[fig9_output$quants$sp_dist>0]),1)` km, higher than the mean of ~9.6km expected if each 8x8km cell had at least one adjacent 'remnant' cell.
+
+**Table 4**. *Spatial distance to novelty - modeled as a binomial - from remnant forests (forests within the first 25th percentile of nearest neighbor distances).  The null model uses permutation (n=100) where quantiles are resampled without replacement.*
+
+Zone          | Min | Max | Min (Null) | Max (Null)
+------------- | ------------- | ------------- | ---------- | ----------- 
+Tamarack-Pine-Spruce-Poplar      | `r fig9_output$distances[[1]][1,1]` | `r fig9_output$distances[[1]][1,2]` | `r fig9_output$distances[[2]][1,2]` | `r fig9_output$distances[[2]][1,3]` | Further
+Oak-Poplar-Basswood-Maple  | `r fig9_output$distances[[1]][2,1]` | `r fig9_output$distances[[1]][2,2]` | `r fig9_output$distances[[2]][2,3]` | `r fig9_output$distances[[2]][2,3]` | Further
+Pine          | `r fig9_output$distances[[1]][3,1]` | `r fig9_output$distances[[1]][3,2]` | `r fig9_output$distances[[2]][3,2]` | `r fig9_output$distances[[2]][3,3]` | Further
+Hemlock-Cedar-Birch-Maple      | `r fig9_output$distances[[1]][4,1]` | `r fig9_output$distances[[1]][4,2]` | `r fig9_output$distances[[2]][4,2]` | `r fig9_output$distances[[2]][4,3]` | Closer
+Oak Savanna   | `r fig9_output$distances[[1]][5,1]` | `r fig9_output$distances[[1]][5,2]` | `r fig9_output$distances[[2]][5,2]` | `r fig9_output$distances[[2]][5,3]` | Overlapping
+
+The GLM shows that distance from remnant forests in the FIA is significantly related to the probability of a cell being novel ($\chi_{1,4}$=623, p < 0.001). The mean distance to novel forest varies by pre-settlement forest class (Fig 5, 9), but is between approximately 20 and 60km for the four forest types examined here (Fig 9), while the null model would predict a distance of 10 - 20km to novelty from remnant cells if dissimilarities were distributed randomly on the landscape (Table 4). Novel forests are generally further from remnant patches than expected in the null model, regardless of forest type, but the distance to novelty is greater for modern forests that are, generally, more similar to their PLSS state (pine and tamarack dominated forests), and closer for forests that are more dissimilar.
+
+**Fig 9**. *The model relating the probability of novel forests to spatial distance from remnant forest.  Here the 25%ile is used to indicate remnant forest, and the 95%ile is defined as novelty. Binomial regression predicts the probaility of novel forest, the red dashed line indicates a response greater than 0.5.  The curves represent the relationship between spatial distance and  dissimilarity for each of the five major historic forest types (Fig 5) defined here as Oak Savanna (blue), Oak-Poplar-Basswood-Maple (light purple), Tamarack-Pine-Spruce-Poplar (green), Hemlock-Cedar-Birch-Maple (yellow) and Pine (orange). Points are jittered to improve display.  Points at 1 are cells whose dissimilarity is greater than the 95th %ile of dissimilarities within the PLSS, here considered novel forest.*
+
+The Hemlock-Cedar-Birch-Maple forest class (Fig 5 & 10b, yellow), appearing as a flat line, predicting novel forest continuously, from distance 0.  This is due, in part, to the very small proportion of Hemlock-Cedar-Birch-Maple cells that are considered residual (only 63 of 1780 FIA cells within the historical zone are considered remnant) and the very high proportion of novel cells in the zone (923 of 1780 cells, or 52% of all cells).
+
+Distance to novel forests within the Oak Savanna have a confidence interval that overlaps the interval predicted from the null model (Table 4). Northern softwood forests (Tamarack-Pine-Spruce-Poplar, Fig 5, light green) are considered novel at between 29 and 43km, northern Oak forests (Oak-Poplar-Basswood-Maple; Fig 5, light purple) are predicted to be novel at 23 - 33 km, slightly higher than the 14 - 19km predicted by the null model.  Pine forests (Fig 5, orange) are predicted to be novel at a distance three times further than expected by the null, at 32 - 56km (Table 4).
+
+```{r fig11_calc, echo = FALSE, message = FALSE, warning=FALSE}
+
+source('R/figures/fig10_transect_plots.R')
+
+```
+
+### Compositional Changes Between PLSS and FIA Forests: Ecotone Structure
+
+To understand how the ecotonal structure has been transformed by post-settlement land-use, we constructed two transects of the FIA and PLSS data (Fig 10a), and fitted GAM models to genus abundances along these transects. Transect One (T1) runs from northern prairie (in northern Minnesota) to southern deciduous savanna in southeastern Wisconsin (left to right in Figures 11c-f), while Transect Two (T2) runs from southern prairie in southwestern Minnesota to northern mixedwood forest in the Upper Peninsula of Michigan (left to right in Figures 11g-j). In general, these transect analyses show:  1) significant differences in ecotonal structure between the present and pre-settlement, and 2) steeper ecotones in the past and more diffuse ecotones today.
+
+**Fig 10**. *Transects (a) across the region show clear changes in the ecotonal strength. Transect One shows shifts in broadleaved taxon distributions from the PLSS to FIA (b and c) and in needleleaved distributions (d and e). Transect Two broadleaf (f and g) and needleleaf (h and i) taxa show shifts that again appear to represent regional scale homogenization. Ecotones in the pre-settlement era were stronger in the past than they are in the present. Fitted curves represent smoothed estimates across the transects using Generalized Additive Models using a beta family.*
+
+For T1, GAM models show significant differences (using AIC) between time periods in curves for all broadleaved taxa (Fig 10b & c) and for al needleleaved taxa (Figures 10d and e). The PLSS curves show a transition in the northwest from poplar dominated open forest to a needleleaved forest composed of pine, spruce and tamarack. Tamarack and poplar proportions decline gradually from the east, being replaced first by pine, then briefly by maple and birch, and then, ultimately by oak as the transect grades into oak savanna. In the FIA dataset poplar in the northwest grades into mixedwood forests. While the PLSS transect shows distinct vegetation types in the central part of the transect, the FIA shows relatively constant proportions of oak, pine, spruce, poplar and maple before pine, oak and elm increase in the southeastern portions of the transect.
+
+The second transect (T2) shows a similar pattern, with well-defined ecotones in the pre-settlement period (Fig 10f and h). Although a sharp increase in poplar appears just east of the Tension Zone in (Fig 10g), there are no major changes in any other taxon (Fig 10g, i). Oak forest, with a component of elm and poplar in the southwest grades slowly to a rapid transition zone where pine, elm, maple (first), then rapidly birch, hemlock and tamarack, and later, spruce, increase. This region, the Tension Zone, extends from 3 x 10^5^ to 4.5x10^5^ meters East, eventually becoming a forest that shows co-dominance between birch, pine, maple, spruce and tamarack, likely reflecting some local variability as a result of topographic and hydrological factors. Missing data at the beginning of the FIA transect reflects a lack of FIA plots in unforested regions in the west
+
+Contemporary forests show broader homogenization and increased heterogeneity (evidenced by the lower within-FIA Moran's I estimates for near-neighbor distances) at a local scale in the region. Homogenization is evident across T1, where Bray-Curtis dissimilarity between adjacent cells declines from the PLSS to the FIA ($\Delta_{beta}$ = -0.22, $t_{113}$ = -7.93, p<0.001), mirroring declines in the Pine Barrens between the 1950s and the present [@li2014drivers]. The PLSS shows strong differentiation in the central region of T2 where maple-pine-oak shifts to pine-poplar-birch forest (Fig 10d). This sharp ecotone is not apparent in the FIA data, which shows gradual and blurred changes in species composition across the ecotone (Fig 10i). $\beta$-diversity along T2 is lower in the FIA than in the PLSS ($\Delta_{beta}$ = -0.19, $t_{65}$=-7.34, p < 0.01), indicating higher heterogeneity in the PLSS data at the 64 km^2^ meso-scale.
+
+Across the entire domain, $\beta$ diversity is lower in the FIA than in the PLSS ($\Delta_{\beta}$ = -0.172, $t_{1.3e7}$ = 2480, p <0.001), lending support to the hypothesis of overall homogenization. Differences in sampling design between PLSS and FIA data cannot explain this homogenzation, since its effect would have been expected to increase $\beta$-diversity along linear transects and at larger spatial scales.
+
+
+Discussion
+------------------------------
+
+The records of the Public Land Survey System (PLSS) provide broad spatial coverage for the Upper Midwestern United States and elsewhere at a time immediately prior to widespread land use change.  Many of the forests of the PLSS are no longer represented on the landscape. We identify five key forest-types that have vanished at the 64 km^2^ mesoscale, and five new forest types that have been gained. The joint controls of broad-scale climatic structuring and local hydrology on forest composition and density can be seen in the pre-settlement forests. For example, along the Minnesota River in south-western Minnesota a corridor of savanna was sustained in a region occupied by prairie (Fig 2b).  Composition gradients in the FIA are weaker now than in the past (Fig 10), with clear signs of increased homogenization at local and regional scales and decreased spatial structure among forest-types (Fig 8). 
+
+Biomass change since pre-settlement is spatially structured (Fig 7d), and appears to be controlled both by parent vegetation and land use change. Total biomass loss is equivalent to `r p(tot_biom_diff/sum(getValues(biomass), na.rm=TRUE)* 100)`% of pre-settlement standing biomass across the domain, but differential impacts of land clearance and subsequent forest management in the south vs the northwest are apparent in the change.  High-biomass southern hardwood forests are lost, accompanied by declines in mean diameters for species such as maple and hemlock. Regionally, this is balanced by higher biomass in the north and northwest due to fire suppression and regeneration of hardwoods, and higher average diameters for species including poplar.  Therefore, although there is an overall trend of lower biomass since EuroAmerican Settlement, the loss is not uniform across the domain.
+
+The loss of ecotones in the upper Midwestern United States suggests that ability to predict abiotic controls on species distributions at the landscape scale may be weaker than in the past, reducing the apparent influence of climatic or edaphic factors, and increasing the relative influence of recent land-use history, a factor that is often not considered [@hamburg1986disturbance]. 
+
+Recent land-use history and historical vegetation cover play a large role in recovery from the large-scale disturbance following EuroAmerican settlement. Our results show decreased $\beta$ diversity along regional transects (shown in Fig. 10), which indicates homogenization at meso-scales of 100s of km^2^, while the overall reduction in Moran's I for dissimilarity in the FIA indicates a regional reduction in heterogeneity on the scale of 1000s of km^2^. The selective loss or weakening of major vegetation ecotones, particularly in central Wisconsin, and the development of novel species assemblages across the region further suggests that modern correlational studies, examining regional relationships between species and climate (for example) may fail to capture the full range of edaphic controls on species distributions. These changes are the result of land-use, both agricultural and logging, but affect forests in contrasting ways across the domain. Maple has become one of the most dominant taxa across the region, largely red maple (*Acer rubrum*), while in northern Minnesota, forest biomass has increased and species shifts have reflected increases in poplar and pine, while in south central and eastern Wisconsin, biomass has declined, and hemlock has been lost almost completely.
+
+
+Recent work in eastern North America suggests the utility of including spatial structure in species distribution models to improve predictive ability [@record2013should]. Accounting for spatial structure may improve models by capturing missing covariates within species distribution models [@record2013should], but if recent land-use history has strongly shaped species distributions, or co-occurrence, then the spatial effect is likely to be non-stationary at longer temporal scales.  Observations at longer time-scales, and multiple baselines from which to build distributional models are critical to avoid conflating recent land-use effects with the long-term ecological processes structuring the landscape [@wolkovich2014temporal; @dawson2011beyond].
+
+Anthropogenic shifts in forest composition over decades and centuries seen here and elsewhere [@thompson2013four;@cogbill2002forests] are embedded within a set of interacting systems that operate on multiple scales of space and time [macrosystems, *sensu* @heffernan2014macrosystems]. Combining regional historical baselines, long-term ecological studies and high frequency analyses can reveal complex responses to climate change at local and regional scales [@groffman2012long]. Estimates of pre-settlement forest composition and structure are critical to understanding the processes that govern forest dynamics because they represent a snapshot of the landscape prior to major EuroAmerican land-use conversion [@schulte2001original;@liu2011broadscale]. Pre-settlement vegetation provides an opportunity to test forest-climate relationships prior to land-use conversion and to test dynamic vegetation models in a data assimilation framework [*e.g.*, @hartig2012connecting]. For these reason, the widespread loss of regional forest associations common in the PLSS (Fig 8d), and the rapid rise of novel forest assemblages (Fig 8e) have important implications for our ability to understand ecological responses to changing climate.  The loss of historical forest types implies the modern understanding of forest cover, climate relationships, realized and potential niches and species associations may be biased in this region, given that `r diffs[2]`% of the total regional cover is novel relative to forests only two centuries ago and that forests prior to EuroAmerican change were also undergoing shifts in composition on relatively short time-scales [@grimm1984fire;@umbanhowar2004interaction]
+
+Beyond shifts in composition at a meso-scale, the broader shifts in ecotones can strongly impact models of species responses and co-occurrence on the landscape. For example, the heterogeneity, distribution, and control of savanna-forest boundaries [@staver2011global] is of particular interest to ecologists and modelers given the ecological implications of current woody encroachment on savanna ecosystems [@ratajczak2012woody]. Declines in landscape heterogeneity may also strongly affect ecosystem models, and predictions of future change. Our data show higher levels of vegetation heterogeneity at mesoscales during the pre-settlement era, and greater fine scaled turnover along transects. Lower $\beta$ diversity shown here and elsewhere [@li2014drivers] indicate increasing homogeneity at a very large spatial scale, and the loss of resolution along major historical ecotones.
+
+This study also points to the need for a deeper understanding of some of the landscape- and regional-scale drivers of novelty, given the likely role for climatic and land-use change (including land abandonment) to continue to drive ecological novelty [@radeloff2015rise;@martinuzzi2015future].  In particular the role of regional species pools and remnant patches of forest in driving or mitigating compositional novelty.  This work shows that the baseline forest type, and its structure on the landscape moderates the degree to which landscape scale patterns can drive compositional novelty. To some degree relationships between compositional novelty and distance from remnant patches may be dependent on the size or diversity of the species pool and the sensitivity of dissimilarity metrics to $\beta$ diversity [@faith1987compositional]. Our results indicate that diversity alone cannot be the driving factor in determining post-settlement dissimilarity since all forest classes show this pattern of change.
+
+Both Pine and the Oak-Poplar-Basswood-Maple forest types are the most fragmented across the region. There is strong evidence that, in some locations, pine forests have persisted over very long timescales in the region [@ewing2002influence], although there is also evidence, in other regions, that these states may shift strongly in response to interactions between landscape level processes such as fire and geophysical features [@lynch2014presence]. Thus complex interactions between landscape-scale processes, including fire and land-use change, or geophysical features, and the species assemblages themselves, point to the difficulty in making simplifying assumptions about species assemblages. Caution in simplifying species assignments is necessary since this region is dominated by forests that respond very differently to the settlement-era (and pre-settlement) disturbance, even though they are composed of different species within the same genera or plant functional type. Recent ecosystem model benchmarking using pre-settlement vegetation has shown significant mismatch between climate representations of plant functional types across a range of ecosystem models [@Matthesinreview]. In the model intercomparison, no ecosystem model accurately represented the true climate space of plant functional types in the northeastern United States, indicating simplifying assumptions within dynamic models of vegetation fail to accurately represent the complexity of vegetation in this region with respect to climate [@Matthesinreview].
+
+The analysis relating to the distance-to-novel forests (Fig 9) points to the possibility that landscape-scale restoration has high likelihood of success if local-scale restoration focuses on sites where restoration potential is high, as suggested for Hemlock-Cedar-Birch-Maple forests in northern Wisconsin [@bolliger2004assessing]. If some of the novelty is driven by depauparate species pools beyond certain threshold distances from remnant forests then it should also be possible to restore these forest at a regional scale through the translocation of key species [@seddon2010reintroduction]. This work is supported by a number of other studies at smaller scales [@Dunn1983;@Johnson1988;@Nyamai2014]. For example, the presence of white pine in mesic sites during the PLSS era has been attributed to its presence as a seed source on marginal sites at scales of hundreds of meters [@Fahey2012]. Simulations show that seed-source distribution can affect community composition over hundreds of years at large spatial scales in a region spatially coincident with this current study [@He1999] .  Thus, land-use change has significantly altered the landscape, both by "resetting" the successional clock, but also, because of the extent of change, by impacting the regional species pool and seed source for re-establishing forests that are compositionally similar to pre-settlement forests.
+
+Methodological advances of the current work include 1) the systematic standardization of PLSS data to enable mapping at broad spatial extent and high spatial resolution, 2) the use of spatially varying correction factors to accommodate variations among surveyors in sampling design, and 3) parallel analysis of FIA datasets to enable comparisons of forest composition and structure between contemporary and historical time periods. This approach is currently being extended to TPS and PLSS datasets across the north-central and northeastern US, with the goal of providing consistent reconstructions of forest composition and structure for northeastern US forests at the time of EuroAmerican forests.
+
+Our results support the consensus that robust estimates of pre-settlement forest composition and structure can be obtained from PLSS data [*e.g.*, Wisconsin: @schulte2002quantitative; California: @williams2011testing; Iowa: @rayburn2009integrating; Oregon: @duren2012vegetation; Missouri: @Hanberry2014, Minnesota: @hanberry2012comparison]. Patterns of density, basal area and biomass are roughly equivalent to previous estimates [@schulte2007homogenization; @rhemtulla2009historical], but show variability across the region, largely structured by historical vegetation type (Table 3). Our results for stem density are lower than those estimated by Hanberrry *et al*. [@hanberry2012comparison] for eastern Minnesota, but density and basal area are similar to those in the northern Lower Peninsula of Michigan [@leahy2003comparison] and biomass estimates are in line with estimates of aboveground carbon for Wisconsin [@rhemtulla2009historical].
+
+These maps of settlement-era forest composition and structure can provide a useful calibration dataset for pollen-based vegetation reconstructions for time periods predating the historical record [@Dawson2015quantifying]. Many papers have used calibration datasets comprised of modern pollen samples to build transfer functions for inferring past climates and vegetation from fossil pollen records [@birks2010strengths;@paciorek2009mapping;@jacques2008pre;@goring2009new]. However, modern pollen datasets are potentially confounded by recent land-use, which can alter paleoclimatic reconstructions using pollen data [@jacques2008pre, but see @herbert2016evaluation]. By linking pollen and vegetation at modern and historical periods we develop capacity to provide compositional datasets at broader spatio-temporal scales, providing more data for model validation and improvement. Ultimately, it should  be possible to assimilate these empirical reconstructions of past vegetation with dynamic vegetation models in order to infer forest composition and biomass during past climate changes. Data assimilation,  however, requires assessment of observational and model uncertainty in the data sources used for data assimilation. Spatio-temporal models of uncertainty have been developed for the compositional data [@paciorek2015composition].
+
+Ultimately the pre-settlement vegetation data present an opportunity to develop and refine statistical and mechanistic models of terrestrial vegetation that can take multiple structural and compositional forest attributes into account. The future development of uncertainty estimates for the data remains an opportunity that can help integrate pre-settlement estimates of composition and structure into a data assimilation framework to build more complete and  more accurate reconstructions of past vegetation dynamics, and to help improve predictions of future vegetation under global change scenarios.
+
+Acknowledgements
+==================
+The authors would like to thanks the large number of individuals who have worked to first, undertake the PLSSsurvey, to bring the original survey data together, to digitize and standardize much of the survey results, and finally, to assist in interpreting and compiling the data in its present form. We would like to thank our reviewers, Kerry Woods and Greg Guerin, and those who provided comments on the preprint (http://dx.doi.org/10.1101/026575). This material is based upon work carried out by the PalEON Project (paleonproject.org) with support from the National Science Foundation Macrosystems Biology program, under grants no. DEB-1065656, 1065848, 1065732, 1065702, 1241891, 1241868, and 1241874.  Maps were made using data from Natural Earth (http://naturalearth.com), which provides raster & vector map data in the public domain.
+
+***
+```{r fig1_output,echo=FALSE,warning=FALSE,message=FALSE,fig.width=4,fig.height = 3,dpi=300, dev=c('png','tiff')}
+
+val.plot <- data.frame(xyFromCell(dens, 1:ncell(dens)),
+                       dens = !is.na(getValues(dens)))
+
+val.plot$dens[!val.plot$dens] <- NA
+
+fig1plot <- base.map +
+  geom_tile(data = na.omit(val.plot), 
+            aes(x = x, y = y), alpha = 0.8, fill = 'lightgray') +
+  geom_path(data=river.subset, 
+            aes(x = long, y = lat, group = group), color = 'blue', alpha = 0.1) +
+    geom_polygon(data=lakes.subset, 
+                 aes(x = long, y = lat, group = group), fill = '#ADD8E6') +
+  geom_path(data = umw.domain, aes(x = long, y = lat, group = group, linesize = paleon)) +
+  geom_path(data = can.domain, aes(x = long, y = lat, group = group)) +
+  theme_bw() +
+  theme(axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        legend.position = 'none',
+        legend.title = element_blank())
+
+fig1plot
+```
+
+***
+```{r fig2_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=5, fig.height = 5, dpi=300, dev=c('png','tiff')}
+
+grid.arrange(dens.facet, anders.facet, basa.facet, biom.facet, nrow = 2)
+
+```
+
+***
+
+```{r fig3_output, echo=FALSE, message=FALSE, warning=FALSE, width=5, fig.height = 5, dpi=300, dev=c('png','tiff')}
+
+  biom_sd
+
+```
+
+***
+
+```{r fig4_output, echo = FALSE, warning=FALSE, message=FALSE, fig.width=7, fig.height = 5, dpi=300, dev=c('png','tiff')}
+composition.plots
+```
+
+***
+
+```{r fig5_clusters, echo = FALSE, warning=FALSE, message=FALSE, fig.width=7, fig.height = 5, dpi=300, dev=c('png','tiff')}
+
+map_plots
+
+```
+
+***
+```{r fig6_output, echo = FALSE, message = FALSE, warning=FALSE, results='hide', fig.width=6, fig.height=6, dpi=300, dev=c('png','tiff')}
+
+out.map
+
+```
+
+***
+```{r fig7_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 7, dpi=300, dev=c('png','tiff')}
+
+# ggsave(arrangeGrob(dens.fp, basa.fp, biom.fp, biomass.comp, nrow = 2), 
+#        filename = paste0('figures/fig8_fourpanelbiomass', version, '.tiff'), 
+#        width=8, height = 8, dpi=300)
+
+plot(arrangeGrob(dens.fp, basa.fp, biom.fp, biomass.comp, nrow = 2))
+       
+```
+
+***
+```{r fig8_output, echo = FALSE, warning=FALSE, message=FALSE, results='hide', fig.width=7, fig.height = 5, dpi=300, dev=c('png','tiff')}
+
+grid.arrange(histogram, spatial.internal, spatial.external, ncol = 1)
+
+```
+
+***
+
+```{r fig9_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 6, dpi=300, dev=c('png','tiff')}
+
+plot(fig9_output$plot)
+
+```
+
+***
+```{r fig10_output, echo = FALSE, message = FALSE, warning=FALSE, fig.width=7, fig.height = 6, dpi=300, dev=c('png','tiff')}
+trans.plot
+```
+
+***
+### Literature Cited

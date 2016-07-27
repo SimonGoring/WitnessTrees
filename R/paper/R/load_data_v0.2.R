@@ -1,3 +1,6 @@
+
+library(dplyr)
+library(testthat)
 library(statmod)
 library(RColorBrewer)
 library(ggplot2)
@@ -14,41 +17,55 @@ library(spdep)
 library(vegan)
 library(cluster)
 
+#  We use two different projection systems here.  This is the test to create the
+#  base resolution.
+if (model.proj == '+init=epsg:4326') {
+  #  lat/long
+  base.rast <- raster(xmn = -98.6, xmx = -66.1, ncols = 391,
+                      ymn = 36.5,  ymx = 49.75, nrows = 160,
+                      crs = '+init=epsg:4326')
+  numbered.rast <- setValues(base.rast, 1:ncell(base.rast))
+}
+
+if (model.proj == '+init=epsg:3175') {
+  base.rast <- raster(xmn = -71000, xmx = 2297000, ncols = 296,
+                      ymn = 58000,  ymx = 1498000, nrows = 180,
+                      crs = '+init=epsg:3175')
+  numbered.rast <- setValues(base.rast, 1:ncell(base.rast))
+}
+
+if (model.proj == '+init=epsg:3175') {
+  # These are narrower boundaries than the base raster for reasons associated with
+  # the broader PalEON project.
+  xylimits <- c(-100000, 1050000, 600000, 1600000)
+}
+if (model.proj == '+init=epsg:4326') {
+  xylimits <- c(-98, -83, 42, 50)
+}
+
 #  This code requires you to set the directory to the directory in which you've unpacked the supplement.
 
 source('R/misc.functionsv1.4.R')
 
-#  Ramankutty raster, for use as a template.
-#  No longer used, but we'll leave it for now.
-pot.veg <- raster(read.asciigrid(fname='../../data/input/rasters/glpotveg_5min.asc'))
-projection(pot.veg) <- '+init=epsg:4326'
-
 #   Get the us & canadian lines into the right projection
-usa <-    spTransform(readOGR('../../data/input/shapes/usa/us.shp', 'us'), 
-                      CRSobj=CRS(model.proj))
-canada <- spTransform(readOGR('../../data/input/shapes/canada', 'PROVINCE'), 
-                      CRSobj=CRS(model.proj))
+umw.domain <- spTransform(readOGR('../../data/input/shapes/usa/us.shp', 'us'), 
+                          CRSobj = CRS(model.proj)) %>% 
+  fortify(region = 'STATE_NAME')
 
-usa    <- fortify(usa, region = 'STATE_NAME')
-canada <- fortify(canada, region = 'NAME')
+can.domain <- spTransform(readOGR('../../data/input/shapes/canada', 'PROVINCE'), 
+                          CRSobj = CRS(model.proj)) %>% fortify(region = 'NAME')
 
 #  This file was processed in the first file in this chain.
 #  replace with 'minn.wisc.mich.clean_v1_2'
 
 used.data <- readOGR('../../data/output//aggregated_midwest//minn.wisc.mich.clean_v1_8.shp', 'minn.wisc.mich.clean_v1_8')
-if(is.na(proj4string(used.data))) proj4string(used.data) <- CRS('+proj=longlat +ellps=WGS84')
 
-data.box <- bbox(used.data)
-data.box[c(1, 2)] <- floor(data.box[c(1,2)])
-data.box[c(3,4)] <- ceiling(data.box[c(3,4)])
+if (is.na(proj4string(used.data))) {
+  # Just in case there happens to be no projection information associated with the data.
+  proj4string(used.data) <- CRS('+proj=longlat +ellps=WGS84')
+}
 
-pot.veg <- crop(pot.veg, extent(data.box))
-reproject <- function(x) projectRaster(x, crs=model.proj, method = 'ngb')
-pot.veg <- reproject(pot.veg)
-bbox.new <- bbox(pot.veg)
-
-num.rast <- setValues(pot.veg, 1:ncell(pot.veg))
-
+#########################################################################
 #  Clean the tree data:
 
 diams <- used.data@data[,4:7]
@@ -71,9 +88,6 @@ external <- c(109:120, 97:108, 87, 89, 91, 93, 95, 122:126)
 #  These correction values are derived empirically and are described in the supplementary material.
 #  One issue right now is the lack of an empirical theta value.
 
-####################################
-# I'm in the middle of editing this!!!!
-####################################
 corr.vals <- read.csv('../../data/input/relation_tables/cogbill_corrections.csv')
 
 correction <- data.frame(kappa = rep(NA, length(used.data)),
@@ -81,7 +95,7 @@ correction <- data.frame(kappa = rep(NA, length(used.data)),
                          zeta  = rep(NA, length(used.data)),
                          phi   = rep(NA, length(used.data)))
 
-plot.trees <- rowSums(!(species == 'Water'|species == 'NonTree'), na.rm=TRUE)
+plot.trees <- rowSums(!(species == 'Water' | species == 'NonTree'), na.rm = TRUE)
 
 point.no <- as.numeric(as.character(used.data$Point))
 
@@ -91,7 +105,7 @@ internal <- ifelse(!point.no %in% external, 'internal', 'external')
 trees    <- ifelse(plot.trees == 2, 'P', '2NQ')
 section  <- ifelse(point.no %in% sections, 'section', 'quartersection')
 state    <- ifelse(substr(used.data@data$Township, 1, 2) == 'wi', 'Wisconsin',
-                   ifelse(substr(used.data@data$Township, 1, 2) =='mi', 'Michigan', 'Minnesota'))
+                   ifelse(substr(used.data@data$Township, 1, 2) == 'mi', 'Michigan', 'Minnesota'))
 
 corr.year     <- as.character(used.data@data$year)
 corr.year[state == 'Michigan'] <- 'all'
@@ -100,35 +114,39 @@ corr.year[state == 'Wisconsin' & !(corr.year %in% c('1832-1834', '1834-1846'))] 
 corr.year[state == 'Minnesota' & (corr.year %in% (as.character(1847:1855)))] <- 1855
 corr.year[state == 'Minnesota' & !(corr.year %in% (as.character(1847:1855)))] <- 1907
 
-match.vec <- apply(corr.vals[,1:4], 1, paste, collapse='')
-to.match <- apply(data.frame(state, corr.year, internal, section, stringsAsFactors=FALSE), 1, paste, collapse = '')
+match.vec <- apply(corr.vals[,1:4], 1, paste, collapse = '')
+to.match <- apply(data.frame(state, corr.year, internal, section, stringsAsFactors = FALSE), 1, paste, collapse = '')
 
 correction <- corr.vals[match(to.match, match.vec),]
 
 #  Get rid of variables that aren't used anymore.
-rm(external, sections, data.box, plot.trees, 
+rm(external, sections, plot.trees, 
    corr.year, trees, section, state, 
    match.vec, to.match)
 
-ninefive <- function(x, to.rast = TRUE){
-  if(class(x) == 'RasterLayer'){
+##########################################################
+#  A set of helper functions for the paper:
+ninefive <- function(x, to.rast = TRUE) {
+  # Generate 95% CIs:
+  
+  if (class(x) == 'RasterLayer') {
     data <- getValues(x)
     
-    data.nf <- quantile(data, c(0.025, 0.975), na.rm=TRUE)
+    data.nf <- quantile(data, c(0.025, 0.975), na.rm = TRUE)
     
     new.x <- x
     new.x[x == 0] <- NA
     new.x[x < data.nf[1]] <- NA
     new.x[x > data.nf[2]] <- data.nf[2]
     
-    if(to.rast){
+    if (to.rast) {
       out <- new.x
     }
     else{
       out <- data.nf
     }
   }
-  else{
+  else {
     data.sort <- sort(x)
     out <- c(data.sort[length(data.sort) * 0.025], 
                  data.sort[length(data.sort) * 0.975])
@@ -136,17 +154,51 @@ ninefive <- function(x, to.rast = TRUE){
   return(out)
 }
 
-p <- function(x, fixed=FALSE){
-  if(x > 100 & !fixed){
+p <- function(x, fixed = FALSE) {
+  
+  # Pretty up the numbers:
+  testthat::expect_true(class(x) %in% c('numeric', 'integer'))
+  
+  if (x > 100 & !fixed) {
     #  Round to three significant figures and add a comma:
     x <- round(x, -(floor(log(x, 10)) - 3))
     y <- formatC(x, format = 'd', digits = 2, big.mark = ',')
   }
-  if(x > 100 & fixed){
+  
+  if (x > 100 & fixed) {
     y <- formatC(x, format = 'd', big.mark = ',')
   }
-  if(x < 100){
+  
+  if (x < 100) {
     y <- as.numeric(formatC(x, format = 'g', digits = 3))
   }
+  
   return(y)
 }
+
+add_cells <- function(pts) {
+  
+  # This adds the `cell` column to a table with x & y coordinates:
+  # Some assertions about `pts`
+  testthat::expect_true((class(pts) %in% c("SpatialPoints", "SpatialPointsDataFrame") | all(c('x', 'y') %in% colnames(pts)) | ncol(pts) == 2))
+  
+  # A function to add cell numbers to a data.frame from the base raster:
+  base.rast <- raster(xmn = -71000, xmx = 2297000, ncols = 296,
+                      ymn = 58000,  ymx = 1498000, nrows = 180,
+                      crs = '+init=epsg:3175')
+  
+  base.rast <- setValues(base.rast, 1:ncell(base.rast))
+  
+  points <- raster::extract(x = numbered.rast, y = pts)
+  
+  # Some assertions:
+  # If this returns NAs then something is out of the domain.
+  testthat::expect_true(all(!is.na(points)))
+  
+  return(points)
+
+}
+
+# A function - `check_vars` that basically looks at everything in memory and tells 
+# you where it comes from and how often it's used.
+source('R/check_var_use.R')

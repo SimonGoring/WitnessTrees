@@ -43,10 +43,10 @@ test.class <- function(pfts){
   rf.classes[cell][class == 2 & apply(x, 1, which.max) %in% c(1, 2)] <- 9
   
   # Temperate Deciduous Forest
-  rf.classes[cell][class > 2 & (x/rowSums(x, na.rm=TRUE))$TBDT > .7] <- 5
+  rf.classes[cell][class > 2 & (x/rowSums(x, na.rm = TRUE))$TBDT > .7] <- 5
   
   # Evergreen/Deciduous Mixed Forest/Woodland
-  rf.classes[cell][class > 2 & ((x/rowSums(x, na.rm=TRUE))$TNET + (x/rowSums(x, na.rm=TRUE))$TNDT)  > .7] <- 8
+  rf.classes[cell][class > 2 & ((x/rowSums(x, na.rm = TRUE))$TNET + (x/rowSums(x, na.rm = TRUE))$TNDT)  > .7] <- 8
   
   # Temperate Needleleaf Evergreen Forest/Woodland
   rf.classes[cell][is.na(rf.classes[cell])] <- 4
@@ -60,11 +60,11 @@ biom.class <- test.class(biomass.pft)
 
 patch.size <- function(table, class){
   
-  rast <- crop(table, pot.veg)
+  rast <- crop(table, base.rast)
   
-  clumped <- getValues(clump(rast == class, directions=4))
+  clumped <- getValues(clump(rast == class, directions = 4))
   
-  if(model.proj == '+init=epsg:3175'){
+  if (model.proj == '+init=epsg:3175') {
     output <- table(clumped) * 64
   }
   
@@ -72,28 +72,28 @@ patch.size <- function(table, class){
   
 }
 
-base <- resample(pot.veg, dens, method = 'ngb')
-base[is.na(basal.class)] <- NA
-
-#  This gives me the mean patch size for each zone.
-patch.ests <- lapply(list(base, basal.class, dens.class, basal.class, biom.class),
-                     function(y) unlist(sapply(c(4, 5, 8, 9, 10), function(x) patch.size(y, x))))
-       
-#  iGraph has a function edge that works differently than the raster package's edge.
-detach('package:igraph')
-
-edge.size <- function(rast){
-  if(!model.proj == '+init=epsg:3175'){
-    rast <- projectRaster(rast, crs='+init=epsg:3175')
-  }
-  edge.rast <- boundaries(rast, directions = 4, classes = TRUE) - boundaries(rast, directions = 4)
-  
-  sum(getValues(edge.rast), na.rm=TRUE)
-}
-
-base.edge <- sum(getValues(boundaries(base, directions=4)) == 0, na.rm=TRUE)
-
-edge.est <-  sapply(list(base, basal.class, dens.class, basal.class, biom.class),
-                   function(x) edge.size(x))
-
-edge.est <- round(edge.est / base.edge * 100, 1)
+ base <- resample(base.rast, dens, method = 'ngb')
+ base[is.na(basal.class)] <- NA
+# 
+# #  This gives me the mean patch size for each zone.
+# patch.ests <- lapply(list(base, basal.class, dens.class, basal.class, biom.class),
+#                      function(y) unlist(sapply(c(4, 5, 8, 9, 10), function(x) patch.size(y, x))))
+#        
+# #  iGraph has a function edge that works differently than the raster package's edge.
+# detach('package:igraph')
+# 
+# edge.size <- function(rast){
+#   if (!model.proj == '+init=epsg:3175') {
+#     rast <- projectRaster(rast, crs = '+init=epsg:3175')
+#   }
+#   edge.rast <- boundaries(rast, directions = 4, classes = TRUE) - boundaries(rast, directions = 4)
+#   
+#   sum(getValues(edge.rast), na.rm = TRUE)
+# }
+# 
+# base.edge <- sum(getValues(boundaries(base, directions = 4)) == 0, na.rm = TRUE)
+# 
+# edge.est <-  sapply(list(base, basal.class, dens.class, basal.class, biom.class),
+#                    function(x) edge.size(x))
+# 
+# edge.est <- round(edge.est / base.edge * 100, 1)
