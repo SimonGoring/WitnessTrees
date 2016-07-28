@@ -284,3 +284,22 @@ add.v(biomass.table, 'plss_biomass')
 add.v(dens.pft, 'plss_density_pft')
 add.v(basal.pft, 'plss_basal_pft')
 add.v(biomass.pft, 'plss_biomass_pft')
+
+#  Check all the cell numbers are consistent:
+all_cells <- list(unique(points_per_cell_df$cell), 
+                  unique(biomass.points$cell),
+                  unique(biomass.points.pft$cell),
+                  unique(diam.table.uw$cell),
+                  unique(count.table$cell),
+                  unique(density.table$cell),
+                  unique(basal.table$cell),
+                  unique(biomass.table$cell),
+                  unique(dens.pft$cell),
+                  unique(basal.pft$cell),
+                  unique(biomass.pft$cell))
+
+for (i in 1:(length(all_cells) - 1)) {
+  for (j in 2:length(all_cells)) {
+  assertthat::assert_that(all.equal(sort(all_cells[[i]]), sort(all_cells[[j]])))
+  }
+}
