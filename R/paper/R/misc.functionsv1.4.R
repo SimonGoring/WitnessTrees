@@ -1,19 +1,17 @@
 #  Functions used in the Settlement Vegetation analysis:
 
 #  The Morisita density estimator:
-morisita <- function(processed.data, correction.factor = NULL, veil=FALSE) {
+morisita <- function(processed.data, correction.factor = NULL, veil = FALSE) {
   #  Function to calculate stem density using the morista function.  The input 
   #  is 'processed.data', which should be the file 'used.data'.  'correction 
-  #  factor' is the modified Cottam Correction factor determined in 
-  #  'load.estimate.correction.R' using a generalized linear model (with a Gamma
-  #  distribution).
+  #  factor' is the modified Cottam Correction factor.
   
   azim <- processed.data@data[,c('az1', 'az2', 'az3', 'az4')]
   diam <- processed.data@data[,c('diam1', 'diam2', 'diam3', 'diam4')]
   dist <- processed.data@data[,c('dist1', 'dist2', 'dist3', 'dist4')]
   spec <- processed.data@data[,c('species1', 'species2', 'species3', 'species4')]
   
-  if(veil){
+  if (veil) {
     diam[diam < 8] <- NA
   }
   
@@ -71,10 +69,10 @@ morisita <- function(processed.data, correction.factor = NULL, veil=FALSE) {
   #  density with less than two trees, and requires two quadrats.
   
   #  I'm going to let the NAs stand in this instance.
-  rsum <- rowSums((m.dist[,1:2])^2, na.rm=T)
+  rsum <- rowSums((m.dist[,1:2]) ^ 2, na.rm = T)
   
   #  A set of conditions to be met for the rsum to be valid:
-  rsum[rowSums(is.na(m.dist[,1:2])) == 2 |  q < 2 | rsum == 0 | rowSums(m.dist[,1:2], na.rm=T) < 0.6035] <- NA
+  rsum[rowSums(is.na(m.dist[,1:2])) == 2 |  q < 2 | rsum == 0 | rowSums(m.dist[,1:2], na.rm = T) < 0.6035] <- NA
     
   #  From the formula,
   #  lambda = kappa * theta * (q - 1)/(pi * n) * (q / sum_(1:q)(r^2))
@@ -105,6 +103,22 @@ morisita <- function(processed.data, correction.factor = NULL, veil=FALSE) {
 get_cells <- function(x, y = NULL){
   ### This function is the basic function where we get xy coordinates of the points and then 
   ### either create a raster with the focal dataset (y) or just the cell numbers:
+  
+  if (model.proj == '+init=epsg:4326') {
+    #  lat/long
+    base.rast <- raster(xmn = -98.6, xmx = -66.1, ncols = 391,
+                        ymn = 36.5,  ymx = 49.75, nrows = 160,
+                        crs = '+init=epsg:4326')
+    numbered.rast <- setValues(base.rast, 1:ncell(base.rast))
+  }
+  
+  if (model.proj == '+init=epsg:3175') {
+    base.rast <- raster(xmn = -71000, xmx = 2297000, ncols = 296,
+                        ymn = 58000,  ymx = 1498000, nrows = 180,
+                        crs = '+init=epsg:3175')
+    numbered.rast <- setValues(base.rast, 1:ncell(base.rast))
+  }
+  
   cells <- extract(numbered.rast, x)
   
   if (is.null(y)) {

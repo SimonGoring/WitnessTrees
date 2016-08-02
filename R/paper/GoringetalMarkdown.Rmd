@@ -1,9 +1,7 @@
 ---
-title: "Forest Change in the Upper Midwestern United States"
-author: "Simon Goring *et al*."
-date: "`r format(Sys.time(), '%d %B, %Y')`"
-output: word_document
-  reference_docx: word_template.docx
+output: 
+  word_document:
+    reference_docx: word_template.docx
 bibliography: goringetal_references.bib
 csl: plos.csl
 ---
@@ -90,7 +88,7 @@ John W. Williams^12,13^
 
 ```{r dataLoad, echo = FALSE, message=FALSE, results = 'hide', warning=FALSE}
 
-version <- '0.9-9'
+version <- '0.9-10'
 
 #  Choose one of the two below (3175 is the Albers, 4326 is lat/long):
 model.proj <- '+init=epsg:3175'
@@ -281,7 +279,7 @@ good.trees <- with(used.data@data,
 
 used.data$good <- two.quads | good.trees
 
-count.plot <- rasterize(spTransform(used.data, CRSobj = CRS(model.proj)), 
+count.plot <- rasterize(spTransform(used.data, CRSobj = CRS(model.proj)),
                         base.rast, 'good', sum)
   
 count.df <- data.frame(xyFromCell(count.plot, 1:ncell(count.plot)),
@@ -769,7 +767,7 @@ Ultimately the pre-settlement vegetation data present an opportunity to develop 
 
 Acknowledgements
 ==================
-The authors would like to thanks the large number of individuals who have worked to first, undertake the Public Lands System Survey, to bring the original survey data together, to digitize and standardize much of the survey results, and finally, to assist in interpreting and compiling the data in its present form. We would like to acknowledge the contributions of Sean DuBois in assisting with the Forest Inventory Analysis data. We would like to thank our reviewers, Kerry Woods and Greg Guerin, and those who provided comments on the preprint (http://dx.doi.org/10.1101/026575). This material is based upon work carried out by the PalEON Project (http://paleonproject.org).  Maps were made using data from Natural Earth (http://naturalearth.com), which provides raster & vector map data in the public domain. Any use of trade, firm, or product name is for descriptive purposes only and does not imply endorsment by the U.S. Government.
+The authors would like to thanks the large number of individuals who have worked to first, undertake the Public Lands System Survey, to bring the original survey data together, to digitize and standardize much of the survey results, and finally, to assist in interpreting and compiling the data in its present form. We would like to acknowledge the contributions of Sean DuBois in assisting with the Forest Inventory Analysis data. We would like to thank our reviewers, Kerry Woods and Greg Guerin, and those who provided comments on the preprint (http://dx.doi.org/10.1101/026575). This material is based upon work carried out by the PalEON Project (http://paleonproject.org).  Maps were made using data from Natural Earth (http://naturalearth.com), which provides raster & vector map data in the public domain. Any use of trade, firm, or product name is for descriptive purposes only and does not imply endorsement by the U.S. Government.
 
 ***
 ```{r fig1_output,echo=FALSE,warning=FALSE,message=FALSE,fig.width=4,fig.height = 3,dpi=300, dev=c('png','tiff')}

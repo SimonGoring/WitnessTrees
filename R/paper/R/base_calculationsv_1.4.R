@@ -1,6 +1,6 @@
 ##################################################################
 #  morisita is a function found in misc.functions.r
-estimates <- morisita(used.data, correction, veil = FALSE)
+estimates <- morisita(used.data, correction)
 
 stem.density <- estimates[[1]]
 basal.area <- estimates[[2]]
@@ -45,6 +45,8 @@ if (paste0('pointwise.ests','_v',version, '.RDS') %in% list.files('../../data/ou
                            basal =  rep(stem.density$basal/2, 2),
                            diams = c(diams[,1], diams[,2]),
                            stringsAsFactors = FALSE)
+  
+  spec.table[,1:2] <- xyFromCell(base.rast, spec.table$cell)
   
   biom.table <- read.csv('../../data/input/relation_tables/plss.pft.conversion_v0.1-1.csv', 
                          stringsAsFactors = FALSE)
@@ -161,6 +163,8 @@ basal.table   <- dcast(spec.table, x + y  + cell ~ spec, sum, na.rm = TRUE, valu
 biomass.table <- dcast(spec.table, x + y  + cell ~ spec, sum, na.rm = TRUE, value.var = 'biom')
 diam.table    <- dcast(spec.table, x + y  + cell ~ spec, sum, na.rm = TRUE, value.var = 'diams')
 
+diam.table.veil    <- dcast(spec.table[!spec.table$diams < 8, ], x + y  + cell ~ spec, sum, na.rm = TRUE, value.var = 'diams')
+
 ## This is to normalize.  Diameters need to be averaged by the tree number, otherwise, by
 ##  the point number.
 points.by.cell <- rowSums(count.table[,4:ncol(count.table)], na.rm = TRUE)
@@ -176,8 +180,12 @@ normalize <- function(x, mult = 2, value = points.by.cell) {
 density.table <- normalize(density.table)
 basal.table   <- normalize(basal.table)
 biomass.table <- normalize(biomass.table)
+diam.table.uw <- normalize(diam.table, mult = 2.54, value = 1) # [unweighted]
 diam.table    <- normalize(diam.table, mult = 2.54) # [weighted]
-diam.table.uw <- normalize(diam.table, mult = 2.54, 1) # [weighted]
+
+diam.table.veil.uw <- normalize(diam.table.veil, mult = 2.54, value = 1) # [unweighted]
+diam.table.veil    <- normalize(diam.table.veil, mult = 2.54) # [weighted]
+
 
 #  We want rasterized versions of these tables with sums:
 rast.fun <- function(x) {
@@ -276,7 +284,9 @@ add.v(biomass.points.pft, 'plss_plots_pft')
 
 ## This is everything else:
 add.v(diam.table.uw, 'plss_diam')
+add.v(diam.table.veil.uw, 'plss_diam_veil')
 add.v(count.table, 'plss_composition')
+
 add.v(density.table, 'plss_density')
 add.v(basal.table, 'plss_basal')
 add.v(biomass.table, 'plss_biomass')
@@ -303,3 +313,11 @@ for (i in 1:(length(all_cells) - 1)) {
   assertthat::assert_that(all.equal(sort(all_cells[[i]]), sort(all_cells[[j]])))
   }
 }
+
+assertthat::assert_that(all(round(apply(diam.table.veil.uw[,-(1:3)], 2, 
+                                        function(x)min(x[x > 0], na.rm = TRUE)), 0) > 18))
+
+assertthat::assert_that(all(points_per_cell_df$total == rowSums(points_per_cell_df[,5:6])))
+assertthat::assert_that(all((biomass.points$`No tree` > 0) == (points_per_cell_df$untreed > 0)))
+assertthat::assert_that(all(rowSums(biomass.points[,-(1:3)]) >= points_per_cell_df$total))
+assertthat::assert_that(all(rowSums(biomass.points.pft[,-(1:3)]) >= points_per_cell_df$total))
