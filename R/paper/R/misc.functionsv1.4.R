@@ -73,12 +73,12 @@ morisita <- function(processed.data, correction.factor = NULL, veil = FALSE) {
   
   #  A set of conditions to be met for the rsum to be valid:
   rsum[rowSums(is.na(m.dist[,1:2])) == 2 |  q < 2 | rsum == 0 | rowSums(m.dist[,1:2], na.rm = T) < 0.6035] <- NA
-    
+
   #  From the formula,
   #  lambda = kappa * theta * (q - 1)/(pi * n) * (q / sum_(1:q)(r^2))
   #  here, n is equal to 1.
   #  units are in stems / m^2
-  
+
   morisita.est <- ((q - 1) / (pi * 1)) * (2 / rsum) *
     correction.factor$kappa * correction.factor$theta * correction.factor$zeta * correction.factor$phi
   

@@ -86,7 +86,7 @@ John W. Williams^12,13^
 
 ******
 
-```{r dataLoad, echo = FALSE, message=FALSE, results = 'hide', warning=FALSE}
+```{r dataLoad, echo = FALSE, message=FALSE, results = 'hide', warning=FALSE, cache=FALSE}
 
 version <- '0.9-10'
 
@@ -234,7 +234,7 @@ fia.plots <- raster('../../data/input/rasters/numplots_alb.tif')
 
 ```
 
-The United States Forest Service has monitored the nation's forests through the FIA Program since 1929, with an annualized state inventory system implemented in 1998 [@woudenberg2010forest]. On average there is one permanent FIA plot per 2,428 ha of land in the United States classified as forested. Each FIA plot consists of four 7.2m fixed-radius subplots in which measurements are made of all trees >12.7cm dbh [@woudenberg2010forest]. We used data from the most recent full plot inventory (2007-2011). The FIA plot inventory provides a median of `r median(getValues(fia.plots), na.rm = TRUE)` FIA plots per cell using the 64km^2^ grid.  We calculated mean basal area (m^2^ ha^-1^), stem density (stems ha^-1^), and mean diameter at breast height (cm) for all live trees with dbh greater than 20.32cm (8in).  All calculations followed instructions in Woudenberg *et al* [-@woudenberg2010forest].
+The United States Forest Service has monitored the nation's forests through the FIA Program since 1929, with an annualized state inventory system implemented in 1998 [@woudenberg2010forest]. On average there is one permanent FIA plot per 2,428 ha of land in the United States classified as forested. Each FIA plot consists of four 7.2m fixed-radius subplots in which measurements are made of all trees >12.7cm dbh [@woudenberg2010forest]. We used data from the most recent full plot inventory (2007-2011). The FIA plot inventory provides a median of `r median(raster::getValues(fia.plots), na.rm = TRUE)` FIA plots per cell using the 64km^2^ grid.  We calculated mean basal area (m^2^ ha^-1^), stem density (stems ha^-1^), and mean diameter at breast height (cm) for all live trees with dbh greater than 20.32cm (8in).  All calculations followed instructions in Woudenberg *et al* [-@woudenberg2010forest].
 
 One critical issue is the reliance on forested condition for the FIA sampling.  This reduces our capacity to compare forest state between PLSS and FIA cover in regions with historical  prairie and savanna coverage that are now patches of closed canopy forest among a largely agricultural landscape.  In addition, it may result in the overestimation of modern density and basal area at the mesoscale in these same regions by drawing from a sample biased specifically towards plots with > 10% forest cover [@woudenberg2010forest], however, the 10% cover threshold is fairly low, but more likely in line with "open forest" [*sensu* @anderson1975presettlement] than savanna.
 
@@ -284,7 +284,7 @@ count.plot <- rasterize(spTransform(used.data, CRSobj = CRS(model.proj)),
   
 count.df <- data.frame(xyFromCell(count.plot, 1:ncell(count.plot)),
                        cell = get_cells(xyFromCell(count.plot, 1:ncell(count.plot))),
-                       points = getValues(count.plot))
+                       points = raster::getValues(count.plot))
 
 write.csv(na.omit(count.df),
           paste0('../../data/output/wiki_outputs/plss_counts_alb_', version, '.csv'),
@@ -298,7 +298,7 @@ rm(quadrant)
 
 The original PLSS dataset contains `r p(length(used.data), fixed = TRUE)` corner points (excluding line and meander points), with `r p(sum(regexpr('wi', used.data$Township)>0, na.rm = TRUE), fixed=TRUE)` points from Wisconsin, `r p(sum(regexpr('mn', used.data$Township)>0, na.rm = TRUE), fixed=TRUE)` points from Minnesota and `r p(sum(regexpr('mi', used.data$Township)>0, na.rm = TRUE), fixed=TRUE)` points from Michigan. Standardizing data and accounting for potential outliers, described above, removed 1.5% of points from the dataset, yielding a final total of `r p(sum(!is.na(estimates[[1]])), fixed=TRUE)` corner points.
 
-Rasterizing the PLSS dataset to the Albers 64km^2^ grid produces `r p(sum(!is.na(as.vector(count.plot))), fixed=TRUE)` raster cells with data. Each cell contains between `r min(getValues(count.plot), na.rm = TRUE)` and `r max(getValues(count.plot), na.rm = TRUE)` corner points, with a mean of `r p(mean(getValues(count.plot), na.rm = TRUE))` ($\sigma$ = `r p(sd(getValues(count.plot), na.rm = TRUE))`) and a median of `r median(getValues(count.plot), na.rm = TRUE)` corners (S3 File). Cells with a low number of points were mainly near water bodies or along political boundaries such as the Canadian/Minnesota border, or southern Minnesota and Wisconsin borders. Only `r p(sum(getValues(count.plot) < 10, na.rm = TRUE) / sum(!is.na(getValues(count.plot)), na.rm = TRUE) * 100)`% of cells have fewer than 10 points per cell.
+Rasterizing the PLSS dataset to the Albers 64km^2^ grid produces `r p(sum(!is.na(as.vector(count.plot))), fixed=TRUE)` raster cells with data. Each cell contains between `r min(raster::getValues(count.plot), na.rm = TRUE)` and `r max(raster::getValues(count.plot), na.rm = TRUE)` corner points, with a mean of `r p(mean(raster::getValues(count.plot), na.rm = TRUE))` ($\sigma$ = `r p(sd(getValues(count.plot), na.rm = TRUE))`) and a median of `r median(getValues(count.plot), na.rm = TRUE)` corners (S3 File). Cells with a low number of points were mainly near water bodies or along political boundaries such as the Canadian/Minnesota border, or southern Minnesota and Wisconsin borders. Only `r p(sum(getValues(count.plot) < 10, na.rm = TRUE) / sum(!is.na(getValues(count.plot)), na.rm = TRUE) * 100)`% of cells have fewer than 10 points per cell.
 
 Species assignments to genera were rarely problematic. Only `r sum(species[,1:2] == 'Unknown tree')` PLSS trees were assigned to the Unknown Tree category, representing less than 0.01% of all points. These unknown trees largely consisted of corner trees for which taxon could not be interpreted, but for which diameter and azimuth data was recorded. A further `r p(sum(species[,1:2] == 'Other hardwood')/(length(used.data)*2)*100)`% of trees were assigned to the "Other hardwood" taxon (*e.g.*, hawthorn, "may cherry", and "white thorn").
 
